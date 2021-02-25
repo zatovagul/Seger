@@ -69,6 +69,8 @@ class OxideDao extends DatabaseAccessor<AppDatabase> with _$OxideDaoMixin {
   Future<List<Oxide>> getAllOxides() => select(oxides).get();
   Stream<List<Oxide>> watchOxides() => select(oxides).watch();
   Future insertNewOxide(Oxide oxide) => into(oxides).insert(oxide);
+  Future updateOxide(Oxide oxide) =>
+      update(oxides).replace(oxide);
 }
 
 @UseDao(tables: [Mats])

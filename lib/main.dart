@@ -12,6 +12,14 @@ abstract class SegerItems{
   static TextStyle mainStyle(double x){
     return TextStyle(color: blue,fontSize: x);
   }
+  static TextStyle whiteStyle(double x){
+    return TextStyle(color: Colors.white,fontSize: x);
+  }
+
+  static BoxDecoration pageDecoration=BoxDecoration(
+    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    color: Colors.white,
+  );
 }
 
 

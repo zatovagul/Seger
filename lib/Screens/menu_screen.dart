@@ -5,6 +5,7 @@ import 'package:seger/main.dart';
 class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -12,10 +13,7 @@ class MenuScreen extends StatelessWidget {
         margin:
             EdgeInsets.only(left: 20.0, right: 20.0, top: 60.0, bottom: 20.0),
         padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 20.0),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          color: Colors.white,
-        ),
+        decoration:  SegerItems.pageDecoration,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
