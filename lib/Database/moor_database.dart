@@ -43,7 +43,7 @@ class Recipes extends Table {
       integer().customConstraint("REFERENCES folders(id)")();
 }
 
-class RecipeMaterials extends Table {
+class RecipeMats extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get matId => integer().customConstraint("REFERENCES mats(id)")();
   IntColumn get recipeId =>
@@ -96,9 +96,49 @@ class MatOxideDao extends DatabaseAccessor<AppDatabase>
       delete(matOxides).delete(matOxide);
 }
 
+@UseDao(tables: [Recipes])
+class RecipeDao extends DatabaseAccessor<AppDatabase> with _$RecipeDaoMixin{
+  final AppDatabase db;
+  RecipeDao(this.db):super(db);
+
+  Stream<List<Recipe>> watchRecipesByFolderId(int folderId) =>
+      (select(recipes)..where((tbl) => tbl.folderId.equals(folderId))).watch();
+  Future insertRecipe(Recipe recipe) =>
+      into(recipes).insert(recipe);
+  Future updateRecipe(Recipe recipe) =>
+      update(recipes).replace(recipe);
+}
+
+@UseDao(tables: [RecipeMats])
+class RecipeMatDao extends DatabaseAccessor<AppDatabase> with _$RecipeMatDaoMixin{
+  final AppDatabase db;
+  RecipeMatDao(this.db):super(db);
+
+  Stream<List<RecipeMat>> watchRecipeMatsByRecipeId(int recipeId) =>
+      (select(recipeMats)..where((tbl) => tbl.recipeId.equals(recipeId))).watch();
+  Future insertRecipeMat(RecipeMat recipeMat) =>
+      into(recipeMats).insert(recipeMat);
+  Future updateRecipeMat(RecipeMat recipeMat) =>
+      update(recipeMats).replace(recipeMat);
+}
+
+@UseDao(tables: [Folders])
+class FolderDao extends DatabaseAccessor<AppDatabase> with _$FolderDaoMixin{
+  final AppDatabase db;
+  FolderDao(this.db):super(db);
+
+  Stream<List<Folder>> watchFolders() => select(folders).watch();
+  Future insertFolder(Folder folder) =>
+      into(folders).insert(folder);
+  Future deleteFolder(Folder folder) =>
+      delete(folders).delete(folder);
+  Future updateFolder(Folder folder) =>
+      update(folders).replace(folder);
+}
+
 @UseMoor(
-    tables: [Orders, Oxides, Mats, MatOxides],
-    daos: [OxideDao, MatDao, MatOxideDao])
+    tables: [Orders, Oxides, Mats, MatOxides, Recipes, RecipeMats, Folders],
+    daos: [OxideDao, MatDao, MatOxideDao, FolderDao, RecipeDao, RecipeMatDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase()
       : super(FlutterQueryExecutor.inDatabaseFolder(

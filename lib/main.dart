@@ -22,6 +22,9 @@ void main() {
       Provider(create: (_) => db.oxideDao),
       Provider(create: (_) => db.matDao),
       Provider(create: (_) => db.matOxideDao),
+      Provider(create: (_) => db.recipeDao),
+      Provider(create: (_) => db.recipeMatDao),
+      Provider(create: (_) => db.folderDao),
     ],
     child: MaterialApp(
       home: SplashScreen(),

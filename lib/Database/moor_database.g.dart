@@ -619,11 +619,8 @@ class $MatsTable extends Mats with TableInfo<$MatsTable, Mat> {
   @override
   GeneratedBoolColumn get def => _def ??= _constructDef();
   GeneratedBoolColumn _constructDef() {
-    return GeneratedBoolColumn(
-      'def',
-      $tableName,
-      false,
-    );
+    return GeneratedBoolColumn('def', $tableName, false,
+        defaultValue: const Constant(false));
   }
 
   @override
@@ -837,7 +834,7 @@ class $MatOxidesTable extends MatOxides
   GeneratedIntColumn get matId => _matId ??= _constructMatId();
   GeneratedIntColumn _constructMatId() {
     return GeneratedIntColumn('mat_id', $tableName, false,
-        $customConstraints: 'REFERENCES materials(id)');
+        $customConstraints: 'REFERENCES mats(id)');
   }
 
   final VerificationMeta _countMeta = const VerificationMeta('count');
@@ -922,6 +919,686 @@ class $MatOxidesTable extends MatOxides
   }
 }
 
+class Recipe extends DataClass implements Insertable<Recipe> {
+  final int id;
+  final String name;
+  final DateTime date;
+  final int folderId;
+  Recipe(
+      {@required this.id,
+      @required this.name,
+      @required this.date,
+      @required this.folderId});
+  factory Recipe.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
+    final dateTimeType = db.typeSystem.forDartType<DateTime>();
+    return Recipe(
+      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      date:
+          dateTimeType.mapFromDatabaseResponse(data['${effectivePrefix}date']),
+      folderId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}folder_id']),
+    );
+  }
+  factory Recipe.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
+    return Recipe(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      folderId: serializer.fromJson<int>(json['folderId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson(
+      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
+    return {
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'date': serializer.toJson<DateTime>(date),
+      'folderId': serializer.toJson<int>(folderId),
+    };
+  }
+
+  @override
+  T createCompanion<T extends UpdateCompanion<Recipe>>(bool nullToAbsent) {
+    return RecipesCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      date: date == null && nullToAbsent ? const Value.absent() : Value(date),
+      folderId: folderId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(folderId),
+    ) as T;
+  }
+
+  Recipe copyWith({int id, String name, DateTime date, int folderId}) => Recipe(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        date: date ?? this.date,
+        folderId: folderId ?? this.folderId,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Recipe(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('date: $date, ')
+          ..write('folderId: $folderId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(id.hashCode,
+      $mrjc(name.hashCode, $mrjc(date.hashCode, folderId.hashCode))));
+  @override
+  bool operator ==(other) =>
+      identical(this, other) ||
+      (other is Recipe &&
+          other.id == id &&
+          other.name == name &&
+          other.date == date &&
+          other.folderId == folderId);
+}
+
+class RecipesCompanion extends UpdateCompanion<Recipe> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<DateTime> date;
+  final Value<int> folderId;
+  const RecipesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.date = const Value.absent(),
+    this.folderId = const Value.absent(),
+  });
+  RecipesCompanion copyWith(
+      {Value<int> id,
+      Value<String> name,
+      Value<DateTime> date,
+      Value<int> folderId}) {
+    return RecipesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      date: date ?? this.date,
+      folderId: folderId ?? this.folderId,
+    );
+  }
+}
+
+class $RecipesTable extends Recipes with TableInfo<$RecipesTable, Recipe> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $RecipesTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  GeneratedIntColumn _id;
+  @override
+  GeneratedIntColumn get id => _id ??= _constructId();
+  GeneratedIntColumn _constructId() {
+    return GeneratedIntColumn('id', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _nameMeta = const VerificationMeta('name');
+  GeneratedTextColumn _name;
+  @override
+  GeneratedTextColumn get name => _name ??= _constructName();
+  GeneratedTextColumn _constructName() {
+    return GeneratedTextColumn(
+      'name',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _dateMeta = const VerificationMeta('date');
+  GeneratedDateTimeColumn _date;
+  @override
+  GeneratedDateTimeColumn get date => _date ??= _constructDate();
+  GeneratedDateTimeColumn _constructDate() {
+    return GeneratedDateTimeColumn(
+      'date',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _folderIdMeta = const VerificationMeta('folderId');
+  GeneratedIntColumn _folderId;
+  @override
+  GeneratedIntColumn get folderId => _folderId ??= _constructFolderId();
+  GeneratedIntColumn _constructFolderId() {
+    return GeneratedIntColumn('folder_id', $tableName, false,
+        $customConstraints: 'REFERENCES folders(id)');
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, name, date, folderId];
+  @override
+  $RecipesTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'recipes';
+  @override
+  final String actualTableName = 'recipes';
+  @override
+  VerificationContext validateIntegrity(RecipesCompanion d,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    if (d.id.present) {
+      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    } else if (id.isRequired && isInserting) {
+      context.missing(_idMeta);
+    }
+    if (d.name.present) {
+      context.handle(
+          _nameMeta, name.isAcceptableValue(d.name.value, _nameMeta));
+    } else if (name.isRequired && isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (d.date.present) {
+      context.handle(
+          _dateMeta, date.isAcceptableValue(d.date.value, _dateMeta));
+    } else if (date.isRequired && isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (d.folderId.present) {
+      context.handle(_folderIdMeta,
+          folderId.isAcceptableValue(d.folderId.value, _folderIdMeta));
+    } else if (folderId.isRequired && isInserting) {
+      context.missing(_folderIdMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Recipe map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return Recipe.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  Map<String, Variable> entityToSql(RecipesCompanion d) {
+    final map = <String, Variable>{};
+    if (d.id.present) {
+      map['id'] = Variable<int, IntType>(d.id.value);
+    }
+    if (d.name.present) {
+      map['name'] = Variable<String, StringType>(d.name.value);
+    }
+    if (d.date.present) {
+      map['date'] = Variable<DateTime, DateTimeType>(d.date.value);
+    }
+    if (d.folderId.present) {
+      map['folder_id'] = Variable<int, IntType>(d.folderId.value);
+    }
+    return map;
+  }
+
+  @override
+  $RecipesTable createAlias(String alias) {
+    return $RecipesTable(_db, alias);
+  }
+}
+
+class RecipeMat extends DataClass implements Insertable<RecipeMat> {
+  final int id;
+  final int matId;
+  final int recipeId;
+  final double count;
+  final bool tag;
+  RecipeMat(
+      {@required this.id,
+      @required this.matId,
+      @required this.recipeId,
+      @required this.count,
+      @required this.tag});
+  factory RecipeMat.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final doubleType = db.typeSystem.forDartType<double>();
+    final boolType = db.typeSystem.forDartType<bool>();
+    return RecipeMat(
+      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      matId: intType.mapFromDatabaseResponse(data['${effectivePrefix}mat_id']),
+      recipeId:
+          intType.mapFromDatabaseResponse(data['${effectivePrefix}recipe_id']),
+      count:
+          doubleType.mapFromDatabaseResponse(data['${effectivePrefix}count']),
+      tag: boolType.mapFromDatabaseResponse(data['${effectivePrefix}tag']),
+    );
+  }
+  factory RecipeMat.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
+    return RecipeMat(
+      id: serializer.fromJson<int>(json['id']),
+      matId: serializer.fromJson<int>(json['matId']),
+      recipeId: serializer.fromJson<int>(json['recipeId']),
+      count: serializer.fromJson<double>(json['count']),
+      tag: serializer.fromJson<bool>(json['tag']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson(
+      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
+    return {
+      'id': serializer.toJson<int>(id),
+      'matId': serializer.toJson<int>(matId),
+      'recipeId': serializer.toJson<int>(recipeId),
+      'count': serializer.toJson<double>(count),
+      'tag': serializer.toJson<bool>(tag),
+    };
+  }
+
+  @override
+  T createCompanion<T extends UpdateCompanion<RecipeMat>>(bool nullToAbsent) {
+    return RecipeMatsCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      matId:
+          matId == null && nullToAbsent ? const Value.absent() : Value(matId),
+      recipeId: recipeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recipeId),
+      count:
+          count == null && nullToAbsent ? const Value.absent() : Value(count),
+      tag: tag == null && nullToAbsent ? const Value.absent() : Value(tag),
+    ) as T;
+  }
+
+  RecipeMat copyWith(
+          {int id, int matId, int recipeId, double count, bool tag}) =>
+      RecipeMat(
+        id: id ?? this.id,
+        matId: matId ?? this.matId,
+        recipeId: recipeId ?? this.recipeId,
+        count: count ?? this.count,
+        tag: tag ?? this.tag,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('RecipeMat(')
+          ..write('id: $id, ')
+          ..write('matId: $matId, ')
+          ..write('recipeId: $recipeId, ')
+          ..write('count: $count, ')
+          ..write('tag: $tag')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => $mrjf($mrjc(
+      id.hashCode,
+      $mrjc(matId.hashCode,
+          $mrjc(recipeId.hashCode, $mrjc(count.hashCode, tag.hashCode)))));
+  @override
+  bool operator ==(other) =>
+      identical(this, other) ||
+      (other is RecipeMat &&
+          other.id == id &&
+          other.matId == matId &&
+          other.recipeId == recipeId &&
+          other.count == count &&
+          other.tag == tag);
+}
+
+class RecipeMatsCompanion extends UpdateCompanion<RecipeMat> {
+  final Value<int> id;
+  final Value<int> matId;
+  final Value<int> recipeId;
+  final Value<double> count;
+  final Value<bool> tag;
+  const RecipeMatsCompanion({
+    this.id = const Value.absent(),
+    this.matId = const Value.absent(),
+    this.recipeId = const Value.absent(),
+    this.count = const Value.absent(),
+    this.tag = const Value.absent(),
+  });
+  RecipeMatsCompanion copyWith(
+      {Value<int> id,
+      Value<int> matId,
+      Value<int> recipeId,
+      Value<double> count,
+      Value<bool> tag}) {
+    return RecipeMatsCompanion(
+      id: id ?? this.id,
+      matId: matId ?? this.matId,
+      recipeId: recipeId ?? this.recipeId,
+      count: count ?? this.count,
+      tag: tag ?? this.tag,
+    );
+  }
+}
+
+class $RecipeMatsTable extends RecipeMats
+    with TableInfo<$RecipeMatsTable, RecipeMat> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $RecipeMatsTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  GeneratedIntColumn _id;
+  @override
+  GeneratedIntColumn get id => _id ??= _constructId();
+  GeneratedIntColumn _constructId() {
+    return GeneratedIntColumn('id', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _matIdMeta = const VerificationMeta('matId');
+  GeneratedIntColumn _matId;
+  @override
+  GeneratedIntColumn get matId => _matId ??= _constructMatId();
+  GeneratedIntColumn _constructMatId() {
+    return GeneratedIntColumn('mat_id', $tableName, false,
+        $customConstraints: 'REFERENCES mats(id)');
+  }
+
+  final VerificationMeta _recipeIdMeta = const VerificationMeta('recipeId');
+  GeneratedIntColumn _recipeId;
+  @override
+  GeneratedIntColumn get recipeId => _recipeId ??= _constructRecipeId();
+  GeneratedIntColumn _constructRecipeId() {
+    return GeneratedIntColumn('recipe_id', $tableName, false,
+        $customConstraints: 'REFERENCES recipes(id)');
+  }
+
+  final VerificationMeta _countMeta = const VerificationMeta('count');
+  GeneratedRealColumn _count;
+  @override
+  GeneratedRealColumn get count => _count ??= _constructCount();
+  GeneratedRealColumn _constructCount() {
+    return GeneratedRealColumn(
+      'count',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _tagMeta = const VerificationMeta('tag');
+  GeneratedBoolColumn _tag;
+  @override
+  GeneratedBoolColumn get tag => _tag ??= _constructTag();
+  GeneratedBoolColumn _constructTag() {
+    return GeneratedBoolColumn('tag', $tableName, false,
+        defaultValue: const Constant(false));
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, matId, recipeId, count, tag];
+  @override
+  $RecipeMatsTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'recipe_mats';
+  @override
+  final String actualTableName = 'recipe_mats';
+  @override
+  VerificationContext validateIntegrity(RecipeMatsCompanion d,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    if (d.id.present) {
+      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    } else if (id.isRequired && isInserting) {
+      context.missing(_idMeta);
+    }
+    if (d.matId.present) {
+      context.handle(
+          _matIdMeta, matId.isAcceptableValue(d.matId.value, _matIdMeta));
+    } else if (matId.isRequired && isInserting) {
+      context.missing(_matIdMeta);
+    }
+    if (d.recipeId.present) {
+      context.handle(_recipeIdMeta,
+          recipeId.isAcceptableValue(d.recipeId.value, _recipeIdMeta));
+    } else if (recipeId.isRequired && isInserting) {
+      context.missing(_recipeIdMeta);
+    }
+    if (d.count.present) {
+      context.handle(
+          _countMeta, count.isAcceptableValue(d.count.value, _countMeta));
+    } else if (count.isRequired && isInserting) {
+      context.missing(_countMeta);
+    }
+    if (d.tag.present) {
+      context.handle(_tagMeta, tag.isAcceptableValue(d.tag.value, _tagMeta));
+    } else if (tag.isRequired && isInserting) {
+      context.missing(_tagMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RecipeMat map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return RecipeMat.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  Map<String, Variable> entityToSql(RecipeMatsCompanion d) {
+    final map = <String, Variable>{};
+    if (d.id.present) {
+      map['id'] = Variable<int, IntType>(d.id.value);
+    }
+    if (d.matId.present) {
+      map['mat_id'] = Variable<int, IntType>(d.matId.value);
+    }
+    if (d.recipeId.present) {
+      map['recipe_id'] = Variable<int, IntType>(d.recipeId.value);
+    }
+    if (d.count.present) {
+      map['count'] = Variable<double, RealType>(d.count.value);
+    }
+    if (d.tag.present) {
+      map['tag'] = Variable<bool, BoolType>(d.tag.value);
+    }
+    return map;
+  }
+
+  @override
+  $RecipeMatsTable createAlias(String alias) {
+    return $RecipeMatsTable(_db, alias);
+  }
+}
+
+class Folder extends DataClass implements Insertable<Folder> {
+  final int id;
+  final String name;
+  final bool delete;
+  Folder({@required this.id, @required this.name, @required this.delete});
+  factory Folder.fromData(Map<String, dynamic> data, GeneratedDatabase db,
+      {String prefix}) {
+    final effectivePrefix = prefix ?? '';
+    final intType = db.typeSystem.forDartType<int>();
+    final stringType = db.typeSystem.forDartType<String>();
+    final boolType = db.typeSystem.forDartType<bool>();
+    return Folder(
+      id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
+      name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      delete:
+          boolType.mapFromDatabaseResponse(data['${effectivePrefix}delete']),
+    );
+  }
+  factory Folder.fromJson(Map<String, dynamic> json,
+      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
+    return Folder(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      delete: serializer.fromJson<bool>(json['delete']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson(
+      {ValueSerializer serializer = const ValueSerializer.defaults()}) {
+    return {
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'delete': serializer.toJson<bool>(delete),
+    };
+  }
+
+  @override
+  T createCompanion<T extends UpdateCompanion<Folder>>(bool nullToAbsent) {
+    return FoldersCompanion(
+      id: id == null && nullToAbsent ? const Value.absent() : Value(id),
+      name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      delete:
+          delete == null && nullToAbsent ? const Value.absent() : Value(delete),
+    ) as T;
+  }
+
+  Folder copyWith({int id, String name, bool delete}) => Folder(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        delete: delete ?? this.delete,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('Folder(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('delete: $delete')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      $mrjf($mrjc(id.hashCode, $mrjc(name.hashCode, delete.hashCode)));
+  @override
+  bool operator ==(other) =>
+      identical(this, other) ||
+      (other is Folder &&
+          other.id == id &&
+          other.name == name &&
+          other.delete == delete);
+}
+
+class FoldersCompanion extends UpdateCompanion<Folder> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<bool> delete;
+  const FoldersCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.delete = const Value.absent(),
+  });
+  FoldersCompanion copyWith(
+      {Value<int> id, Value<String> name, Value<bool> delete}) {
+    return FoldersCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      delete: delete ?? this.delete,
+    );
+  }
+}
+
+class $FoldersTable extends Folders with TableInfo<$FoldersTable, Folder> {
+  final GeneratedDatabase _db;
+  final String _alias;
+  $FoldersTable(this._db, [this._alias]);
+  final VerificationMeta _idMeta = const VerificationMeta('id');
+  GeneratedIntColumn _id;
+  @override
+  GeneratedIntColumn get id => _id ??= _constructId();
+  GeneratedIntColumn _constructId() {
+    return GeneratedIntColumn('id', $tableName, false,
+        hasAutoIncrement: true, declaredAsPrimaryKey: true);
+  }
+
+  final VerificationMeta _nameMeta = const VerificationMeta('name');
+  GeneratedTextColumn _name;
+  @override
+  GeneratedTextColumn get name => _name ??= _constructName();
+  GeneratedTextColumn _constructName() {
+    return GeneratedTextColumn(
+      'name',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _deleteMeta = const VerificationMeta('delete');
+  GeneratedBoolColumn _delete;
+  @override
+  GeneratedBoolColumn get delete => _delete ??= _constructDelete();
+  GeneratedBoolColumn _constructDelete() {
+    return GeneratedBoolColumn(
+      'delete',
+      $tableName,
+      false,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, name, delete];
+  @override
+  $FoldersTable get asDslTable => this;
+  @override
+  String get $tableName => _alias ?? 'folders';
+  @override
+  final String actualTableName = 'folders';
+  @override
+  VerificationContext validateIntegrity(FoldersCompanion d,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    if (d.id.present) {
+      context.handle(_idMeta, id.isAcceptableValue(d.id.value, _idMeta));
+    } else if (id.isRequired && isInserting) {
+      context.missing(_idMeta);
+    }
+    if (d.name.present) {
+      context.handle(
+          _nameMeta, name.isAcceptableValue(d.name.value, _nameMeta));
+    } else if (name.isRequired && isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (d.delete.present) {
+      context.handle(
+          _deleteMeta, delete.isAcceptableValue(d.delete.value, _deleteMeta));
+    } else if (delete.isRequired && isInserting) {
+      context.missing(_deleteMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Folder map(Map<String, dynamic> data, {String tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : null;
+    return Folder.fromData(data, _db, prefix: effectivePrefix);
+  }
+
+  @override
+  Map<String, Variable> entityToSql(FoldersCompanion d) {
+    final map = <String, Variable>{};
+    if (d.id.present) {
+      map['id'] = Variable<int, IntType>(d.id.value);
+    }
+    if (d.name.present) {
+      map['name'] = Variable<String, StringType>(d.name.value);
+    }
+    if (d.delete.present) {
+      map['delete'] = Variable<bool, BoolType>(d.delete.value);
+    }
+    return map;
+  }
+
+  @override
+  $FoldersTable createAlias(String alias) {
+    return $FoldersTable(_db, alias);
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(const SqlTypeSystem.withDefaults(), e);
   $OrdersTable _orders;
@@ -932,6 +1609,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   $MatsTable get mats => _mats ??= $MatsTable(this);
   $MatOxidesTable _matOxides;
   $MatOxidesTable get matOxides => _matOxides ??= $MatOxidesTable(this);
+  $RecipesTable _recipes;
+  $RecipesTable get recipes => _recipes ??= $RecipesTable(this);
+  $RecipeMatsTable _recipeMats;
+  $RecipeMatsTable get recipeMats => _recipeMats ??= $RecipeMatsTable(this);
+  $FoldersTable _folders;
+  $FoldersTable get folders => _folders ??= $FoldersTable(this);
   OxideDao _oxideDao;
   OxideDao get oxideDao => _oxideDao ??= OxideDao(this as AppDatabase);
   MatDao _matDao;
@@ -939,8 +1622,16 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   MatOxideDao _matOxideDao;
   MatOxideDao get matOxideDao =>
       _matOxideDao ??= MatOxideDao(this as AppDatabase);
+  FolderDao _folderDao;
+  FolderDao get folderDao => _folderDao ??= FolderDao(this as AppDatabase);
+  RecipeDao _recipeDao;
+  RecipeDao get recipeDao => _recipeDao ??= RecipeDao(this as AppDatabase);
+  RecipeMatDao _recipeMatDao;
+  RecipeMatDao get recipeMatDao =>
+      _recipeMatDao ??= RecipeMatDao(this as AppDatabase);
   @override
-  List<TableInfo> get allTables => [orders, oxides, mats, matOxides];
+  List<TableInfo> get allTables =>
+      [orders, oxides, mats, matOxides, recipes, recipeMats, folders];
 }
 
 // **************************************************************************
@@ -959,4 +1650,16 @@ mixin _$MatOxideDaoMixin on DatabaseAccessor<AppDatabase> {
   $MatOxidesTable get matOxides => db.matOxides;
   $MatsTable get mats => db.mats;
   $OxidesTable get oxides => db.oxides;
+}
+
+mixin _$RecipeDaoMixin on DatabaseAccessor<AppDatabase> {
+  $RecipesTable get recipes => db.recipes;
+}
+
+mixin _$RecipeMatDaoMixin on DatabaseAccessor<AppDatabase> {
+  $RecipeMatsTable get recipeMats => db.recipeMats;
+}
+
+mixin _$FolderDaoMixin on DatabaseAccessor<AppDatabase> {
+  $FoldersTable get folders => db.folders;
 }
