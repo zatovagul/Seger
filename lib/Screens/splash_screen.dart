@@ -19,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(Duration(seconds: 2),
         (){
-          Navigator.pushReplacement(context, PageTransition(type:PageTransitionType.fade,child:MenuScreen(), duration: Duration(seconds: 2)));
+          Navigator.pushReplacement(context, PageTransition(type:PageTransitionType.fade,child:SecondScreen(), duration: Duration(seconds: 2)));
         });
   }
 

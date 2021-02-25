@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:moor_flutter/moor_flutter.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:seger/Database/default_data.dart';
 part 'moor_database.g.dart';
 
 class Orders extends Table {
@@ -9,11 +12,99 @@ class Orders extends Table {
   TextColumn get productName => text()();
 }
 
-@UseMoor(tables: [Orders])
+class Oxides extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  TextColumn get role => text()();
+  TextColumn get defRole => text()();
+  RealColumn get mass => real()();
+}
+
+class Mats extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  TextColumn get info => text()();
+  BoolColumn get def => boolean().withDefault(const Constant(false))();
+}
+
+class MatOxides extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get oxideId =>
+      integer().customConstraint("REFERENCES oxides(id)")();
+  IntColumn get matId => integer().customConstraint("REFERENCES mats(id)")();
+  RealColumn get count => real()();
+}
+
+class Recipes extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  DateTimeColumn get date => dateTime()();
+  IntColumn get folderId =>
+      integer().customConstraint("REFERENCES folders(id)")();
+}
+
+class RecipeMaterials extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get matId => integer().customConstraint("REFERENCES mats(id)")();
+  IntColumn get recipeId =>
+      integer().customConstraint("REFERENCES recipes(id)")();
+  RealColumn get count => real()();
+  BoolColumn get tag => boolean().withDefault(const Constant(false))();
+}
+
+class Folders extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  BoolColumn get delete => boolean()();
+}
+
+@UseDao(tables: [Oxides])
+class OxideDao extends DatabaseAccessor<AppDatabase> with _$OxideDaoMixin {
+  final AppDatabase db;
+
+  OxideDao(this.db) : super(db);
+
+  Stream<Oxide> watchOxideById(int id) =>
+      (select(oxides)..where((tbl) => tbl.id.equals(id))).watchSingle();
+  Future<List<Oxide>> getAllOxides() => select(oxides).get();
+  Stream<List<Oxide>> watchOxides() => select(oxides).watch();
+  Future insertNewOxide(Oxide oxide) => into(oxides).insert(oxide);
+}
+
+@UseDao(tables: [Mats])
+class MatDao extends DatabaseAccessor<AppDatabase> with _$MatDaoMixin {
+  final AppDatabase db;
+  MatDao(this.db) : super(db);
+
+  Future insertNewMat(Mat mat) => into(mats).insert(mat);
+
+  Stream<List<Mat>> watchMaterials() => select(mats).watch();
+}
+
+@UseDao(tables: [MatOxides, Mats, Oxides])
+class MatOxideDao extends DatabaseAccessor<AppDatabase>
+    with _$MatOxideDaoMixin {
+  final AppDatabase db;
+  MatOxideDao(this.db) : super(db);
+
+  Stream<List<MatOxide>> watchMatOxidesByMatId(int matId) =>
+      (select(matOxides)..where((tbl) => tbl.matId.equals(matId))).watch();
+  Stream<List<MatOxide>> watchMatOxides() => select(matOxides).watch();
+  Future insertNewMaterialOxide(MatOxide matOxide) =>
+      into(matOxides).insert(matOxide);
+  Future deleteMaterialOxide(MatOxide matOxide) =>
+      delete(matOxides).delete(matOxide);
+}
+
+@UseMoor(
+    tables: [Orders, Oxides, Mats, MatOxides],
+    daos: [OxideDao, MatDao, MatOxideDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase()
       : super(FlutterQueryExecutor.inDatabaseFolder(
-      path: "db.sqlite", logStatements: true));
+          path: "db.sqlite",
+          logStatements: true,
+        ));
   int get schemaVersion => 1;
 
   Future<List<Order>> getAllOrder() => select(orders).get();
@@ -21,6 +112,18 @@ class AppDatabase extends _$AppDatabase {
   Future insertNewOrder(Order order) => into(orders).insert(order);
   Future updateOrder(Order order) => update(orders).replace(order);
   Future deleteOrder(Order order) => delete(orders).delete(order);
+  Future deleteAll() => delete(orders).go();
 
-
-  }
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+      beforeOpen: (db, details) async {
+        if (details.wasCreated) {
+          DataInfo dataInfo = DataInfo();
+          await into(oxides).insertAll(dataInfo.oxides);
+          await into(mats).insertAll(dataInfo.mats);
+          await into(matOxides).insertAll(dataInfo.matOxides);
+        }
+        await db.customStatement('PRAGMA foreign_keys = ON');
+      },
+      onUpgrade: (migration, from, to) async {});
+}

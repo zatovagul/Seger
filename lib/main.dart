@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:seger/Database/moor_database.dart';
 import 'package:seger/Screens/splash_screen.dart';
 
@@ -15,8 +16,16 @@ abstract class SegerItems{
 
 
 void main() {
-  runApp(MaterialApp(
-    home: SplashScreen(),
+  final db=AppDatabase();
+  runApp(MultiProvider(
+    providers: [
+      Provider(create: (_) => db.oxideDao),
+      Provider(create: (_) => db.matDao),
+      Provider(create: (_) => db.matOxideDao),
+    ],
+    child: MaterialApp(
+      home: SplashScreen(),
+    ),
   ));
 }
 
@@ -55,58 +64,58 @@ class _NewOrderState extends State<NewOrder> {
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
+    final matDao= Provider.of<MatDao>(context);
+    final matOxideDao=Provider.of<MatOxideDao>(context);
+    final oxideDao= Provider.of<OxideDao>(context);
     return Column(
       children: [
-        TextField(
-          decoration: InputDecoration(hintText: 'Order name'),
-          keyboardType: TextInputType.text,
-          controller: nameController,
-        ),
-        TextField(
-          decoration: InputDecoration(hintText: 'Order price'),
-          keyboardType: TextInputType.text,
-          controller: priceController,
-        ),
-        RaisedButton(
-          onPressed: () {
-            setState(() {
-              AppDatabase().insertNewOrder(Order(
-                  price: priceController.text,
-                  productName: nameController.text));
-              priceController.clear();
-              nameController.clear();
-            });
-          },
-          color: Colors.green,
-          child: Text("Place Order"),
-        ),
         Container(
           height: 700,
           width: double.infinity,
           child: StreamBuilder(
-            stream: AppDatabase().watchAllOrder(),
-            builder: (context, AsyncSnapshot<List<Order>> snapshot){
+            stream:  matDao.watchMaterials(),
+            builder: (context, AsyncSnapshot<List<Mat>> snapshot){
               return ListView.builder(
                 itemCount: snapshot.data!=null ? snapshot.data.length : 0,
                 itemBuilder: (_,index){
-                  return Card(
-                    color: Colors.orangeAccent,
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        child: Text('${index+1}'),
-                        radius: 20,
-                      ),
-                      title: Text(snapshot.data[index].productName),
-                      subtitle: Text("Rs. ${snapshot.data[index].price} ${snapshot.data[index].id}"),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete_outline),
-                        onPressed: (){
-                          setState(() {
-                            AppDatabase().deleteOrder(snapshot.data[index]);
-                          });
-                        },
-                        color: Colors.red,
-                      ),
+                  Mat mat=snapshot.data[index];
+                  return Container(
+                    child: Column(
+                      children: [
+                        Text("${mat.name}  ${mat.id}  ${mat.def}"),
+                        Container(
+                          height: 700,
+                          width: double.infinity,
+                          child: StreamBuilder(
+                            stream: matOxideDao.watchMatOxidesByMatId(mat.id),
+                            builder: (context, AsyncSnapshot<List<MatOxide>> snapshot1){
+                                return ListView.builder(
+                                    itemCount: snapshot1.data!=null ?  snapshot1.data.length : 0,
+                                  itemBuilder: (_,index)
+                                  {
+                                    MatOxide matO=snapshot1.data[index];
+                                    return Container(
+                                      height:50,
+                                      width: double.infinity,
+                                      child: StreamBuilder(
+                                        stream: oxideDao.watchOxideById(matO.oxideId),
+                                        builder: (context,AsyncSnapshot<Oxide> snapshot2){
+                                          if(snapshot2.data==null) return Center();
+                                          else
+                                          return Center(
+                                            child: Container(
+                                              child: Text("OxideId-${snapshot2.data.id}  ${snapshot2.data.name}  ${snapshot2.data.mass}  ${snapshot2.data.role}"),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                );
+                            },
+                          ),
+                        )
+                      ],
                     ),
                   );
                 },
