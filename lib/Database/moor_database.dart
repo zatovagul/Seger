@@ -31,7 +31,7 @@ class MatOxides extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get oxideId =>
       integer().customConstraint("REFERENCES oxides(id)")();
-  IntColumn get matId => integer().customConstraint("REFERENCES mats(id)")();
+  IntColumn get matId => integer().customConstraint("NOT NULL REFERENCES mats(id)")();
   RealColumn get count => real()();
 }
 
@@ -45,7 +45,7 @@ class Recipes extends Table {
 
 class RecipeMats extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get matId => integer().customConstraint("REFERENCES mats(id)")();
+  IntColumn get matId => integer().customConstraint("NOT NULL REFERENCES mats(id)")();
   IntColumn get recipeId =>
       integer().customConstraint("REFERENCES recipes(id)")();
   RealColumn get count => real()();
@@ -55,7 +55,7 @@ class RecipeMats extends Table {
 class Folders extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
-  BoolColumn get delete => boolean()();
+  BoolColumn get del => boolean()();
 }
 
 @UseDao(tables: [Oxides])
@@ -80,7 +80,10 @@ class MatDao extends DatabaseAccessor<AppDatabase> with _$MatDaoMixin {
 
   Future insertNewMat(Mat mat) => into(mats).insert(mat);
 
-  Stream<List<Mat>> watchMaterials() => select(mats).watch();
+  Stream<List<Mat>> watchMats() => select(mats).watch();
+  Future<List<Mat>> getAllMats() => select(mats).get();
+  Future deleteAllMats() =>
+      delete(mats).go();
 }
 
 @UseDao(tables: [MatOxides, Mats, Oxides])
@@ -92,10 +95,15 @@ class MatOxideDao extends DatabaseAccessor<AppDatabase>
   Stream<List<MatOxide>> watchMatOxidesByMatId(int matId) =>
       (select(matOxides)..where((tbl) => tbl.matId.equals(matId))).watch();
   Stream<List<MatOxide>> watchMatOxides() => select(matOxides).watch();
+  Future<List<MatOxide>> getAllMatOxides() => select(matOxides).get();
   Future insertNewMaterialOxide(MatOxide matOxide) =>
       into(matOxides).insert(matOxide);
+  Future insertAllMaterialOxides(List<MatOxide> matOxide) =>
+      into(matOxides).insertAll(matOxide);
   Future deleteMaterialOxide(MatOxide matOxide) =>
       delete(matOxides).delete(matOxide);
+  Future deleteAllMaterialOxides() =>
+      delete(matOxides).go();
 }
 
 @UseDao(tables: [Recipes])

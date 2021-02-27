@@ -834,7 +834,7 @@ class $MatOxidesTable extends MatOxides
   GeneratedIntColumn get matId => _matId ??= _constructMatId();
   GeneratedIntColumn _constructMatId() {
     return GeneratedIntColumn('mat_id', $tableName, false,
-        $customConstraints: 'REFERENCES mats(id)');
+        $customConstraints: 'NOT NULL REFERENCES mats(id)');
   }
 
   final VerificationMeta _countMeta = const VerificationMeta('count');
@@ -1298,7 +1298,7 @@ class $RecipeMatsTable extends RecipeMats
   GeneratedIntColumn get matId => _matId ??= _constructMatId();
   GeneratedIntColumn _constructMatId() {
     return GeneratedIntColumn('mat_id', $tableName, false,
-        $customConstraints: 'REFERENCES mats(id)');
+        $customConstraints: 'NOT NULL REFERENCES mats(id)');
   }
 
   final VerificationMeta _recipeIdMeta = const VerificationMeta('recipeId');
@@ -1412,8 +1412,8 @@ class $RecipeMatsTable extends RecipeMats
 class Folder extends DataClass implements Insertable<Folder> {
   final int id;
   final String name;
-  final bool delete;
-  Folder({@required this.id, @required this.name, @required this.delete});
+  final bool del;
+  Folder({@required this.id, @required this.name, @required this.del});
   factory Folder.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -1423,8 +1423,7 @@ class Folder extends DataClass implements Insertable<Folder> {
     return Folder(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
-      delete:
-          boolType.mapFromDatabaseResponse(data['${effectivePrefix}delete']),
+      del: boolType.mapFromDatabaseResponse(data['${effectivePrefix}del']),
     );
   }
   factory Folder.fromJson(Map<String, dynamic> json,
@@ -1432,7 +1431,7 @@ class Folder extends DataClass implements Insertable<Folder> {
     return Folder(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      delete: serializer.fromJson<bool>(json['delete']),
+      del: serializer.fromJson<bool>(json['del']),
     );
   }
   @override
@@ -1441,7 +1440,7 @@ class Folder extends DataClass implements Insertable<Folder> {
     return {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
-      'delete': serializer.toJson<bool>(delete),
+      'del': serializer.toJson<bool>(del),
     };
   }
 
@@ -1450,53 +1449,52 @@ class Folder extends DataClass implements Insertable<Folder> {
     return FoldersCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
-      delete:
-          delete == null && nullToAbsent ? const Value.absent() : Value(delete),
+      del: del == null && nullToAbsent ? const Value.absent() : Value(del),
     ) as T;
   }
 
-  Folder copyWith({int id, String name, bool delete}) => Folder(
+  Folder copyWith({int id, String name, bool del}) => Folder(
         id: id ?? this.id,
         name: name ?? this.name,
-        delete: delete ?? this.delete,
+        del: del ?? this.del,
       );
   @override
   String toString() {
     return (StringBuffer('Folder(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('delete: $delete')
+          ..write('del: $del')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(name.hashCode, delete.hashCode)));
+      $mrjf($mrjc(id.hashCode, $mrjc(name.hashCode, del.hashCode)));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
       (other is Folder &&
           other.id == id &&
           other.name == name &&
-          other.delete == delete);
+          other.del == del);
 }
 
 class FoldersCompanion extends UpdateCompanion<Folder> {
   final Value<int> id;
   final Value<String> name;
-  final Value<bool> delete;
+  final Value<bool> del;
   const FoldersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
-    this.delete = const Value.absent(),
+    this.del = const Value.absent(),
   });
   FoldersCompanion copyWith(
-      {Value<int> id, Value<String> name, Value<bool> delete}) {
+      {Value<int> id, Value<String> name, Value<bool> del}) {
     return FoldersCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
-      delete: delete ?? this.delete,
+      del: del ?? this.del,
     );
   }
 }
@@ -1526,20 +1524,20 @@ class $FoldersTable extends Folders with TableInfo<$FoldersTable, Folder> {
     );
   }
 
-  final VerificationMeta _deleteMeta = const VerificationMeta('delete');
-  GeneratedBoolColumn _delete;
+  final VerificationMeta _delMeta = const VerificationMeta('del');
+  GeneratedBoolColumn _del;
   @override
-  GeneratedBoolColumn get delete => _delete ??= _constructDelete();
-  GeneratedBoolColumn _constructDelete() {
+  GeneratedBoolColumn get del => _del ??= _constructDel();
+  GeneratedBoolColumn _constructDel() {
     return GeneratedBoolColumn(
-      'delete',
+      'del',
       $tableName,
       false,
     );
   }
 
   @override
-  List<GeneratedColumn> get $columns => [id, name, delete];
+  List<GeneratedColumn> get $columns => [id, name, del];
   @override
   $FoldersTable get asDslTable => this;
   @override
@@ -1561,11 +1559,10 @@ class $FoldersTable extends Folders with TableInfo<$FoldersTable, Folder> {
     } else if (name.isRequired && isInserting) {
       context.missing(_nameMeta);
     }
-    if (d.delete.present) {
-      context.handle(
-          _deleteMeta, delete.isAcceptableValue(d.delete.value, _deleteMeta));
-    } else if (delete.isRequired && isInserting) {
-      context.missing(_deleteMeta);
+    if (d.del.present) {
+      context.handle(_delMeta, del.isAcceptableValue(d.del.value, _delMeta));
+    } else if (del.isRequired && isInserting) {
+      context.missing(_delMeta);
     }
     return context;
   }
@@ -1587,8 +1584,8 @@ class $FoldersTable extends Folders with TableInfo<$FoldersTable, Folder> {
     if (d.name.present) {
       map['name'] = Variable<String, StringType>(d.name.value);
     }
-    if (d.delete.present) {
-      map['delete'] = Variable<bool, BoolType>(d.delete.value);
+    if (d.del.present) {
+      map['del'] = Variable<bool, BoolType>(d.del.value);
     }
     return map;
   }

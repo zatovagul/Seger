@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:seger/Database/moor_database.dart';
@@ -6,8 +7,29 @@ import 'package:seger/Screens/splash_screen.dart';
 
 abstract class SegerItems{
   static const blue = Color(0xFF007AFF);
+  static const greyi = Color(0xFFF6F6F6);
 
   static const mainTextStyle=TextStyle(color: blue,fontSize: 17.0);
+  static const menuIcon=Icon(
+    Icons.menu,
+    size: 35.0,
+    color: Colors.white,
+  );
+
+  static const textFieldDecoration=InputDecoration(
+  hintText: "Enter name",
+  border:UnderlineInputBorder(
+  borderSide: BorderSide(color: SegerItems.blue)
+  ) ,
+  enabledBorder: UnderlineInputBorder(
+  borderSide: BorderSide(color: SegerItems.blue)
+  ),
+  focusedBorder: UnderlineInputBorder(
+  borderSide: BorderSide(color: SegerItems.blue)
+  ),
+  );
+  static final FilteringTextInputFormatter doubleFilter =
+  FilteringTextInputFormatter.allow(RegExp('[0-9+-.,]'));
 
   static TextStyle mainStyle(double x){
     return TextStyle(color: blue,fontSize: x);
@@ -84,7 +106,7 @@ class _NewOrderState extends State<NewOrder> {
           height: 700,
           width: double.infinity,
           child: StreamBuilder(
-            stream:  matDao.watchMaterials(),
+            stream:  matDao.watchMats(),
             builder: (context, AsyncSnapshot<List<Mat>> snapshot){
               return ListView.builder(
                 itemCount: snapshot.data!=null ? snapshot.data.length : 0,

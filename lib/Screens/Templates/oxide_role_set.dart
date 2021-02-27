@@ -10,6 +10,7 @@ class OxideRoleSettings extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final oxideDao=Provider.of<OxideDao>(context);
+    List<Oxide> oxideList=[];
     return Scaffold(
       backgroundColor: SegerItems.blue,
       appBar: AppBar(
@@ -24,11 +25,7 @@ class OxideRoleSettings extends StatelessWidget {
                 onTap: (){
                   Navigator.push(context, PageTransition(type:PageTransitionType.fade,child:MenuScreen(), duration: Duration(milliseconds: 500)));
                 },
-                child: Icon(
-                  Icons.menu,
-                  size: 35.0,
-                  color: Colors.white,
-                ),
+                child: SegerItems.menuIcon,
               ),
           )
         ],
@@ -51,10 +48,10 @@ class OxideRoleSettings extends StatelessWidget {
             ),
             Expanded(
               child: Container(
-                padding: EdgeInsets.only(top:10,left:20,right: 20),
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                decoration: SegerItems.pageDecoration,
+                  padding: EdgeInsets.only(top:10,left:20,right: 20),
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  decoration: SegerItems.pageDecoration,
                 child: Column(
                   children: [
                     Row(
@@ -84,17 +81,35 @@ class OxideRoleSettings extends StatelessWidget {
                           stream: oxideDao.watchOxides(),
                           builder: (context, AsyncSnapshot<List<Oxide>> oxides){
                               return ListView.builder(
-                                  itemCount: oxides.data!=null ? oxides.data.length : 0,
+                                  itemCount: oxides.data!=null ? oxides.data.length+1 : 1,
                                   itemBuilder:  (_,index){
+                                    if(oxides.data==null || index==oxides.data.length){
+                                      return Container(
+                                        margin: EdgeInsets.only(top:20, bottom: 20),
+                                        child: Center(
+                                          child: GestureDetector(
+                                            onTap: (){
+                                              for(Oxide o in oxideList){
+                                                //print("${o.name} ${o.role} ${o.defRole}");
+                                                if(o.defRole!=o.role)
+                                                oxideDao.updateOxide(o.copyWith(role:o.defRole));
+                                              }
+                                            },
+                                            child: Text("Reset to defaults", style: TextStyle(fontSize: 20, color: SegerItems.blue)),
+                                          ),
+                                        ),
+                                      );
+                                    }
                                     Oxide oxide=oxides.data[index];
-                                    print("${oxide.name} ${oxide.role}");
+                                    oxideList.add(oxide);
+                                    //print("${oxide.name} ${oxide.role}");
                                     return OxideRoleRow(oxide: oxide);
                                   }
                               );
                           },
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
