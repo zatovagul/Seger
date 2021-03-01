@@ -11,6 +11,7 @@ class DataInfo{
     Oxide( name: "K2O", role: "a", defRole: "a", mass: 94.2),
     Oxide( name: "BeO", role: "ae", defRole: "ae", mass: 25.012),
     Oxide( name: "MgO", role: "ae", defRole: "ae", mass: 40.31),
+    Oxide( name: "CaO", role: "ae", defRole: "ae", mass: 56.08),
     Oxide( name: "SrO", role: "ae", defRole: "ae", mass: 103.62),
     Oxide( name: "BaO", role: "ae", defRole: "ae", mass: 153.7),
     Oxide( name: "P2O5", role: "a", defRole: "a", mass: 141.94),
@@ -37,5 +38,10 @@ class DataInfo{
     MatOxide( oxideId: 3, matId: 1, count: 1.7),
     MatOxide( oxideId: 4, matId: 1, count: 1.7),
     MatOxide( oxideId: 5, matId: 1, count: 1.7),
+  ];
+  List<Folder> folders=[
+    Folder( name: "Favourites", del: false),
+    Folder( name: "Testing", del: false),
+    Folder( name: "Drafts", del: false),
   ];
 }

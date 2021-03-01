@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:seger/Screens/Templates/folder_lists.dart';
+import 'package:seger/Screens/Templates/mat_list.dart';
+import 'package:seger/Screens/Templates/oxide_role_set.dart';
+import 'package:seger/Screens/calc_screen.dart';
 import 'package:seger/main.dart';
 
 class MenuScreen extends StatelessWidget {
+  List<String> names=["Calculator", "Recipes", "Materials", "Oxide Role"];
   @override
   Widget build(BuildContext context) {
 
@@ -25,34 +31,43 @@ class MenuScreen extends StatelessWidget {
                       width: 100.0),
                   Container(
                       margin: EdgeInsets.only(top: 10.0),
-                      child: Text("by\nOVO TRIMMING TOOLS",
-                          style: SegerItems.mainStyle(14),
-                          textAlign: TextAlign.center)),
+                      child: TextButton(
+                        child: Text("by\nOVO TRIMMING TOOLS",
+                            style: SegerItems.mainStyle(14),
+                            textAlign: TextAlign.center),
+                      )),
                   Container(
-                    margin: EdgeInsets.only(top: 60.0),
-                    child: Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(top: 40.0),
-                            child:
-                            Text("Calculator", style: SegerItems.mainTextStyle),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 40.0),
-                            child:
-                            Text("Recipes", style: SegerItems.mainTextStyle),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 40.0),
-                            child:
-                            Text("Materials", style: SegerItems.mainTextStyle),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 40.0),
-                            child:
-                            Text("Oxide Role", style: SegerItems.mainTextStyle),
-                          ),
-                        ]),
+                    margin: EdgeInsets.only(top: 50.0),
+                    child: Builder(
+                      builder: (context){
+                        List<Widget> widgets=[];
+                        for(int i=0;i<names.length;i++){
+                          Widget page=CalculatorScreen();
+                          if(i==1) page=FolderList();
+                          else if(i==2) page=MatList(choose:false);
+                          else if(i==3) page=OxideRoleSettings();
+                          widgets.add(
+                            Container(
+                              margin: EdgeInsets.only(top: 15.0),
+                              child:
+                              TextButton(
+                                onPressed: (){
+                                  Navigator.pushReplacement(
+                                      context,
+                                      PageTransition(
+                                          type: PageTransitionType.fade,
+                                          child: page,
+                                          duration: Duration(milliseconds: 500)));
+                                },
+                                  child: Text(names[i], style: SegerItems.mainTextStyle)),
+                            ),
+                          );
+                        }
+                        return Column(
+                          children: widgets,
+                        );
+                      },
+                    ),
                   )
                 ],
               ),

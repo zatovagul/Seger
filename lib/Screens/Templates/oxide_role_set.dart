@@ -6,24 +6,37 @@ import 'package:seger/Database/moor_database.dart';
 import 'package:seger/Screens/menu_screen.dart';
 import 'package:seger/main.dart';
 
-class OxideRoleSettings extends StatelessWidget {
+class OxideRoleSettings extends StatefulWidget {
+  @override
+  _OxideRoleSettingsState createState() => _OxideRoleSettingsState();
+}
+
+class _OxideRoleSettingsState extends State<OxideRoleSettings> {
+  Stream<List<Oxide>> streamOxide;
+  OxideDao oxideDao;
+
+  @override
+  void initState() {
+    super.initState();
+    oxideDao=Provider.of<OxideDao>(context, listen:false);
+    streamOxide=oxideDao.watchOxides();
+  }
   @override
   Widget build(BuildContext context) {
-    final oxideDao=Provider.of<OxideDao>(context);
     List<Oxide> oxideList=[];
     return Scaffold(
       backgroundColor: SegerItems.blue,
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        title: SvgPicture.asset("assets/images/seger_icon.svg", width: 70.0),
+        title: SegerItems.segerTopPic,
         backgroundColor: SegerItems.blue,
         actions: [
           Padding(
               padding: EdgeInsets.only(right: 20.0),
               child: GestureDetector(
                 onTap: (){
-                  Navigator.push(context, PageTransition(type:PageTransitionType.fade,child:MenuScreen(), duration: Duration(milliseconds: 500)));
+                  Navigator.pushReplacement(context, PageTransition(type:PageTransitionType.fade,child:MenuScreen(), duration: Duration(milliseconds: 500)));
                 },
                 child: SegerItems.menuIcon,
               ),
@@ -41,7 +54,7 @@ class OxideRoleSettings extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text("Oxide Role", style: SegerItems.whiteStyle(19),),
-                    Text("Cancel", style:SegerItems.whiteStyle(15))
+                    Text("", style:SegerItems.whiteStyle(15))  //cancelText
                   ],
                 ),
               ),
@@ -78,7 +91,7 @@ class OxideRoleSettings extends StatelessWidget {
                     Expanded(
                       child: Container(
                         child: StreamBuilder(
-                          stream: oxideDao.watchOxides(),
+                          stream: streamOxide,
                           builder: (context, AsyncSnapshot<List<Oxide>> oxides){
                               return ListView.builder(
                                   itemCount: oxides.data!=null ? oxides.data.length+1 : 1,

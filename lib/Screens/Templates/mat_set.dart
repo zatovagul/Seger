@@ -26,7 +26,7 @@ class MatSettings extends StatefulWidget {
 class _MatSettingsState extends State<MatSettings> {
   bool edit = false;
   Future<List<Oxide>> _futureBuilder;
-  Stream<double> percStream;
+  static ValueNotifier<double> _notifier;
 
   OxideDao oxideDao;
   MatDao matDao;
@@ -44,12 +44,9 @@ class _MatSettingsState extends State<MatSettings> {
   double percentage=0;
 
 
-  Stream<double> percStreamer(Duration interval) async*{
-    while(true){
-      await Future.delayed(interval);
-      percentage=0;oxideInfo.forEach((element) {percentage+=element.num; });
-      yield percentage;
-    }
+  void _percChange(){
+    percentage=0;oxideInfo.forEach((element) {percentage+=element.num; });
+    _notifier.value=percentage;
   }
 
 
@@ -60,20 +57,20 @@ class _MatSettingsState extends State<MatSettings> {
     infoController..text = edit ? widget.mat.info : "";
     oxideInfo = [];
     edit = widget.mat != null;
-    percStream=percStreamer(Duration(seconds: 1)).asBroadcastStream();
+
+    _notifier=ValueNotifier<double>(0);
+
+    oxideDao = Provider.of<OxideDao>(context, listen: false);
+    matDao = Provider.of<MatDao>(context, listen: false);
+    matOxideDao = Provider.of<MatOxideDao>(context, listen: false);
+
+    _futureBuilder = oxideDao.getAllOxides();
+    _futureBuilder.then((value) => value.forEach((element) { oxideInfo.add(OxideInfo(oxide: element)); }));
+
   }
 
   @override
   Widget build(BuildContext context) {
-    setState(() {
-      oxideDao = Provider.of<OxideDao>(context);
-      matDao = Provider.of<MatDao>(context);
-      matOxideDao = Provider.of<MatOxideDao>(context);
-
-      _futureBuilder = oxideDao.getAllOxides();
-      _futureBuilder.then((value) => value.forEach((element) { oxideInfo.add(OxideInfo(oxide: element)); }));
-
-    });
     return Scaffold(
       //resizeToAvoidBottomInset: false,
       backgroundColor: SegerItems.blue,
@@ -83,14 +80,14 @@ class _MatSettingsState extends State<MatSettings> {
         centerTitle: true,
         title: Text(
           edit ? "Edit Material" : "New Material",
-          style: TextStyle(color: Colors.white, fontSize: 18),
+          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                     context,
                     PageTransition(
                         type: PageTransitionType.fade,
@@ -229,18 +226,15 @@ class _MatSettingsState extends State<MatSettings> {
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
-                                              StreamBuilder<Object>(
-                                                stream: percStream,
-                                                builder: (context, snapshot) {
-                                                  double v=0;
-                                                  if(snapshot.data!=null)
-                                                    v=snapshot.data;
-                                                  return Text("$v",
-                                                    style: TextStyle(
-                                                        fontSize: 17,
-                                                        color: SegerItems.blue),
-                                                  );
-                                                }
+                                              ValueListenableBuilder<double>(
+                                                  valueListenable: _notifier,
+                                                  builder: (context, value, child){
+                                                    return Text("$value",
+                                                      style: TextStyle(
+                                                          fontSize: 17,
+                                                          color: SegerItems.blue),
+                                                    );
+                                                  }
                                               )
                                             ],
                                           ),
@@ -260,8 +254,12 @@ class _MatSettingsState extends State<MatSettings> {
                                   );
                                 }
                                 OxideChangeRow changeRow =
-                                    OxideChangeRow(oxide: oxideInfo[i - 1]);
-
+                                    OxideChangeRow(
+                                        oxide: oxideInfo[i - 1],
+                                        percChangeCall: (){
+                                          _percChange();
+                                        },
+                                    );
                                 return changeRow;
                               },
                             );
@@ -302,15 +300,20 @@ class _MatSettingsState extends State<MatSettings> {
         });
         matOxideDao.insertAllMaterialOxides(matOxides);
       });
+      Navigator.pop(context);
     }
   }
 }
 
+
+typedef PercChangeCall=void Function();
+
 class OxideChangeRow extends StatefulWidget {
   final OxideInfo oxide;
+  final PercChangeCall percChangeCall;
   TextEditingController controller;
   double num = 0;
-  OxideChangeRow({this.oxide});
+  OxideChangeRow({this.oxide, this.percChangeCall});
   @override
   _OxideChangeRowState createState() => _OxideChangeRowState();
 }
@@ -322,7 +325,6 @@ class _OxideChangeRowState extends State<OxideChangeRow> {
     widget.controller = TextEditingController();
     widget.controller.text = widget.oxide.num != 0 ? "${widget.oxide.num}" : "";
   }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -340,13 +342,13 @@ class _OxideChangeRowState extends State<OxideChangeRow> {
                 ),
                 Center(
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(minWidth: 70, maxHeight: 30),
+                    constraints: BoxConstraints(minWidth: 70, maxHeight: 30, maxWidth: 150),
                     child: IntrinsicWidth(
                       child: TextField(
                         controller: widget.controller,
-                        keyboardType: TextInputType.number,
+                        keyboardType: TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [
-                          SegerItems.doubleFilter
+                          SegerItems.doubleFilter,
                         ],
                         style: TextStyle(fontSize: 16, color: Colors.black),
                         textAlign: TextAlign.end,
@@ -365,8 +367,12 @@ class _OxideChangeRowState extends State<OxideChangeRow> {
                                     color: SegerItems.greyi, width: 1.0))),
                         onChanged: (value) {
                           setState(() {
-                            widget.oxide.num = double.parse(value);
+                            if(value.length>0)
+                              widget.oxide.num = double.parse(value.replaceAll(',', '.'));
+                            else
+                              widget.oxide.num=0;
                           });
+                          widget.percChangeCall();
                         },
                       ),
                     ),

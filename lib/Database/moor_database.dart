@@ -6,12 +6,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:seger/Database/default_data.dart';
 part 'moor_database.g.dart';
 
-class Orders extends Table {
-  TextColumn get price => text()();
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get productName => text()();
-}
-
 class Oxides extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
@@ -31,7 +25,8 @@ class MatOxides extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get oxideId =>
       integer().customConstraint("REFERENCES oxides(id)")();
-  IntColumn get matId => integer().customConstraint("NOT NULL REFERENCES mats(id)")();
+  IntColumn get matId =>
+      integer().customConstraint("NOT NULL REFERENCES mats(id)")();
   RealColumn get count => real()();
 }
 
@@ -45,7 +40,8 @@ class Recipes extends Table {
 
 class RecipeMats extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get matId => integer().customConstraint("NOT NULL REFERENCES mats(id)")();
+  IntColumn get matId =>
+      integer().customConstraint("NOT NULL REFERENCES mats(id)")();
   IntColumn get recipeId =>
       integer().customConstraint("REFERENCES recipes(id)")();
   RealColumn get count => real()();
@@ -69,8 +65,7 @@ class OxideDao extends DatabaseAccessor<AppDatabase> with _$OxideDaoMixin {
   Future<List<Oxide>> getAllOxides() => select(oxides).get();
   Stream<List<Oxide>> watchOxides() => select(oxides).watch();
   Future insertNewOxide(Oxide oxide) => into(oxides).insert(oxide);
-  Future updateOxide(Oxide oxide) =>
-      update(oxides).replace(oxide);
+  Future updateOxide(Oxide oxide) => update(oxides).replace(oxide);
 }
 
 @UseDao(tables: [Mats])
@@ -81,9 +76,11 @@ class MatDao extends DatabaseAccessor<AppDatabase> with _$MatDaoMixin {
   Future insertNewMat(Mat mat) => into(mats).insert(mat);
 
   Stream<List<Mat>> watchMats() => select(mats).watch();
+  Stream<List<Mat>> watchMatsOrdered() => (select(mats)..orderBy([
+    (t)=>OrderingTerm(expression: t.name)
+  ])).watch();
   Future<List<Mat>> getAllMats() => select(mats).get();
-  Future deleteAllMats() =>
-      delete(mats).go();
+  Future deleteAllMats() => delete(mats).go();
 }
 
 @UseDao(tables: [MatOxides, Mats, Oxides])
@@ -96,36 +93,36 @@ class MatOxideDao extends DatabaseAccessor<AppDatabase>
       (select(matOxides)..where((tbl) => tbl.matId.equals(matId))).watch();
   Stream<List<MatOxide>> watchMatOxides() => select(matOxides).watch();
   Future<List<MatOxide>> getAllMatOxides() => select(matOxides).get();
+  Future<List<MatOxide>> getMatOxidesByMatId(int matId) => (select(matOxides)..where((tbl) => tbl.matId.equals(matId))).get();
   Future insertNewMaterialOxide(MatOxide matOxide) =>
       into(matOxides).insert(matOxide);
   Future insertAllMaterialOxides(List<MatOxide> matOxide) =>
       into(matOxides).insertAll(matOxide);
   Future deleteMaterialOxide(MatOxide matOxide) =>
       delete(matOxides).delete(matOxide);
-  Future deleteAllMaterialOxides() =>
-      delete(matOxides).go();
+  Future deleteAllMaterialOxides() => delete(matOxides).go();
 }
 
 @UseDao(tables: [Recipes])
-class RecipeDao extends DatabaseAccessor<AppDatabase> with _$RecipeDaoMixin{
+class RecipeDao extends DatabaseAccessor<AppDatabase> with _$RecipeDaoMixin {
   final AppDatabase db;
-  RecipeDao(this.db):super(db);
+  RecipeDao(this.db) : super(db);
 
   Stream<List<Recipe>> watchRecipesByFolderId(int folderId) =>
       (select(recipes)..where((tbl) => tbl.folderId.equals(folderId))).watch();
-  Future insertRecipe(Recipe recipe) =>
-      into(recipes).insert(recipe);
-  Future updateRecipe(Recipe recipe) =>
-      update(recipes).replace(recipe);
+  Future insertRecipe(Recipe recipe) => into(recipes).insert(recipe);
+  Future updateRecipe(Recipe recipe) => update(recipes).replace(recipe);
 }
 
 @UseDao(tables: [RecipeMats])
-class RecipeMatDao extends DatabaseAccessor<AppDatabase> with _$RecipeMatDaoMixin{
+class RecipeMatDao extends DatabaseAccessor<AppDatabase>
+    with _$RecipeMatDaoMixin {
   final AppDatabase db;
-  RecipeMatDao(this.db):super(db);
+  RecipeMatDao(this.db) : super(db);
 
   Stream<List<RecipeMat>> watchRecipeMatsByRecipeId(int recipeId) =>
-      (select(recipeMats)..where((tbl) => tbl.recipeId.equals(recipeId))).watch();
+      (select(recipeMats)..where((tbl) => tbl.recipeId.equals(recipeId)))
+          .watch();
   Future insertRecipeMat(RecipeMat recipeMat) =>
       into(recipeMats).insert(recipeMat);
   Future updateRecipeMat(RecipeMat recipeMat) =>
@@ -133,21 +130,18 @@ class RecipeMatDao extends DatabaseAccessor<AppDatabase> with _$RecipeMatDaoMixi
 }
 
 @UseDao(tables: [Folders])
-class FolderDao extends DatabaseAccessor<AppDatabase> with _$FolderDaoMixin{
+class FolderDao extends DatabaseAccessor<AppDatabase> with _$FolderDaoMixin {
   final AppDatabase db;
-  FolderDao(this.db):super(db);
+  FolderDao(this.db) : super(db);
 
   Stream<List<Folder>> watchFolders() => select(folders).watch();
-  Future insertFolder(Folder folder) =>
-      into(folders).insert(folder);
-  Future deleteFolder(Folder folder) =>
-      delete(folders).delete(folder);
-  Future updateFolder(Folder folder) =>
-      update(folders).replace(folder);
+  Future insertFolder(Folder folder) => into(folders).insert(folder);
+  Future deleteFolder(Folder folder) => delete(folders).delete(folder);
+  Future updateFolder(Folder folder) => update(folders).replace(folder);
 }
 
 @UseMoor(
-    tables: [Orders, Oxides, Mats, MatOxides, Recipes, RecipeMats, Folders],
+    tables: [Oxides, Mats, MatOxides, Recipes, RecipeMats, Folders],
     daos: [OxideDao, MatDao, MatOxideDao, FolderDao, RecipeDao, RecipeMatDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase()
@@ -157,13 +151,6 @@ class AppDatabase extends _$AppDatabase {
         ));
   int get schemaVersion => 1;
 
-  Future<List<Order>> getAllOrder() => select(orders).get();
-  Stream<List<Order>> watchAllOrder() => select(orders).watch();
-  Future insertNewOrder(Order order) => into(orders).insert(order);
-  Future updateOrder(Order order) => update(orders).replace(order);
-  Future deleteOrder(Order order) => delete(orders).delete(order);
-  Future deleteAll() => delete(orders).go();
-
   @override
   MigrationStrategy get migration => MigrationStrategy(
       beforeOpen: (db, details) async {
@@ -172,6 +159,7 @@ class AppDatabase extends _$AppDatabase {
           await into(oxides).insertAll(dataInfo.oxides);
           await into(mats).insertAll(dataInfo.mats);
           await into(matOxides).insertAll(dataInfo.matOxides);
+          await into(folders).insertAll(dataInfo.folders);
         }
         await db.customStatement('PRAGMA foreign_keys = ON');
       },
