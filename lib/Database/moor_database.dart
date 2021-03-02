@@ -19,6 +19,7 @@ class Mats extends Table {
   TextColumn get name => text()();
   TextColumn get info => text()();
   BoolColumn get def => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get date => dateTime().nullable()();
 }
 
 class MatOxides extends Table {
@@ -75,12 +76,16 @@ class MatDao extends DatabaseAccessor<AppDatabase> with _$MatDaoMixin {
 
   Future insertNewMat(Mat mat) => into(mats).insert(mat);
 
+  Stream<Mat> watchMatByMatId(int matId) =>
+      (select(mats)..where((tbl) => tbl.id.equals(matId))).watchSingle();
   Stream<List<Mat>> watchMats() => select(mats).watch();
-  Stream<List<Mat>> watchMatsOrdered() => (select(mats)..orderBy([
-    (t)=>OrderingTerm(expression: t.name)
-  ])).watch();
+  Stream<List<Mat>> watchMatsOrdered() =>
+      (select(mats)..orderBy([(t) => OrderingTerm(expression: t.name)]))
+          .watch();
   Future<List<Mat>> getAllMats() => select(mats).get();
+  Future updateMat(Mat mat) => update(mats).replace(mat);
   Future deleteAllMats() => delete(mats).go();
+  Future deleteMat(Mat mat) => delete(mats).delete(mat);
 }
 
 @UseDao(tables: [MatOxides, Mats, Oxides])
@@ -89,11 +94,21 @@ class MatOxideDao extends DatabaseAccessor<AppDatabase>
   final AppDatabase db;
   MatOxideDao(this.db) : super(db);
 
+  Stream<List<MatOxideForm>> watchMatOxideFormsByMatId(int matId) =>
+      ((select(matOxides)..where((tbl) => tbl.matId.equals(matId)))
+              .join([leftOuterJoin(oxides, matOxides.id.equalsExp(oxides.id))]))
+          .watch()
+          .map((rows) => rows.map((row) {
+                return MatOxideForm(
+                    matOxide: row.readTable(matOxides),
+                    oxide: row.readTable(oxides));
+              }));
   Stream<List<MatOxide>> watchMatOxidesByMatId(int matId) =>
       (select(matOxides)..where((tbl) => tbl.matId.equals(matId))).watch();
   Stream<List<MatOxide>> watchMatOxides() => select(matOxides).watch();
   Future<List<MatOxide>> getAllMatOxides() => select(matOxides).get();
-  Future<List<MatOxide>> getMatOxidesByMatId(int matId) => (select(matOxides)..where((tbl) => tbl.matId.equals(matId))).get();
+  Future<List<MatOxide>> getMatOxidesByMatId(int matId) =>
+      (select(matOxides)..where((tbl) => tbl.matId.equals(matId))).get();
   Future insertNewMaterialOxide(MatOxide matOxide) =>
       into(matOxides).insert(matOxide);
   Future insertAllMaterialOxides(List<MatOxide> matOxide) =>
@@ -101,6 +116,8 @@ class MatOxideDao extends DatabaseAccessor<AppDatabase>
   Future deleteMaterialOxide(MatOxide matOxide) =>
       delete(matOxides).delete(matOxide);
   Future deleteAllMaterialOxides() => delete(matOxides).go();
+  Future deleteMaterialOxidesByMatId(int matId) =>
+      (delete(matOxides)..where((tbl) => tbl.matId.equals(matId))).go();
 }
 
 @UseDao(tables: [Recipes])
@@ -138,6 +155,12 @@ class FolderDao extends DatabaseAccessor<AppDatabase> with _$FolderDaoMixin {
   Future insertFolder(Folder folder) => into(folders).insert(folder);
   Future deleteFolder(Folder folder) => delete(folders).delete(folder);
   Future updateFolder(Folder folder) => update(folders).replace(folder);
+}
+
+class MatOxideForm {
+  final MatOxide matOxide;
+  final Oxide oxide;
+  MatOxideForm({@required this.matOxide, @required this.oxide});
 }
 
 @UseMoor(

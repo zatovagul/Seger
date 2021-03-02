@@ -135,7 +135,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                                 child: MatList(
                                                   choose: true,
                                                 ),
-                                                type: PageTransitionType.fade,
+                                                type: PageTransitionType.rightToLeft,
                                                 duration: Duration(
                                                     milliseconds: 500)));
                                         if (result != null) {

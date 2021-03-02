@@ -280,22 +280,27 @@ class Mat extends DataClass implements Insertable<Mat> {
   final String name;
   final String info;
   final bool def;
+  final DateTime date;
   Mat(
       {@required this.id,
       @required this.name,
       @required this.info,
-      @required this.def});
+      @required this.def,
+      this.date});
   factory Mat.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
     final intType = db.typeSystem.forDartType<int>();
     final stringType = db.typeSystem.forDartType<String>();
     final boolType = db.typeSystem.forDartType<bool>();
+    final dateTimeType = db.typeSystem.forDartType<DateTime>();
     return Mat(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       info: stringType.mapFromDatabaseResponse(data['${effectivePrefix}info']),
       def: boolType.mapFromDatabaseResponse(data['${effectivePrefix}def']),
+      date:
+          dateTimeType.mapFromDatabaseResponse(data['${effectivePrefix}date']),
     );
   }
   factory Mat.fromJson(Map<String, dynamic> json,
@@ -305,6 +310,7 @@ class Mat extends DataClass implements Insertable<Mat> {
       name: serializer.fromJson<String>(json['name']),
       info: serializer.fromJson<String>(json['info']),
       def: serializer.fromJson<bool>(json['def']),
+      date: serializer.fromJson<DateTime>(json['date']),
     );
   }
   @override
@@ -315,6 +321,7 @@ class Mat extends DataClass implements Insertable<Mat> {
       'name': serializer.toJson<String>(name),
       'info': serializer.toJson<String>(info),
       'def': serializer.toJson<bool>(def),
+      'date': serializer.toJson<DateTime>(date),
     };
   }
 
@@ -325,14 +332,17 @@ class Mat extends DataClass implements Insertable<Mat> {
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       info: info == null && nullToAbsent ? const Value.absent() : Value(info),
       def: def == null && nullToAbsent ? const Value.absent() : Value(def),
+      date: date == null && nullToAbsent ? const Value.absent() : Value(date),
     ) as T;
   }
 
-  Mat copyWith({int id, String name, String info, bool def}) => Mat(
+  Mat copyWith({int id, String name, String info, bool def, DateTime date}) =>
+      Mat(
         id: id ?? this.id,
         name: name ?? this.name,
         info: info ?? this.info,
         def: def ?? this.def,
+        date: date ?? this.date,
       );
   @override
   String toString() {
@@ -340,14 +350,17 @@ class Mat extends DataClass implements Insertable<Mat> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('info: $info, ')
-          ..write('def: $def')
+          ..write('def: $def, ')
+          ..write('date: $date')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => $mrjf($mrjc(
-      id.hashCode, $mrjc(name.hashCode, $mrjc(info.hashCode, def.hashCode))));
+      id.hashCode,
+      $mrjc(name.hashCode,
+          $mrjc(info.hashCode, $mrjc(def.hashCode, date.hashCode)))));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
@@ -355,7 +368,8 @@ class Mat extends DataClass implements Insertable<Mat> {
           other.id == id &&
           other.name == name &&
           other.info == info &&
-          other.def == def);
+          other.def == def &&
+          other.date == date);
 }
 
 class MatsCompanion extends UpdateCompanion<Mat> {
@@ -363,22 +377,26 @@ class MatsCompanion extends UpdateCompanion<Mat> {
   final Value<String> name;
   final Value<String> info;
   final Value<bool> def;
+  final Value<DateTime> date;
   const MatsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.info = const Value.absent(),
     this.def = const Value.absent(),
+    this.date = const Value.absent(),
   });
   MatsCompanion copyWith(
       {Value<int> id,
       Value<String> name,
       Value<String> info,
-      Value<bool> def}) {
+      Value<bool> def,
+      Value<DateTime> date}) {
     return MatsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       info: info ?? this.info,
       def: def ?? this.def,
+      date: date ?? this.date,
     );
   }
 }
@@ -429,8 +447,20 @@ class $MatsTable extends Mats with TableInfo<$MatsTable, Mat> {
         defaultValue: const Constant(false));
   }
 
+  final VerificationMeta _dateMeta = const VerificationMeta('date');
+  GeneratedDateTimeColumn _date;
   @override
-  List<GeneratedColumn> get $columns => [id, name, info, def];
+  GeneratedDateTimeColumn get date => _date ??= _constructDate();
+  GeneratedDateTimeColumn _constructDate() {
+    return GeneratedDateTimeColumn(
+      'date',
+      $tableName,
+      true,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, name, info, def, date];
   @override
   $MatsTable get asDslTable => this;
   @override
@@ -463,6 +493,12 @@ class $MatsTable extends Mats with TableInfo<$MatsTable, Mat> {
     } else if (def.isRequired && isInserting) {
       context.missing(_defMeta);
     }
+    if (d.date.present) {
+      context.handle(
+          _dateMeta, date.isAcceptableValue(d.date.value, _dateMeta));
+    } else if (date.isRequired && isInserting) {
+      context.missing(_dateMeta);
+    }
     return context;
   }
 
@@ -488,6 +524,9 @@ class $MatsTable extends Mats with TableInfo<$MatsTable, Mat> {
     }
     if (d.def.present) {
       map['def'] = Variable<bool, BoolType>(d.def.value);
+    }
+    if (d.date.present) {
+      map['date'] = Variable<DateTime, DateTimeType>(d.date.value);
     }
     return map;
   }

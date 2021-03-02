@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:seger/Database/moor_database.dart';
+import 'package:seger/Screens/Templates/mat_list.dart';
 import 'package:seger/main.dart';
 
 import '../menu_screen.dart';
@@ -11,7 +12,7 @@ import '../menu_screen.dart';
 class OxideInfo {
   Oxide oxide;
   double num = 0;
-  OxideInfo({this.oxide});
+  OxideInfo({this.oxide, this.num});
 }
 
 class MatSettings extends StatefulWidget {
@@ -26,6 +27,7 @@ class MatSettings extends StatefulWidget {
 class _MatSettingsState extends State<MatSettings> {
   bool edit = false;
   Future<List<Oxide>> _futureBuilder;
+  Map<int, MatOxide> matOxideMap;
   static ValueNotifier<double> _notifier;
 
   OxideDao oxideDao;
@@ -33,15 +35,16 @@ class _MatSettingsState extends State<MatSettings> {
   MatOxideDao matOxideDao;
   BuildContext scafContext;
 
-  TextEditingController nameController = TextEditingController();
+  TextEditingController nameController;
 
-  TextEditingController infoController = TextEditingController();
+  TextEditingController infoController;
 
   List<OxideInfo> oxideInfo;
   String name="";
   String info="";
 
   double percentage=0;
+  DateTime nowTime;
 
 
   void _percChange(){
@@ -53,20 +56,37 @@ class _MatSettingsState extends State<MatSettings> {
   @override
   void initState() {
     super.initState();
-    nameController..text = edit ? widget.mat.name : "";
-    infoController..text = edit ? widget.mat.info : "";
-    oxideInfo = [];
+    nameController=TextEditingController();
+    infoController=TextEditingController();
+    matOxideMap=Map();
     edit = widget.mat != null;
+    name= edit ? widget.mat.name : "";
+    nameController.text =name;
+    info = edit ? widget.mat.info : "";
+    infoController.text = info;
+
+    oxideInfo = [];
 
     _notifier=ValueNotifier<double>(0);
 
     oxideDao = Provider.of<OxideDao>(context, listen: false);
     matDao = Provider.of<MatDao>(context, listen: false);
     matOxideDao = Provider.of<MatOxideDao>(context, listen: false);
-
+    if(edit)
+      matOxideDao.getMatOxidesByMatId(widget.mat.id).then((value) => value.forEach((element) {
+        matOxideMap[element.oxideId]=element;
+      }));
     _futureBuilder = oxideDao.getAllOxides();
-    _futureBuilder.then((value) => value.forEach((element) { oxideInfo.add(OxideInfo(oxide: element)); }));
+    _futureBuilder.then((value) => value.forEach((element) {
+      double su=0;
+      if(edit){
+        if(matOxideMap.containsKey(element.id))
+          su=matOxideMap[element.id].count;
+      }
+      oxideInfo.add(OxideInfo(oxide: element, num:su));
+    }));
 
+    nowTime=DateTime.now();
   }
 
   @override
@@ -200,7 +220,7 @@ class _MatSettingsState extends State<MatSettings> {
                                             "Percentage analysis",
                                             style: TextStyle(
                                                 fontSize: 18,
-                                                color: Colors.black),
+                                                color: Colors.black, fontWeight: FontWeight.bold),
                                           ),
                                         ),
                                       ),
@@ -229,7 +249,8 @@ class _MatSettingsState extends State<MatSettings> {
                                               ValueListenableBuilder<double>(
                                                   valueListenable: _notifier,
                                                   builder: (context, value, child){
-                                                    return Text("$value",
+                                                    double to=double.parse(value.toStringAsFixed(2));
+                                                    return Text("$to",
                                                       style: TextStyle(
                                                           fontSize: 17,
                                                           color: SegerItems.blue),
@@ -243,7 +264,7 @@ class _MatSettingsState extends State<MatSettings> {
                                           margin: EdgeInsets.only(
                                               top: 10, bottom: 20),
                                           child: Text(
-                                            "31.01.2021",
+                                            SegerItems.dateFormat.format(nowTime),
                                             style: TextStyle(
                                                 fontSize: 12,
                                                 color: Colors.grey),
@@ -268,7 +289,20 @@ class _MatSettingsState extends State<MatSettings> {
                       ))
                     ],
                   ),
-                ))
+                )),
+                !edit ? Container(): GestureDetector(
+                  onTap: (){
+                    matOxideDao.deleteMaterialOxidesByMatId(widget.mat.id).then((value){
+                      matDao.deleteMat(widget.mat);
+                      Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MatList(choose: false,), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
+                    });
+                  },
+                  child: Container(
+                    alignment: Alignment.bottomCenter,
+                    height: 50,
+                    child:  Text("Delete Material", style: TextStyle(fontSize: 20, color: Colors.white)),
+                  ),
+                ),
               ],
             ),
           ),
@@ -289,17 +323,33 @@ class _MatSettingsState extends State<MatSettings> {
       Scaffold.of(scafContext).showSnackBar(SnackBar(content: Text('Set percentage to oxides'), backgroundColor: Colors.red,));
     }
     else {
-      Future insertInfo = matDao.insertNewMat(
-          Mat(name: name, info: info, def: false));
-      insertInfo.then((value) {
-        List<MatOxide> matOxides = [];
-        oxideInfo.forEach((element) {
-          if (element.num > 0)
-            matOxides.add(MatOxide(
-                oxideId: element.oxide.id, matId: value, count: element.num));
+      if(edit){
+        Future updateInfo=matDao.updateMat(widget.mat.copyWith(name:name, info: info, def: false, date: nowTime));
+        updateInfo.then((value){
+          matOxideDao.deleteMaterialOxidesByMatId(widget.mat.id).then((v){
+            List<MatOxide> matOxides = [];
+            oxideInfo.forEach((element) {
+              if (element.num > 0)
+                matOxides.add(MatOxide(
+                    oxideId: element.oxide.id, matId: widget.mat.id, count: element.num));
+            });
+            matOxideDao.insertAllMaterialOxides(matOxides);
+          });
         });
-        matOxideDao.insertAllMaterialOxides(matOxides);
-      });
+      }
+      else {
+        Future insertInfo = matDao.insertNewMat(
+            Mat(name: name, info: info, def: false, date: nowTime));
+        insertInfo.then((value) {
+          List<MatOxide> matOxides = [];
+          oxideInfo.forEach((element) {
+            if (element.num > 0)
+              matOxides.add(MatOxide(
+                  oxideId: element.oxide.id, matId: value, count: element.num));
+          });
+          matOxideDao.insertAllMaterialOxides(matOxides);
+        });
+      }
       Navigator.pop(context);
     }
   }

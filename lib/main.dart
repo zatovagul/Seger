@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:seger/Database/moor_database.dart';
 import 'package:seger/Screens/splash_screen.dart';
@@ -45,6 +46,7 @@ abstract class SegerItems{
   );
   static final FilteringTextInputFormatter doubleFilter =
   FilteringTextInputFormatter.allow(RegExp(r'^\d+[\,\.]?\d*'));
+  static final dateFormat=DateFormat("dd.MM.yyyy");
 
   static TextStyle mainStyle(double x){
     return TextStyle(color: blue,fontSize: x);

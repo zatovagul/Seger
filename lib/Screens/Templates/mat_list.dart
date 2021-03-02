@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:seger/Database/moor_database.dart';
+import 'package:seger/Screens/Templates/mat_info.dart';
 import 'package:seger/Screens/Templates/mat_set.dart';
 import 'package:seger/main.dart';
 
@@ -77,7 +78,7 @@ class _MatListState extends State<MatList> {
                               Navigator.push(
                                 context,
                                 PageTransition(
-                                    type: PageTransitionType.fade,
+                                    type: PageTransitionType.rightToLeft,
                                     child: MatSettings(),
                                     duration: Duration(milliseconds: 500)));
                           },
@@ -165,6 +166,13 @@ class _MatRowState extends State<MatRow> {
       onTap: (){
         if(widget.choose){
           Navigator.pop(context, widget.mat);
+        }
+        else{
+          Navigator.push(context,PageTransition(
+              type: PageTransitionType.rightToLeft,
+              child: MatInfoPage(mat: widget.mat,),
+              duration: Duration(milliseconds: 500)
+          ));
         }
       },
       child: Container(
