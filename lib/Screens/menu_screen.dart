@@ -42,8 +42,8 @@ class MenuScreen extends StatelessWidget {
                       builder: (context){
                         List<Widget> widgets=[];
                         for(int i=0;i<names.length;i++){
-                          Widget page=CalculatorScreen();
-                          if(i==1) page=FolderList();
+                          Widget page=CalculatorScreen(edit: false,);
+                          if(i==1) page=FolderList(choose: false,);
                           else if(i==2) page=MatList(choose:false);
                           else if(i==3) page=OxideRoleSettings();
                           widgets.add(

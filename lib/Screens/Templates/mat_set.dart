@@ -49,6 +49,7 @@ class _MatSettingsState extends State<MatSettings> {
 
   void _percChange(){
     percentage=0;oxideInfo.forEach((element) {percentage+=element.num; });
+    print("THIS IS percentage $percentage");
     _notifier.value=percentage;
   }
 
@@ -77,14 +78,20 @@ class _MatSettingsState extends State<MatSettings> {
         matOxideMap[element.oxideId]=element;
       }));
     _futureBuilder = oxideDao.getAllOxides();
-    _futureBuilder.then((value) => value.forEach((element) {
-      double su=0;
-      if(edit){
-        if(matOxideMap.containsKey(element.id))
-          su=matOxideMap[element.id].count;
-      }
-      oxideInfo.add(OxideInfo(oxide: element, num:su));
-    }));
+    _futureBuilder.then((value)
+    {
+      double s=0;
+          value.forEach((element) {
+            double su = 0;
+            if (edit) {
+              if (matOxideMap.containsKey(element.id))
+                su = matOxideMap[element.id].count;
+            }
+            s+=su;
+            oxideInfo.add(OxideInfo(oxide: element, num: su));
+          });
+          _notifier.value=s;
+        });
 
     nowTime=DateTime.now();
   }
@@ -107,12 +114,7 @@ class _MatSettingsState extends State<MatSettings> {
             padding: EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () {
-                Navigator.pushReplacement(
-                    context,
-                    PageTransition(
-                        type: PageTransitionType.fade,
-                        child: MenuScreen(),
-                        duration: Duration(milliseconds: 500)));
+                Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MenuScreen(), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
               },
               child: SegerItems.menuIcon,
             ),
@@ -250,6 +252,7 @@ class _MatSettingsState extends State<MatSettings> {
                                                   valueListenable: _notifier,
                                                   builder: (context, value, child){
                                                     double to=double.parse(value.toStringAsFixed(2));
+                                                    if(to==0 && edit) _percChange();
                                                     return Text("$to",
                                                       style: TextStyle(
                                                           fontSize: 17,

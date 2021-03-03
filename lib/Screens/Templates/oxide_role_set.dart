@@ -14,6 +14,7 @@ class OxideRoleSettings extends StatefulWidget {
 class _OxideRoleSettingsState extends State<OxideRoleSettings> {
   Stream<List<Oxide>> streamOxide;
   OxideDao oxideDao;
+  BuildContext scafContext;
 
   @override
   void initState() {
@@ -36,99 +37,105 @@ class _OxideRoleSettingsState extends State<OxideRoleSettings> {
               padding: EdgeInsets.only(right: 20.0),
               child: GestureDetector(
                 onTap: (){
-                  Navigator.pushReplacement(context, PageTransition(type:PageTransitionType.fade,child:MenuScreen(), duration: Duration(milliseconds: 500)));
+                  Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MenuScreen(), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
                 },
                 child: SegerItems.menuIcon,
               ),
           )
         ],
       ),
-      body: Container(
-        margin: EdgeInsets.only(left: 20, right: 20,  bottom: 20),
-        child: Column(
-          children: [
-            Container(
-              height: 40,
-              child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text("Oxide Role", style: SegerItems.whiteStyle(19),),
-                    Text("", style:SegerItems.whiteStyle(15))  //cancelText
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                  padding: EdgeInsets.only(top:10,left:20,right: 20),
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  decoration: SegerItems.pageDecoration,
-                child: Column(
-                  children: [
-                    Row(
+      body: Builder(
+        builder: (context) {
+          scafContext=context;
+          return Container(
+            margin: EdgeInsets.only(left: 20, right: 20,  bottom: 20),
+            child: Column(
+              children: [
+                Container(
+                  height: 40,
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Container(
-                          width: 80,
-                          height: 50,
-                        ),
-                        Expanded(child: Container(
-                          height: 50,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Expanded(child: Center(child: Text("A"))),
-                              Expanded(child: Center(child: Text("AE"))),
-                              Expanded(child: Center(child: Text("St"))),
-                              Expanded(child: Center(child: Text("GF"))),
-                              Expanded(child: Center(child: Text("Oth"))),
-                            ],
-                          ),
-                        ))
+                        Text("Oxide Role", style: SegerItems.whiteStyle(19),),
+                        Text("", style:SegerItems.whiteStyle(15))  //cancelText
                       ],
                     ),
-                    Expanded(
-                      child: Container(
-                        child: StreamBuilder(
-                          stream: streamOxide,
-                          builder: (context, AsyncSnapshot<List<Oxide>> oxides){
-                              return ListView.builder(
-                                  itemCount: oxides.data!=null ? oxides.data.length+1 : 1,
-                                  itemBuilder:  (_,index){
-                                    if(oxides.data==null || index==oxides.data.length){
-                                      return Container(
-                                        margin: EdgeInsets.only(top:20, bottom: 20),
-                                        child: Center(
-                                          child: GestureDetector(
-                                            onTap: (){
-                                              for(Oxide o in oxideList){
-                                                //print("${o.name} ${o.role} ${o.defRole}");
-                                                if(o.defRole!=o.role)
-                                                oxideDao.updateOxide(o.copyWith(role:o.defRole));
-                                              }
-                                            },
-                                            child: Text("Reset to defaults", style: TextStyle(fontSize: 20, color: SegerItems.blue)),
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    Oxide oxide=oxides.data[index];
-                                    oxideList.add(oxide);
-                                    //print("${oxide.name} ${oxide.role}");
-                                    return OxideRoleRow(oxide: oxide);
-                                  }
-                              );
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                Expanded(
+                  child: Container(
+                      padding: EdgeInsets.only(top:10,left:20,right: 20),
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      decoration: SegerItems.pageDecoration,
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 50,
+                            ),
+                            Expanded(child: Container(
+                              height: 50,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Expanded(child: Center(child: Text("A"))),
+                                  Expanded(child: Center(child: Text("AE"))),
+                                  Expanded(child: Center(child: Text("St"))),
+                                  Expanded(child: Center(child: Text("GF"))),
+                                  Expanded(child: Center(child: Text("Oth"))),
+                                ],
+                              ),
+                            ))
+                          ],
+                        ),
+                        Expanded(
+                          child: Container(
+                            child: StreamBuilder(
+                              stream: streamOxide,
+                              builder: (context, AsyncSnapshot<List<Oxide>> oxides){
+                                  return ListView.builder(
+                                      itemCount: oxides.data!=null ? oxides.data.length+1 : 1,
+                                      itemBuilder:  (_,index){
+                                        if(oxides.data==null || index==oxides.data.length){
+                                          return Container(
+                                            margin: EdgeInsets.only(top:20, bottom: 20),
+                                            child: Center(
+                                              child: GestureDetector(
+                                                onTap: (){
+                                                  for(Oxide o in oxideList){
+                                                    //print("${o.name} ${o.role} ${o.defRole}");
+                                                    if(o.defRole!=o.role)
+                                                    oxideDao.updateOxide(o.copyWith(role:o.defRole));
+                                                  }
+                                                  Scaffold.of(scafContext).showSnackBar(SnackBar(content: Text('Settings reset'), backgroundColor: Colors.green,));
+                                                },
+                                                child: Text("Reset to defaults", style: TextStyle(fontSize: 20, color: SegerItems.blue)),
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        Oxide oxide=oxides.data[index];
+                                        oxideList.add(oxide);
+                                        //print("${oxide.name} ${oxide.role}");
+                                        return OxideRoleRow(oxide: oxide);
+                                      }
+                                  );
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        }
       ),
     );
   }

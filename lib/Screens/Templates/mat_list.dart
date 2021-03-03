@@ -41,12 +41,7 @@ class _MatListState extends State<MatList> {
             padding: EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () {
-                Navigator.pushReplacement(
-                    context,
-                    PageTransition(
-                        type: PageTransitionType.fade,
-                        child: MenuScreen(),
-                        duration: Duration(milliseconds: 500)));
+                Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MenuScreen(), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
               },
               child: SegerItems.menuIcon,
             ),

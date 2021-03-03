@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:seger/Database/moor_database.dart';
+import 'package:seger/Screens/Templates/folder_lists.dart';
 import 'package:seger/Screens/Templates/mat_list.dart';
 
 import '../main.dart';
@@ -22,33 +24,52 @@ class SumOxideForm {
 }
 
 class CalculatorScreen extends StatefulWidget {
+  int recipeId;
+  bool edit;
+  CalculatorScreen({this.recipeId, this.edit});
   @override
   _CalculatorScreenState createState() => _CalculatorScreenState();
 }
 
 class _CalculatorScreenState extends State<CalculatorScreen> {
+  bool updated;
+
+  Recipe recipe;
   OxideDao oxideDao;
   MatOxideDao matOxideDao;
+  RecipeDao recipeDao;
+  RecipeMatDao recipeMatDao;
+  MatDao matDao;
   BuildContext scafContext;
   List<MatCalcForm> matItems;
   Map<int, Oxide> oxideMap;
   Map<int, SumOxideForm> sumMap;
   Map<String, List<SumOxideForm>> resultMap;
   ValueNotifier<List<MatCalcForm>> _notifier;
+  TextEditingController nameController;
+  DateTime nowTime;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    updated=false;
+
     oxideDao = Provider.of<OxideDao>(context, listen: false);
     oxideMap = Map();
     oxideDao.getAllOxides().then((value) => value.forEach((e) {
           oxideMap[e.id] = e;
         }));
     matOxideDao = Provider.of<MatOxideDao>(context, listen: false);
+    recipeDao = Provider.of<RecipeDao>(context, listen: false);
+    recipeMatDao = Provider.of<RecipeMatDao>(context, listen: false);
+    matDao = Provider.of<MatDao>(context, listen: false);
 
     matItems = [];
     _notifier = ValueNotifier<List<MatCalcForm>>(matItems);
+
+    nameController = TextEditingController();
+    nowTime = DateTime.now();
 
     resultMap = Map();
     resultMap['a'] = [];
@@ -56,6 +77,36 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     resultMap['s'] = [];
     resultMap['gf'] = [];
     resultMap['o'] = [];
+
+    if (widget.recipeId!=null) {
+      getRecipeInfo();
+    }
+  }
+
+  void getRecipeInfo() {
+    recipeDao.getRecipeById(widget.recipeId).then((value) {
+      recipe = value;
+      nameController.text = recipe.name;
+      recipeMatDao.getRecipeMatsByRecipeId(recipe.id).then((val) {
+        val.forEach((element) {
+          Map<int, MatOxide> matO = Map();
+          matOxideDao.getMatOxidesByMatId(element.matId).then((value) {
+            value.forEach((element) {
+              matO[element.oxideId] = element;
+            });
+          });
+          matDao.getMatById(element.matId).then((m) {
+            MatCalcForm calcForm = MatCalcForm(
+                mat: m,
+                matOxides: matO,
+                count: element.count,
+                tag: element.tag);
+            matItems.add(calcForm);
+            _notifier.notifyListeners();
+          });
+        });
+      });
+    });
   }
 
   @override
@@ -71,12 +122,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             padding: EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () {
-                Navigator.pushReplacement(
-                    context,
-                    PageTransition(
-                        type: PageTransitionType.fade,
-                        child: MenuScreen(),
-                        duration: Duration(milliseconds: 500)));
+                Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MenuScreen(), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
               },
               child: SegerItems.menuIcon,
             ),
@@ -84,6 +130,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         ],
       ),
       body: Builder(builder: (context) {
+        scafContext = context;
         return GestureDetector(
           onTap: () {
             FocusScope.of(context).requestFocus(new FocusNode());
@@ -101,7 +148,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                         _countTable();
                         return Column(
                           children: [
-                            CalcTop(resultMap: resultMap),
+                            CalcTop(
+                              resultMap: resultMap,
+                              controller: nameController,
+                              updated: (){ updated=true;_notifier.notifyListeners(); },
+                            ), //TopPart
                             Container(
                               color: Colors.white,
                               child: Column(
@@ -113,20 +164,35 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                           .map((e) => MaterialCalcRow(
                                                 mat: e,
                                                 notifier: _notifier,
+                                                updated: (){
+                                                  updated=true;
+                                                  _notifier.notifyListeners();
+                                                },
+                                                delete: (){
+                                                  matItems.remove(e);
+                                                  updated=true;
+                                                  _notifier.notifyListeners();
+                                                },
                                                 tagTrue: () {
                                                   value.remove(e);
                                                   value.add(e);
+
+                                                  updated=true;
+
                                                   _notifier.notifyListeners();
                                                 },
                                                 tagFalse: () {
                                                   value.remove(e);
                                                   value.insert(0, e);
+
+                                                  updated=true;
+
                                                   _notifier.notifyListeners();
                                                 },
                                               ))
                                           .toList(),
                                     ),
-                                  ),
+                                  ), // MaterialsList
                                   GestureDetector(
                                       onTap: () async {
                                         final result = await Navigator.push(
@@ -135,7 +201,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                                 child: MatList(
                                                   choose: true,
                                                 ),
-                                                type: PageTransitionType.rightToLeft,
+                                                type: PageTransitionType
+                                                    .rightToLeft,
                                                 duration: Duration(
                                                     milliseconds: 500)));
                                         if (result != null) {
@@ -153,6 +220,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                                 tag: false,
                                                 matOxides: matO);
                                             matItems.add(calcForm);
+
+                                            updated=true;
+
                                             _notifier.notifyListeners();
                                           });
                                         }
@@ -164,7 +234,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                           child: Text(
                                             "+ Add Material",
                                             style: SegerItems.mainTextStyle,
-                                          ))),
+                                          ))), // AddMaterialButton
                                   Container(
                                     margin: EdgeInsets.only(right: 20),
                                     child: Container(
@@ -188,7 +258,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                             value.forEach((element) {
                                               tot += element.count;
                                             });
-                                            tot=double.parse(tot.toStringAsFixed(2));
+                                            tot = double.parse(
+                                                tot.toStringAsFixed(2));
                                             return Text("$tot",
                                                 style: TextStyle(
                                                     fontSize: 17,
@@ -209,37 +280,97 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                         ],
                                       ),
                                     ),
-                                  ),
-                                  Container(
-                                    padding: EdgeInsets.only(
-                                        right: 20,
-                                        top: 70,
-                                        left: 20,
-                                        bottom: 20),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                  ), // TotalScore and AverageButton
+                                  widget.edit
+                                      ? Container(
+                                    margin: EdgeInsets.only(top: 30, bottom: 30),
+                                    child: Column(
                                       children: [
-                                        Text(
-                                          "Save",
-                                          style: SegerItems.mainTextStyle,
+                                          GestureDetector(
+                                            onTap:(){
+                                                updateRecipe();
+                                            },
+                                            child: Container(
+                                              margin: EdgeInsets.only(top: 40),
+                                              alignment: Alignment.center,
+                                              child: Text("Update", style: TextStyle(fontSize: 20, color: updated ? SegerItems.blue : Colors.grey),),
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.only(top: 40),
+                                          alignment: Alignment.center,
+                                          child: Text("Add Photo", style: TextStyle(fontSize: 20, color: SegerItems.blue),),
                                         ),
                                         GestureDetector(
-                                            onTap: () {
-                                              matItems.clear();
-                                              _notifier.notifyListeners();
-                                              _countTable();
-                                            },
-                                            child: Text(
-                                              "Clear",
-                                              style: SegerItems.mainTextStyle,
-                                            )),
+                                          onTap:(){
+                                            copyAndEdit();
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(top: 40),
+                                            alignment: Alignment.center,
+                                            child: Text("Copy and Edit", style: TextStyle(fontSize: 20, color: SegerItems.blue),),
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: (){
+                                            move();
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(top: 40),
+                                            alignment: Alignment.center,
+                                            child: Text("Move", style: TextStyle(fontSize: 20, color: SegerItems.blue),),
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: (){
+                                            delete();
+                                          },
+                                          child: Container(
+                                            margin: EdgeInsets.only(top: 40),
+                                            alignment: Alignment.center,
+                                            child: Text("Delete", style: TextStyle(fontSize: 20, color: SegerItems.blue),),
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                  )
+                                  )  // Edit buttons
+                                      : Container(
+                                          padding: EdgeInsets.only(
+                                              right: 20,
+                                              top: 70,
+                                              left: 20,
+                                              bottom: 20),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () {
+                                                  _saveRecipe();
+                                                },
+                                                child: Text(
+                                                  "Save",
+                                                  style:
+                                                      SegerItems.mainTextStyle,
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                  onTap: () {
+                                                    matItems.clear();
+                                                    _notifier.notifyListeners();
+                                                    _countTable();
+                                                  },
+                                                  child: Text(
+                                                    "Clear",
+                                                    style: SegerItems
+                                                        .mainTextStyle,
+                                                  )),
+                                            ],
+                                          ),
+                                        ) // Save and clear Button
                                 ],
                               ),
-                            ),
+                            ), //BottomPart
                           ],
                         );
                       },
@@ -300,14 +431,108 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         e.count = double.parse(e.count.toStringAsFixed(2));
       }
     });
+    updated=true;
     _notifier.notifyListeners();
+  }
+
+  //Saving recipe. Going to Folder List
+  Future<void> _saveRecipe() async {
+    if (nameController.text.length == 0) {
+      Scaffold.of(scafContext).showSnackBar(SnackBar(
+        content: Text('Fill the name'),
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 1),
+      ));
+    } else if (matItems.length == 0) {
+      Scaffold.of(scafContext).showSnackBar(SnackBar(
+        content: Text('Add material'),
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 1),
+      ));
+    } else {
+      recipe = Recipe(name: nameController.text, date: nowTime);
+      final result = await Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.rightToLeft,
+              child: FolderList(
+                choose: true,
+                recipe: recipe,
+                matItems: matItems,
+              ),
+              duration: Duration(milliseconds: 500)));
+      recipe = recipe.copyWith(id: result);
+      widget.edit = true;
+      updated=false;
+      _notifier.notifyListeners();
+      Scaffold.of(scafContext).showSnackBar(SnackBar(
+        content: Text('Recipe Saved'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 1),
+      ));
+    }
+  }
+
+  void updateRecipe(){
+    if(updated){
+      recipeDao.updateRecipe(recipe.copyWith(name: nameController.text));
+      recipeMatDao.deleteAllRecipeMatsByRecipeId(recipe.id).then((value){
+        List<RecipeMat> reMats=[];
+        matItems.forEach((element) {
+          reMats.add(RecipeMat(matId: element.mat.id, recipeId: recipe.id, count: element.count, tag: element.tag));
+        });
+        recipeMatDao.insertAllRecipeMats(reMats).then((value){
+          updated=false;
+          _notifier.notifyListeners();
+          Scaffold.of(scafContext).showSnackBar(SnackBar(
+            content: Text('Recipe Updated'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 1),
+          ));
+        });
+      });
+    }
+    else{
+
+    }
+  }
+  void copyAndEdit(){
+    Navigator.of(context).pushAndRemoveUntil(PageTransition(child:
+    CalculatorScreen(recipeId: recipe.id,edit: false,), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
+  }
+  Future<void> move() async {
+    final result = await Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.rightToLeft,
+            child: FolderList(
+              choose: true,
+            ),
+            duration: Duration(milliseconds: 500)));
+    recipeDao.updateRecipe(recipe.copyWith(folderId: result)).then((value) => Scaffold.of(scafContext).showSnackBar(SnackBar(
+      content: Text('Recipe Moved'),
+      backgroundColor: Colors.green,
+      duration: Duration(seconds: 1),
+    )));
+  }
+  void delete(){
+    recipeMatDao.deleteAllRecipeMatsByRecipeId(recipe.id).then((value) => recipeDao.deleteRecipe(recipe).then((value){
+      if(widget.recipeId!=null){
+        Navigator.pop(context);
+      }
+      else{
+        Navigator.of(context).pushAndRemoveUntil(PageTransition(child: CalculatorScreen(edit: false,), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
+      }
+    }));
   }
 }
 
 //Top blue part
 class CalcTop extends StatefulWidget {
   Map<String, List<SumOxideForm>> resultMap;
-  CalcTop({this.resultMap});
+  TextEditingController controller;
+  final TagSwapping updated;
+  CalcTop({this.resultMap, this.controller, this.updated});
   @override
   _CalcTopState createState() => _CalcTopState();
 }
@@ -420,9 +645,12 @@ class _CalcTopState extends State<CalcTop> {
           Container(
             margin: EdgeInsets.only(bottom: 20),
             child: TextField(
+              controller: widget.controller,
               style: TextStyle(fontSize: 22, color: Colors.white),
               decoration: SegerItems.whiteTextFieldDecoration,
-              onChanged: (value) {},
+              onChanged: (value) {
+                widget.updated();
+              },
             ),
           )
         ],
@@ -674,7 +902,9 @@ class MaterialCalcRow extends StatefulWidget {
   MatCalcForm mat;
   final TagSwapping tagTrue;
   final TagSwapping tagFalse;
-  MaterialCalcRow({this.mat, this.notifier, this.tagTrue, this.tagFalse});
+  final TagSwapping updated;
+  final TagSwapping delete;
+  MaterialCalcRow({this.mat, this.notifier, this.tagTrue, this.tagFalse, this.updated, this.delete});
   @override
   _MaterialCalcRowState createState() => _MaterialCalcRowState();
 }
@@ -684,55 +914,69 @@ class _MaterialCalcRowState extends State<MaterialCalcRow> {
   Widget build(BuildContext context) {
     Color color = Colors.grey;
     if (widget.mat.tag) color = SegerItems.blue;
-    return Container(
-      height: 51,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Container(
-            height: 50,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Center(
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                          onTap: () {
-                            widget.mat.tag = !widget.mat.tag;
-                            if (widget.mat.tag)
-                              widget.tagTrue();
-                            else
-                              widget.tagFalse();
-                          },
-                          child: Container(
-                              margin: EdgeInsets.only(left: 10, right: 5),
-                              child: Icon(
-                                Icons.add,
-                                color: color,
-                                size: 35,
-                              ))),
-                      Text(
-                        "${widget.mat.mat.name}",
-                        style: TextStyle(fontSize: 18, color: Colors.black),
-                      )
-                    ],
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      actionExtentRatio: 0.25,
+      child: Container(
+        height: 51,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+              height: 50,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Center(
+                    child: Row(
+                      children: [
+                        GestureDetector(
+                            onTap: () {
+                              widget.mat.tag = !widget.mat.tag;
+                              if (widget.mat.tag)
+                                widget.tagTrue();
+                              else
+                                widget.tagFalse();
+                            },
+                            child: Container(
+                                margin: EdgeInsets.only(left: 10, right: 5),
+                                child: Icon(
+                                  Icons.add,
+                                  color: color,
+                                  size: 35,
+                                ))),
+                        Text(
+                          "${widget.mat.mat.name}",
+                          style: TextStyle(fontSize: 18, color: Colors.black),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                    margin: EdgeInsets.only(right: 20),
-                    child: NumberPicker(
-                      mat: widget.mat,
-                      notifier: widget.notifier,
-                    ))
-              ],
+                  Container(
+                      margin: EdgeInsets.only(right: 20),
+                      child: NumberPicker(
+                        mat: widget.mat,
+                        notifier: widget.notifier,
+                        updated: widget.updated,
+                      ))
+                ],
+              ),
             ),
-          ),
-          Divider(
-            height: 1,
-          )
-        ],
+            Divider(
+              height: 1,
+            )
+          ],
+        ),
       ),
+      secondaryActions: [
+        IconSlideAction(
+          color:Colors.red,
+          icon: Icons.delete,
+          onTap: (){
+            widget.delete();
+          },
+        )
+      ],
     );
   }
 }
@@ -740,7 +984,8 @@ class _MaterialCalcRowState extends State<MaterialCalcRow> {
 class NumberPicker extends StatefulWidget {
   MatCalcForm mat;
   ValueNotifier<List<MatCalcForm>> notifier;
-  NumberPicker({this.mat, this.notifier});
+  final TagSwapping updated;
+  NumberPicker({this.mat, this.notifier, this.updated});
   @override
   _NumberPickerState createState() => _NumberPickerState();
 }
@@ -758,7 +1003,8 @@ class _NumberPickerState extends State<NumberPicker> {
   @override
   Widget build(BuildContext context) {
     try {
-      if (double.parse(controller.text.replaceAll(',', '.')) != widget.mat.count) {
+      if (double.parse(controller.text.replaceAll(',', '.')) !=
+          widget.mat.count) {
         controller.text = "${widget.mat.count}";
       }
     } catch (e) {
@@ -771,7 +1017,7 @@ class _NumberPickerState extends State<NumberPicker> {
           onTap: () {
             widget.mat.count -= 1;
             controller.text = "${widget.mat.count}";
-            widget.notifier.notifyListeners();
+            widget.updated();
           },
           child: Container(
               padding: EdgeInsets.all(5),
@@ -808,10 +1054,10 @@ class _NumberPickerState extends State<NumberPicker> {
                             BorderSide(color: Colors.white, width: 1.0))),
                 onChanged: (value) {
                   if (value.length > 0)
-                    widget.mat.count = double.parse(value.replaceAll(',','.'));
+                    widget.mat.count = double.parse(value.replaceAll(',', '.'));
                   else
                     widget.mat.count = 0;
-                  widget.notifier.notifyListeners();
+                  widget.updated();
                   print("THIS VALUE $value");
                 },
               ),
@@ -822,7 +1068,7 @@ class _NumberPickerState extends State<NumberPicker> {
             onTap: () {
               widget.mat.count += 1;
               controller.text = "${widget.mat.count}";
-              widget.notifier.notifyListeners();
+              widget.updated();
             },
             child: Container(
                 padding: EdgeInsets.all(5),

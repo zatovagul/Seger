@@ -83,6 +83,7 @@ class MatDao extends DatabaseAccessor<AppDatabase> with _$MatDaoMixin {
       (select(mats)..orderBy([(t) => OrderingTerm(expression: t.name)]))
           .watch();
   Future<List<Mat>> getAllMats() => select(mats).get();
+  Future<Mat> getMatById(int matId) => (select(mats)..where((tbl) => tbl.id.equals(matId))).getSingle();
   Future updateMat(Mat mat) => update(mats).replace(mat);
   Future deleteAllMats() => delete(mats).go();
   Future deleteMat(Mat mat) => delete(mats).delete(mat);
@@ -106,13 +107,16 @@ class MatOxideDao extends DatabaseAccessor<AppDatabase>
   Stream<List<MatOxide>> watchMatOxidesByMatId(int matId) =>
       (select(matOxides)..where((tbl) => tbl.matId.equals(matId))).watch();
   Stream<List<MatOxide>> watchMatOxides() => select(matOxides).watch();
+
   Future<List<MatOxide>> getAllMatOxides() => select(matOxides).get();
   Future<List<MatOxide>> getMatOxidesByMatId(int matId) =>
       (select(matOxides)..where((tbl) => tbl.matId.equals(matId))).get();
+
   Future insertNewMaterialOxide(MatOxide matOxide) =>
       into(matOxides).insert(matOxide);
   Future insertAllMaterialOxides(List<MatOxide> matOxide) =>
       into(matOxides).insertAll(matOxide);
+
   Future deleteMaterialOxide(MatOxide matOxide) =>
       delete(matOxides).delete(matOxide);
   Future deleteAllMaterialOxides() => delete(matOxides).go();
@@ -127,8 +131,18 @@ class RecipeDao extends DatabaseAccessor<AppDatabase> with _$RecipeDaoMixin {
 
   Stream<List<Recipe>> watchRecipesByFolderId(int folderId) =>
       (select(recipes)..where((tbl) => tbl.folderId.equals(folderId))).watch();
+
+  Future<List<Recipe>> getRecipesByFolderId(int folderId) => (select(recipes)..where((tbl) => tbl.folderId.equals(folderId))).get();
+  Future<Recipe> getRecipeById(int recipeId) => (select(recipes)..where((tbl) => tbl.id.equals(recipeId))).getSingle();
+  Future<List<Recipe>> getAllRecipes() => select(recipes).get();
+
   Future insertRecipe(Recipe recipe) => into(recipes).insert(recipe);
+
   Future updateRecipe(Recipe recipe) => update(recipes).replace(recipe);
+
+  Future deleteRecipe(Recipe recipe) => delete(recipes).delete(recipe);
+  Future deleteAllRecipes() => delete(recipes).go();
+  Future deleteAllRecipesByFolderId(int folderId) => (delete(recipes)..where((tbl) => tbl.folderId.equals(folderId))).go();
 }
 
 @UseDao(tables: [RecipeMats])
@@ -140,10 +154,17 @@ class RecipeMatDao extends DatabaseAccessor<AppDatabase>
   Stream<List<RecipeMat>> watchRecipeMatsByRecipeId(int recipeId) =>
       (select(recipeMats)..where((tbl) => tbl.recipeId.equals(recipeId)))
           .watch();
+  Future<List<RecipeMat>> getRecipeMatsByRecipeId(int recipeId) =>
+      (select(recipeMats)..where((tbl) => tbl.recipeId.equals(recipeId)))
+          .get();
   Future insertRecipeMat(RecipeMat recipeMat) =>
       into(recipeMats).insert(recipeMat);
+  Future insertAllRecipeMats(List<RecipeMat> recipeMat) =>
+      into(recipeMats).insertAll(recipeMat);
   Future updateRecipeMat(RecipeMat recipeMat) =>
       update(recipeMats).replace(recipeMat);
+  Future deleteAllRecipeMats() => delete(recipeMats).go();
+  Future deleteAllRecipeMatsByRecipeId(int recipeId) => (delete(recipeMats)..where((tbl) => tbl.recipeId.equals(recipeId))).go();
 }
 
 @UseDao(tables: [Folders])
