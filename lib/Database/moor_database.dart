@@ -83,6 +83,9 @@ class MatDao extends DatabaseAccessor<AppDatabase> with _$MatDaoMixin {
   Stream<List<Mat>> watchMatsOrdered() =>
       (select(mats)..orderBy([(t) => OrderingTerm(expression: t.name)]))
           .watch();
+  Future<List<Mat>> getMatsOrderedByCount() => (select(mats)..orderBy([ (t)=>
+    OrderingTerm(expression: t.count)
+  ])).get();
   Future<List<Mat>> getAllMats() => select(mats).get();
   Future<Mat> getMatById(int matId) => (select(mats)..where((tbl) => tbl.id.equals(matId))).getSingle();
   Future updateMat(Mat mat) => update(mats).replace(mat);

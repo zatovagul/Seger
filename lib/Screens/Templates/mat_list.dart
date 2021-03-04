@@ -30,6 +30,17 @@ class _MatListState extends State<MatList> {
     streamMats=matDao.watchMatsOrdered();
     _notifier=ValueNotifier("");
     controller=TextEditingController();
+
+    mostUsedList=[];
+    matDao.getMatsOrderedByCount().then((value){
+      print("FUUUUCK");
+      int n=value.length;
+      int l=0;
+      for(int i=n-1;i>=0;i--){
+        if(l++==4) break;
+        mostUsedList.add(value[i]);
+      }
+    });
   }
 
   @override
@@ -113,7 +124,6 @@ class _MatListState extends State<MatList> {
                         child: ValueListenableBuilder(
                           valueListenable: _notifier,
                           builder: (context, value, child) {
-                            print("NOTIFIER $value");
                             return Container(
                               child: StreamBuilder(
                                 stream: streamMats,
@@ -121,46 +131,98 @@ class _MatListState extends State<MatList> {
                                   String letter="a-";
                                   List<Mat> mats=snapshot.data;
                                   return ListView.builder(
-                                    itemCount: mats!=null ? mats.length : 0,
+                                    itemCount: mats!=null ? mats.length+1 : 1,
                                       itemBuilder: (_,index){
                                         List<Widget> li=[];
-                                        Mat mat=mats[index];
-                                        print("THIS IS COUNT ${mat.name} ${mat.count}");
-                                        if(_notifier.value.length==0) {
-                                          if ((letter[0] ==
-                                              mat.name[0].toLowerCase() &&
-                                              letter[1] == '-') || letter[0] !=
-                                              mat.name[0].toLowerCase()) {
-                                            Widget letField = Column(
-                                                children: [Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                      vertical: 6),
-                                                  child: Align(
-                                                    alignment: Alignment
-                                                        .centerLeft,
-                                                    child: Text(mat.name[0]
-                                                        .toUpperCase(),
-                                                      style: TextStyle(
-                                                          fontSize: 20,
-                                                          fontWeight: FontWeight
-                                                              .bold),),),
-                                                ), Divider(height: 1,)
-                                                ]
-                                            );
-                                            li.add(letField);
-                                            letter =
-                                            "${mat.name.toLowerCase()[0]}+";
-                                          }
-                                          li.add(MatRow(
-                                            mat: mat, choose: widget.choose,));
-                                        }
-                                        else{
-                                          if(mat.name.toLowerCase().startsWith(controller.text.toLowerCase())){
-                                            li.add(MatRow(
-                                              mat: mat, choose: widget.choose,));
+                                        if(index==0){
+                                          if(mostUsedList.length>0 && _notifier.value.length==0){
+                                            List<Widget> list=[];
+                                            list.add(Column(children: [
+                                              Container(
+                                                padding:
+                                                EdgeInsets.symmetric(
+                                                    vertical: 6),
+                                                child: Align(
+                                                  alignment:
+                                                  Alignment.centerLeft,
+                                                  child: Text(
+                                                    "Most Used",
+                                                    style: TextStyle(
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                        FontWeight
+                                                            .bold),
+                                                  ),
+                                                ),
+                                              ),
+                                              Divider(
+                                                height: 1,
+                                              )
+                                            ]));
+                                            mostUsedList.forEach((element) {
+                                              list.add(MatRow(choose: widget.choose,mat: element,));
+                                            });
+                                            li.add(Container(
+                                              margin: EdgeInsets.only(bottom: 50),
+                                              child: Column(children: list,),
+                                            ));
                                           }
                                         }
-                                        return Column(children: li,);
+                                        else {
+                                          Mat mat=mats[index-1];
+                                            if (_notifier.value.length == 0) {
+                                              if ((letter[0] ==
+                                                          mat.name[0]
+                                                              .toLowerCase() &&
+                                                      letter[1] == '-') ||
+                                                  letter[0] !=
+                                                      mat.name[0]
+                                                          .toLowerCase()) {
+                                                Widget letField =
+                                                    Column(children: [
+                                                  Container(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 6),
+                                                    child: Align(
+                                                      alignment:
+                                                          Alignment.centerLeft,
+                                                      child: Text(
+                                                        mat.name[0]
+                                                            .toUpperCase(),
+                                                        style: TextStyle(
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .bold),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Divider(
+                                                    height: 1,
+                                                  )
+                                                ]);
+                                                li.add(letField);
+                                                letter =
+                                                    "${mat.name.toLowerCase()[0]}+";
+                                              }
+                                              li.add(MatRow(
+                                                mat: mat,
+                                                choose: widget.choose,
+                                              ));
+                                            } else {
+                                              if (mat.name
+                                                  .toLowerCase()
+                                                  .startsWith(controller.text
+                                                      .toLowerCase())) {
+                                                li.add(MatRow(
+                                                  mat: mat,
+                                                  choose: widget.choose,
+                                                ));
+                                              }
+                                            }
+                                          }
+                                          return Column(children: li,);
                                       }
                                   );
                                 },
