@@ -17,6 +17,9 @@ class MatList extends StatefulWidget {
 
 class _MatListState extends State<MatList> {
   Stream<List<Mat>> streamMats;
+  ValueNotifier<String> _notifier;
+  TextEditingController controller;
+  List<Mat> mostUsedList;
   MatDao matDao;
 
   @override
@@ -25,6 +28,8 @@ class _MatListState extends State<MatList> {
     super.initState();
     matDao=Provider.of<MatDao>(context, listen: false);
     streamMats=matDao.watchMatsOrdered();
+    _notifier=ValueNotifier("");
+    controller=TextEditingController();
   }
 
   @override
@@ -93,44 +98,75 @@ class _MatListState extends State<MatList> {
                       Container(
                         margin: EdgeInsets.only(top:10),
                         child: TextField(
+                          controller: controller,
                           style: TextStyle(
                               fontSize: 22,
                               color: Colors.black),
                           decoration:
                           SegerItems.textFieldDecoration,
                           onChanged: (value) {
+                            _notifier.value=value;
                           },
                         ),
                       ),
                       Expanded(
-                        child: Container(
-                          child: StreamBuilder(
-                            stream: streamMats,
-                            builder: (context, AsyncSnapshot<List<Mat>> snapshot){
-                              String letter="a-";
-                              List<Mat> mats=snapshot.data;
-                              return ListView.builder(
-                                itemCount: mats!=null ? mats.length : 0,
-                                  itemBuilder: (_,index){
-                                    List<Widget> li=[];
-                                    Mat mat=mats[index];
-                                    if((letter[0]==mat.name[0].toLowerCase() && letter[1]=='-') || letter[0]!=mat.name[0].toLowerCase()){
-                                      Widget letField= Column(
-                                          children:[Container(
-                                        padding: EdgeInsets.symmetric(vertical: 6),
-                                        child: Align(alignment: Alignment.centerLeft,child: Text(mat.name[0].toUpperCase(), style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),),
-                                      ), Divider(height: 1,)
-                                          ]
-                                    );
-                                      li.add(letField);
-                                      letter="${mat.name.toLowerCase()[0]}+";
-                                    }
-                                    li.add( MatRow(mat:mat, choose: widget.choose,));
-                                    return Column(children: li,);
-                                  }
-                              );
-                            },
-                          ),
+                        child: ValueListenableBuilder(
+                          valueListenable: _notifier,
+                          builder: (context, value, child) {
+                            print("NOTIFIER $value");
+                            return Container(
+                              child: StreamBuilder(
+                                stream: streamMats,
+                                builder: (context, AsyncSnapshot<List<Mat>> snapshot){
+                                  String letter="a-";
+                                  List<Mat> mats=snapshot.data;
+                                  return ListView.builder(
+                                    itemCount: mats!=null ? mats.length : 0,
+                                      itemBuilder: (_,index){
+                                        List<Widget> li=[];
+                                        Mat mat=mats[index];
+                                        print("THIS IS COUNT ${mat.name} ${mat.count}");
+                                        if(_notifier.value.length==0) {
+                                          if ((letter[0] ==
+                                              mat.name[0].toLowerCase() &&
+                                              letter[1] == '-') || letter[0] !=
+                                              mat.name[0].toLowerCase()) {
+                                            Widget letField = Column(
+                                                children: [Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 6),
+                                                  child: Align(
+                                                    alignment: Alignment
+                                                        .centerLeft,
+                                                    child: Text(mat.name[0]
+                                                        .toUpperCase(),
+                                                      style: TextStyle(
+                                                          fontSize: 20,
+                                                          fontWeight: FontWeight
+                                                              .bold),),),
+                                                ), Divider(height: 1,)
+                                                ]
+                                            );
+                                            li.add(letField);
+                                            letter =
+                                            "${mat.name.toLowerCase()[0]}+";
+                                          }
+                                          li.add(MatRow(
+                                            mat: mat, choose: widget.choose,));
+                                        }
+                                        else{
+                                          if(mat.name.toLowerCase().startsWith(controller.text.toLowerCase())){
+                                            li.add(MatRow(
+                                              mat: mat, choose: widget.choose,));
+                                          }
+                                        }
+                                        return Column(children: li,);
+                                      }
+                                  );
+                                },
+                              ),
+                            );
+                          }
                         ),
                       )
                     ],
@@ -154,12 +190,21 @@ class MatRow extends StatefulWidget {
 }
 
 class _MatRowState extends State<MatRow> {
+  MatDao matDao;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    matDao=Provider.of<MatDao>(context, listen: false);
+  }
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: (){
         if(widget.choose){
+          int c=widget.mat.count+1;
+          matDao.updateMat(widget.mat.copyWith(count: c));
           Navigator.pop(context, widget.mat);
         }
         else{

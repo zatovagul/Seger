@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:seger/Database/moor_database.dart';
+import 'package:seger/Screens/Templates/extra_widgets.dart';
 import 'package:seger/Screens/Templates/folder_lists.dart';
 import 'package:seger/Screens/Templates/mat_list.dart';
 
@@ -45,6 +47,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   Map<int, Oxide> oxideMap;
   Map<int, SumOxideForm> sumMap;
   Map<String, List<SumOxideForm>> resultMap;
+  List<SumOxideForm> defResult;
   ValueNotifier<List<MatCalcForm>> _notifier;
   TextEditingController nameController;
   DateTime nowTime;
@@ -150,8 +153,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                           children: [
                             CalcTop(
                               resultMap: resultMap,
+                              defResult: defResult,
                               controller: nameController,
-                              updated: (){ updated=true;_notifier.notifyListeners(); },
+                              updated: (){ updated=true;_notifier.notifyListeners();
+                              },
+
                             ), //TopPart
                             Container(
                               color: Colors.white,
@@ -387,7 +393,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   void _countTable() {
     sumMap = Map();
-    resultMap = Map();
+    resultMap = Map();defResult=[];
     resultMap['a'] = [];
     resultMap['ae'] = [];
     resultMap['s'] = [];
@@ -403,10 +409,23 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         sumMap[i.matOxides[j].oxideId].sum += s;
       }
     }
-    double s = 0;
+    double s = 0, defS=0;
     for (SumOxideForm i in sumMap.values) {
       if (i.oxide.role.contains("a")) {
         s += i.sum;
+      }
+      if(i.oxide.defRole.contains("a")){
+        defS+=i.sum;
+      }
+    }
+    for(SumOxideForm i in sumMap.values){
+      if(i.oxide.id==1 || i.oxide.id == 2){
+        if(defS>0) {
+          var a=SumOxideForm(oxide: i.oxide, sum:(i.sum*(1/defS)));
+          defResult
+              .add(a);
+          print("${a.oxide.name}  ${a.sum} DEFAULT");
+        }
       }
     }
     for (SumOxideForm i in sumMap.values) {
@@ -530,18 +549,21 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 //Top blue part
 class CalcTop extends StatefulWidget {
   Map<String, List<SumOxideForm>> resultMap;
+  List<SumOxideForm> defResult;
   TextEditingController controller;
   final TagSwapping updated;
-  CalcTop({this.resultMap, this.controller, this.updated});
+  CalcTop({this.resultMap, this.controller, this.updated, this.defResult});
   @override
   _CalcTopState createState() => _CalcTopState();
 }
 
 class _CalcTopState extends State<CalcTop> {
   static ValueNotifier<int> _pageNotifier;
+  ValueChanged<int> valueChanged;
   PageController _pageController;
   double siAl = 0;
   double al = 0, ae = 0;
+  double silicon=0, alumni=0, titan=0, defSilicon=0, defAlumni=0;
 
   @override
   void initState() {
@@ -554,6 +576,12 @@ class _CalcTopState extends State<CalcTop> {
   @override
   Widget build(BuildContext context) {
     countNum();
+    List<LinearValues> vals=[LinearValues(silicon,alumni,0)];
+    if((defAlumni!=alumni || defSilicon!=silicon) && defAlumni>=0.01){
+      vals.add(LinearValues(defSilicon, defAlumni, 1));
+    }
+    if(titan>0)
+      vals.add(LinearValues(silicon, alumni+titan, 2));
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20),
       color: SegerItems.blue,
@@ -591,22 +619,18 @@ class _CalcTopState extends State<CalcTop> {
                 }),
           ),
           Container(
-            height: 260,
+            height: 280,
             child: PageView.builder(
               controller: _pageController,
+              onPageChanged: (page) => _pageNotifier.value=page,
               itemCount: 2,
               itemBuilder: (_, index) {
                 switch (index) {
                   case 0:
-                    return Container(
-                      color: Colors.pinkAccent,
-                    );
+                    return GraphicChart.withSampleData(vals);
                   default:
                     return CalcTable(resultMap: widget.resultMap);
                 }
-              },
-              onPageChanged: (page) {
-                _pageNotifier.value = page;
               },
             ),
           ),
@@ -661,8 +685,8 @@ class _CalcTopState extends State<CalcTop> {
   void countNum() {
     al = 0;
     ae = 0;
-    siAl = 0;
-    double sum = 0, Si = 0, Al = 0;
+    siAl = 0; silicon=0;alumni=0;titan=0;defSilicon=0;defAlumni=0;
+    double sum = 0;
     widget.resultMap['a'].forEach((e) {
       al += e.sum;
       sum += e.sum;
@@ -673,8 +697,9 @@ class _CalcTopState extends State<CalcTop> {
     });
     widget.resultMap.forEach((key, value) {
       value.forEach((e) {
-        if (e.oxide.id == 1) Si = e.sum;
-        if (e.oxide.id == 2) Al = e.sum;
+        if (e.oxide.id == 1) silicon = e.sum;
+        if (e.oxide.id == 2) alumni = e.sum;
+        if(e.oxide.id == 13) titan=e.sum;
       });
     });
     if (sum > 0) {
@@ -683,8 +708,13 @@ class _CalcTopState extends State<CalcTop> {
       ae = ae / sum;
       ae = double.parse(ae.toStringAsFixed(2));
     }
-    if (Al > 0) siAl = Si / Al;
+    if (alumni > 0) siAl = silicon / alumni;
     siAl = double.parse(siAl.toStringAsFixed(2));
+
+    widget.defResult.forEach((element) {
+      if(element.oxide.id==1) defSilicon=element.sum;
+      else defAlumni=element.sum;
+    });
   }
 }
 
@@ -892,6 +922,94 @@ class OthersTe extends StatelessWidget {
         ));
   }
 }
+
+//Creating graphic
+class GraphicChart extends StatelessWidget {
+  final List<charts.Series> seriesList;
+  final bool animate;
+  static double maxY=0, maxX=0;
+
+  GraphicChart(this.seriesList, {this.animate});
+  factory GraphicChart.withSampleData(List<LinearValues> values) {
+    return new GraphicChart(
+      _createSampleData(values),
+      // Disable animations for image tests.
+      animate: false,
+    );
+  }
+  @override
+  Widget build(BuildContext context) {
+    return charts.ScatterPlotChart(seriesList, animate: animate,
+          domainAxis: new charts.NumericAxisSpec(
+              renderSpec: charts.GridlineRendererSpec(
+                  labelStyle:charts.TextStyleSpec(
+                    fontSize: 10,
+                    color: charts.MaterialPalette.white,
+                  ),
+                  lineStyle: charts.LineStyleSpec(
+                    color: charts.MaterialPalette.white,
+                  )),
+                  tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
+                      (num value) => "${value / 100}"
+                  ),
+                  tickProviderSpec: charts.BasicNumericTickProviderSpec(desiredTickCount: 11),
+          ),
+          primaryMeasureAxis: new charts.NumericAxisSpec(
+              renderSpec: charts.GridlineRendererSpec(
+                  labelStyle:charts.TextStyleSpec(
+                    fontSize: 10,
+                    color: charts.MaterialPalette.white,
+                  ),
+                  lineStyle: charts.LineStyleSpec(
+                    color: charts.MaterialPalette.white,
+                  )),
+            tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
+                (num value) => "${value/100}"
+            ),
+            tickProviderSpec: charts.BasicNumericTickProviderSpec(desiredTickCount: 11),
+          ),
+    );
+  }
+
+
+  static List<charts.Series<LinearValues, double>> _createSampleData(List<LinearValues> values) {
+    final data =values;
+    data.forEach((element) {
+      if(element.sili>maxX) maxX=element.sili;
+      if(element.alu>maxY) maxY=element.alu;
+    });
+    return [
+      new charts.Series<LinearValues, double>(
+        id: 'Sales',
+        // Providing a color function is optional.
+        colorFn: (LinearValues sales, _) {
+          final bucket = sales.val;
+
+          if (bucket==0) {
+            return charts.MaterialPalette.white;
+          } else if (bucket==1) {
+            return charts.ColorUtil.fromDartColor(Color(0xFF0047B1));
+          } else {
+            return charts.MaterialPalette.yellow.shadeDefault;
+          }
+        },
+        domainFn: (LinearValues sales, _) => sales.sili*100,
+        measureFn: (LinearValues sales, _) => sales.alu*100,
+        radiusPxFn: (LinearValues sales, _) => 5,
+        data: data,
+      )
+    ];
+  }
+}
+class LinearValues {
+  final double sili;
+  final double alu;
+  final int val;
+
+  LinearValues(this.sili, this.alu, this.val);
+}
+
+
 
 //Function for swapping Materials
 typedef TagSwapping = Function();

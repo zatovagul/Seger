@@ -18,6 +18,7 @@ class Mats extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
   TextColumn get info => text()();
+  IntColumn get count => integer().withDefault(const Constant(0))();
   BoolColumn get def => boolean().withDefault(const Constant(false))();
   DateTimeColumn get date => dateTime().nullable()();
 }
