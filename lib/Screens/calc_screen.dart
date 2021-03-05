@@ -765,7 +765,6 @@ class _CalcTableState extends State<CalcTable> {
     return Column(
       children: [
         Container(
-          height: 150,
           child: Column(
             children: [
               Container(
@@ -828,109 +827,121 @@ class _CalcTableState extends State<CalcTable> {
                 height: 1,
                 color: Color(0x66FFFFFF),
               ),
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.only(top: 10),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                          child: Align(
-                        alignment: Alignment.centerLeft,
+              Container(
+                margin: EdgeInsets.only(top: 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
                         child: Container(
                           margin: EdgeInsets.only(left: 10),
-                          child: ListView.builder(
-                              itemCount: rMap['a'].length,
-                              itemBuilder: (_, index) {
-                                SumOxideForm form = rMap['a'][index];
-                                double sum =
-                                    double.parse(form.sum.toStringAsFixed(2));
-                                return Text(
+                          child: Builder(builder: (context){
+                            List<Widget> list=[];
+                            rMap['a'].forEach((element) {
+                              SumOxideForm form = element;
+                              double sum =
+                              double.parse(form.sum.toStringAsFixed(2));
+                              list.add(Container(
+                                alignment: Alignment.topLeft,
+                                child: Text(
                                   "${sum} ${form.oxide.name}",
                                   style: TextStyle(
-                                      fontSize: 14, color: Colors.white),
-                                );
-                              }),
-                        ),
-                      )),
-                      Expanded(
-                          child: Align(
-                        alignment: Alignment.centerLeft,
+                                      fontSize: 14, color: Colors.white),),
+                              )
+                              );
+                            });
+                            return Column(children:list);
+                          })
+                        )),
+                    Expanded(
                         child: Container(
                           margin: EdgeInsets.only(left: 10),
-                          child: ListView.builder(
-                              itemCount: rMap['ae'].length,
-                              itemBuilder: (_, index) {
-                                SumOxideForm form = rMap['ae'][index];
-                                double sum =
-                                    double.parse(form.sum.toStringAsFixed(2));
-                                return Text(
+                          child: Builder(builder: (context){
+                            List<Widget> list=[];
+                            rMap['ae'].forEach((element) {
+                              SumOxideForm form = element;
+                              double sum =
+                              double.parse(form.sum.toStringAsFixed(2));
+                              list.add(Container(
+                                alignment: Alignment.topLeft,
+                                child: Text(
                                   "${sum} ${form.oxide.name}",
                                   style: TextStyle(
-                                      fontSize: 14, color: Colors.white),
-                                );
-                              }),
-                        ),
-                      )),
-                      Container(
-                        height: double.infinity,
-                        width: 1,
-                        color: Color(0x66FFFFFF),
-                      ),
-                      Expanded(
-                          child: Align(
-                        alignment: Alignment.centerLeft,
+                                      fontSize: 14, color: Colors.white),),
+                              )
+                              );
+                            });
+                            return Column(children:list);
+                          })
+                        )),
+                    Container(
+                      height: 99,
+                      width: 1,
+                      color: Color(0x66FFFFFF),
+                    ),
+                    Expanded(
                         child: Container(
                           margin: EdgeInsets.only(left: 10),
-                          child: ListView.builder(
-                              itemCount: rMap['s'].length,
-                              itemBuilder: (_, index) {
-                                SumOxideForm form = rMap['s'][index];
-                                double sum =
-                                    double.parse(form.sum.toStringAsFixed(2));
-                                return Text(
+                          child: Builder(builder: (context){
+                            List<Widget> list=[];
+                            rMap['s'].forEach((element) {
+                              SumOxideForm form = element;
+                              double sum =
+                              double.parse(form.sum.toStringAsFixed(2));
+                              list.add(Container(
+                                alignment: Alignment.topLeft,
+                                child: Text(
                                   "${sum} ${form.oxide.name}",
                                   style: TextStyle(
-                                      fontSize: 14, color: Colors.white),
-                                );
-                              }),
-                        ),
-                      )),
-                      Container(
-                        height: double.infinity,
-                        width: 1,
-                        color: Color(0x66FFFFFF),
-                      ),
-                      Expanded(
-                          child: Align(
-                        alignment: Alignment.centerLeft,
+                                      fontSize: 14, color: Colors.white),),
+                              )
+                              );
+                            });
+                            return Column(children:list);
+                          })
+                        )),
+                    Container(
+                      alignment: Alignment.topLeft,
+                      height: 99,
+                      width: 1,
+                      color: Color(0x66FFFFFF),
+                    ),
+                    Expanded(
                         child: Container(
                           margin: EdgeInsets.only(left: 10),
-                          child: ListView.builder(
-                              itemCount:
-                                  rMap['gf'].length + rMap['o'].length + 1,
-                              itemBuilder: (_, index) {
-                                SumOxideForm form;
-                                //print("$index ${rMap['o'].length}  ${rMap['gf'].length}");
-                                if (index == rMap['gf'].length) {
-                                  return OthersTe();
-                                } else if (index > rMap['gf'].length)
-                                  form =
-                                      rMap['o'][index - rMap['gf'].length - 1];
-                                else
-                                  form = rMap['gf'][index];
-                                double sum =
-                                    double.parse(form.sum.toStringAsFixed(2));
-                                return Text(
+                          child: Builder(builder: (context){
+                            List<Widget> list=[];
+                            rMap['gf'].forEach((element) {
+                              SumOxideForm form = element;
+                              double sum =
+                              double.parse(form.sum.toStringAsFixed(2));
+                              list.add(Container(
+                                alignment: Alignment.topLeft,
+                                child: Text(
                                   "${sum} ${form.oxide.name}",
                                   style: TextStyle(
-                                      fontSize: 14, color: Colors.white),
-                                );
-                              }),
-                        ),
-                      )),
-                    ],
-                  ),
+                                      fontSize: 14, color: Colors.white),),
+                              )
+                              );
+                            });
+                            list.add(OthersTe());
+                            rMap['o'].forEach((element) {
+                              SumOxideForm form = element;
+                              double sum =
+                              double.parse(form.sum.toStringAsFixed(2));
+                              list.add(Container(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  "${sum} ${form.oxide.name}",
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.white),),
+                              )
+                              );
+                            });
+                            return Container(child: Column(children:list));
+                          })
+                        )),
+                  ],
                 ),
               )
             ],
