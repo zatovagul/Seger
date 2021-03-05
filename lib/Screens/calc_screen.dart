@@ -971,14 +971,7 @@ class GraphicChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return charts.ScatterPlotChart(seriesList, animate: animate,
           domainAxis: new charts.NumericAxisSpec(
-              renderSpec: charts.GridlineRendererSpec(
-                  labelStyle:charts.TextStyleSpec(
-                    fontSize: 10,
-                    color: charts.MaterialPalette.white,
-                  ),
-                  lineStyle: charts.LineStyleSpec(
-                    color: charts.MaterialPalette.white,
-                  )),
+              renderSpec: charts.NoneRenderSpec(),
                   tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
                       (num value) => "${value / 100}"
                   ),
@@ -986,14 +979,7 @@ class GraphicChart extends StatelessWidget {
                   viewport: charts.NumericExtents(0,720)
           ),
           primaryMeasureAxis: new charts.NumericAxisSpec(
-              renderSpec: charts.GridlineRendererSpec(
-                  labelStyle:charts.TextStyleSpec(
-                    fontSize: 10,
-                    color: charts.MaterialPalette.white,
-                  ),
-                  lineStyle: charts.LineStyleSpec(
-                    color: charts.MaterialPalette.white,
-                  )),
+              renderSpec: charts.NoneRenderSpec(),
             tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
                 (num value) => ""//"${value/100}"
             ),
