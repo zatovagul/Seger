@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:flutter_svg/svg.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:seger/Database/moor_database.dart';
@@ -582,6 +583,9 @@ class _CalcTopState extends State<CalcTop> {
     }
     if(titan>0)
       vals.add(LinearValues(silicon, alumni+titan, 2));
+
+    Size size=MediaQuery.of(context).size;
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20),
       color: SegerItems.blue,
@@ -619,7 +623,7 @@ class _CalcTopState extends State<CalcTop> {
                 }),
           ),
           Container(
-            height: 280,
+            height: 300,
             child: PageView.builder(
               controller: _pageController,
               onPageChanged: (page) => _pageNotifier.value=page,
@@ -627,7 +631,21 @@ class _CalcTopState extends State<CalcTop> {
               itemBuilder: (_, index) {
                 switch (index) {
                   case 0:
-                    return GraphicChart.withSampleData(vals);
+                    return Stack(children: [
+                      Container(margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 0),
+                            child: SvgPicture.asset("assets/images/UMF.svg", width: size.width,),
+                      ),
+                     /*LayoutBuilder(
+                       builder: (_, constraints) {
+                         double w=constraints.widthConstraints().maxWidth, h=constraints.heightConstraints().maxHeight;
+                         print("${constraints.widthConstraints().maxWidth} ${constraints.heightConstraints().maxHeight}");
+                         return Container(margin: EdgeInsets.only(left: w*0.04846, right:0, bottom: h*0.083),
+                             width: w,height: h,
+                             child: CustomPaint(painter: OutlinePainter(),));
+                       }
+                     )*/
+                      GraphicChart.withSampleData(vals),
+                    ],);
                   default:
                     return CalcTable(resultMap: widget.resultMap);
                 }
@@ -733,7 +751,7 @@ class _CalcTableState extends State<CalcTable> {
     return Column(
       children: [
         Container(
-          height: 230,
+          height: 270,
           child: Column(
             children: [
               Container(
@@ -923,6 +941,7 @@ class OthersTe extends StatelessWidget {
   }
 }
 
+
 //Creating graphic
 class GraphicChart extends StatelessWidget {
   final List<charts.Series> seriesList;
@@ -950,9 +969,10 @@ class GraphicChart extends StatelessWidget {
                     color: charts.MaterialPalette.white,
                   )),
                   tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
-                      (num value) => "${value / 100}"
+                      (num value) => ""//"${value / 100}"
                   ),
-                  tickProviderSpec: charts.BasicNumericTickProviderSpec(desiredTickCount: 11),
+                  tickProviderSpec: charts.BasicNumericTickProviderSpec(desiredTickCount: 2),
+                  viewport: charts.NumericExtents(0,720)
           ),
           primaryMeasureAxis: new charts.NumericAxisSpec(
               renderSpec: charts.GridlineRendererSpec(
@@ -964,9 +984,10 @@ class GraphicChart extends StatelessWidget {
                     color: charts.MaterialPalette.white,
                   )),
             tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
-                (num value) => "${value/100}"
+                (num value) => ""//"${value/100}"
             ),
-            tickProviderSpec: charts.BasicNumericTickProviderSpec(desiredTickCount: 11),
+            tickProviderSpec: charts.BasicNumericTickProviderSpec(desiredTickCount: 2),
+              viewport: charts.NumericExtents(0,100)
           ),
     );
   }

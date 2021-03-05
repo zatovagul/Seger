@@ -117,3 +117,27 @@ class _SizeReportingWidgetState extends State<SizeReportingWidget> {
     }
   }
 }
+
+class OutlinePainter extends CustomPainter{
+
+  @override
+  void paint(Canvas canvas, Size size){
+    final paint=Paint()
+      ..style=PaintingStyle.fill
+      ..color=Colors.yellow;
+    
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(Rect.fromLTWH(0, 40, 10, 10), Radius.circular(20)),
+      paint
+    );
+    canvas.drawOval(
+      Rect.fromLTWH(size.width-8, 40, 10, 10),
+      paint
+    );
+
+    canvas.drawOval(Rect.fromLTWH(0, size.height-10, 10, 10), paint);
+  }
+
+  @override
+  bool shouldRepaint(OutlinePainter oldDelegate)=>false;
+}
