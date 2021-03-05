@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
@@ -585,13 +587,14 @@ class _CalcTopState extends State<CalcTop> {
       vals.add(LinearValues(silicon, alumni+titan, 2));
 
     Size size=MediaQuery.of(context).size;
-
+    bool android=Platform.isAndroid;
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      //padding: EdgeInsets.symmetric(horizontal: 20),
       color: SegerItems.blue,
       child: Column(
         children: [
           Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
             margin: EdgeInsets.symmetric(vertical: 5),
             child: ValueListenableBuilder<int>(
                 valueListenable: _pageNotifier,
@@ -632,7 +635,10 @@ class _CalcTopState extends State<CalcTop> {
                 switch (index) {
                   case 0:
                     return Stack(children: [
-                      Container(margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 0),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        alignment: Alignment.topCenter,
+                        margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 0),
                             child: SvgPicture.asset("assets/images/UMF.svg", width: size.width,),
                       ),
                      /*LayoutBuilder(
@@ -644,15 +650,19 @@ class _CalcTopState extends State<CalcTop> {
                              child: CustomPaint(painter: OutlinePainter(),));
                        }
                      )*/
-                      GraphicChart.withSampleData(vals),
+                     Container(
+                            margin:android ? EdgeInsets.only(left:23, bottom: 10, right: 2) : EdgeInsets.only(left:21,right: 3, bottom: 18, top:7),
+                            child: GraphicChart.withSampleData(vals)),
                     ],);
                   default:
-                    return CalcTable(resultMap: widget.resultMap);
+                    return Container(padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: CalcTable(resultMap: widget.resultMap));
                 }
               },
             ),
           ),
           Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
             height: 30,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -685,6 +695,7 @@ class _CalcTopState extends State<CalcTop> {
             ),
           ),
           Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
             margin: EdgeInsets.only(bottom: 20),
             child: TextField(
               controller: widget.controller,
@@ -969,7 +980,7 @@ class GraphicChart extends StatelessWidget {
                     color: charts.MaterialPalette.white,
                   )),
                   tickFormatterSpec: charts.BasicNumericTickFormatterSpec(
-                      (num value) => ""//"${value / 100}"
+                      (num value) => "${value / 100}"
                   ),
                   tickProviderSpec: charts.BasicNumericTickProviderSpec(desiredTickCount: 2),
                   viewport: charts.NumericExtents(0,720)
