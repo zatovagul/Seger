@@ -36,7 +36,7 @@ class _MatListState extends State<MatList> {
       print("FUUUUCK");
       int n=value.length;
       int l=0;
-      for(int i=n-1;i>=0;i--){
+      for(int i=0;i<n;i++){
         if(l++==4) break;
         mostUsedList.add(value[i]);
       }

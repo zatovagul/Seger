@@ -278,6 +278,7 @@ class $OxidesTable extends Oxides with TableInfo<$OxidesTable, Oxide> {
 class Mat extends DataClass implements Insertable<Mat> {
   final int id;
   final String name;
+  final String lowerName;
   final String info;
   final int count;
   final bool def;
@@ -285,6 +286,7 @@ class Mat extends DataClass implements Insertable<Mat> {
   Mat(
       {@required this.id,
       @required this.name,
+      @required this.lowerName,
       @required this.info,
       @required this.count,
       @required this.def,
@@ -299,6 +301,8 @@ class Mat extends DataClass implements Insertable<Mat> {
     return Mat(
       id: intType.mapFromDatabaseResponse(data['${effectivePrefix}id']),
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
+      lowerName: stringType
+          .mapFromDatabaseResponse(data['${effectivePrefix}lower_name']),
       info: stringType.mapFromDatabaseResponse(data['${effectivePrefix}info']),
       count: intType.mapFromDatabaseResponse(data['${effectivePrefix}count']),
       def: boolType.mapFromDatabaseResponse(data['${effectivePrefix}def']),
@@ -311,6 +315,7 @@ class Mat extends DataClass implements Insertable<Mat> {
     return Mat(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      lowerName: serializer.fromJson<String>(json['lowerName']),
       info: serializer.fromJson<String>(json['info']),
       count: serializer.fromJson<int>(json['count']),
       def: serializer.fromJson<bool>(json['def']),
@@ -323,6 +328,7 @@ class Mat extends DataClass implements Insertable<Mat> {
     return {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'lowerName': serializer.toJson<String>(lowerName),
       'info': serializer.toJson<String>(info),
       'count': serializer.toJson<int>(count),
       'def': serializer.toJson<bool>(def),
@@ -335,6 +341,9 @@ class Mat extends DataClass implements Insertable<Mat> {
     return MatsCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
+      lowerName: lowerName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lowerName),
       info: info == null && nullToAbsent ? const Value.absent() : Value(info),
       count:
           count == null && nullToAbsent ? const Value.absent() : Value(count),
@@ -346,6 +355,7 @@ class Mat extends DataClass implements Insertable<Mat> {
   Mat copyWith(
           {int id,
           String name,
+          String lowerName,
           String info,
           int count,
           bool def,
@@ -353,6 +363,7 @@ class Mat extends DataClass implements Insertable<Mat> {
       Mat(
         id: id ?? this.id,
         name: name ?? this.name,
+        lowerName: lowerName ?? this.lowerName,
         info: info ?? this.info,
         count: count ?? this.count,
         def: def ?? this.def,
@@ -363,6 +374,7 @@ class Mat extends DataClass implements Insertable<Mat> {
     return (StringBuffer('Mat(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('lowerName: $lowerName, ')
           ..write('info: $info, ')
           ..write('count: $count, ')
           ..write('def: $def, ')
@@ -376,14 +388,19 @@ class Mat extends DataClass implements Insertable<Mat> {
       id.hashCode,
       $mrjc(
           name.hashCode,
-          $mrjc(info.hashCode,
-              $mrjc(count.hashCode, $mrjc(def.hashCode, date.hashCode))))));
+          $mrjc(
+              lowerName.hashCode,
+              $mrjc(
+                  info.hashCode,
+                  $mrjc(
+                      count.hashCode, $mrjc(def.hashCode, date.hashCode)))))));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
       (other is Mat &&
           other.id == id &&
           other.name == name &&
+          other.lowerName == lowerName &&
           other.info == info &&
           other.count == count &&
           other.def == def &&
@@ -393,6 +410,7 @@ class Mat extends DataClass implements Insertable<Mat> {
 class MatsCompanion extends UpdateCompanion<Mat> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String> lowerName;
   final Value<String> info;
   final Value<int> count;
   final Value<bool> def;
@@ -400,6 +418,7 @@ class MatsCompanion extends UpdateCompanion<Mat> {
   const MatsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.lowerName = const Value.absent(),
     this.info = const Value.absent(),
     this.count = const Value.absent(),
     this.def = const Value.absent(),
@@ -408,6 +427,7 @@ class MatsCompanion extends UpdateCompanion<Mat> {
   MatsCompanion copyWith(
       {Value<int> id,
       Value<String> name,
+      Value<String> lowerName,
       Value<String> info,
       Value<int> count,
       Value<bool> def,
@@ -415,6 +435,7 @@ class MatsCompanion extends UpdateCompanion<Mat> {
     return MatsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      lowerName: lowerName ?? this.lowerName,
       info: info ?? this.info,
       count: count ?? this.count,
       def: def ?? this.def,
@@ -443,6 +464,18 @@ class $MatsTable extends Mats with TableInfo<$MatsTable, Mat> {
   GeneratedTextColumn _constructName() {
     return GeneratedTextColumn(
       'name',
+      $tableName,
+      false,
+    );
+  }
+
+  final VerificationMeta _lowerNameMeta = const VerificationMeta('lowerName');
+  GeneratedTextColumn _lowerName;
+  @override
+  GeneratedTextColumn get lowerName => _lowerName ??= _constructLowerName();
+  GeneratedTextColumn _constructLowerName() {
+    return GeneratedTextColumn(
+      'lower_name',
       $tableName,
       false,
     );
@@ -491,7 +524,8 @@ class $MatsTable extends Mats with TableInfo<$MatsTable, Mat> {
   }
 
   @override
-  List<GeneratedColumn> get $columns => [id, name, info, count, def, date];
+  List<GeneratedColumn> get $columns =>
+      [id, name, lowerName, info, count, def, date];
   @override
   $MatsTable get asDslTable => this;
   @override
@@ -512,6 +546,12 @@ class $MatsTable extends Mats with TableInfo<$MatsTable, Mat> {
           _nameMeta, name.isAcceptableValue(d.name.value, _nameMeta));
     } else if (name.isRequired && isInserting) {
       context.missing(_nameMeta);
+    }
+    if (d.lowerName.present) {
+      context.handle(_lowerNameMeta,
+          lowerName.isAcceptableValue(d.lowerName.value, _lowerNameMeta));
+    } else if (lowerName.isRequired && isInserting) {
+      context.missing(_lowerNameMeta);
     }
     if (d.info.present) {
       context.handle(
@@ -555,6 +595,9 @@ class $MatsTable extends Mats with TableInfo<$MatsTable, Mat> {
     }
     if (d.name.present) {
       map['name'] = Variable<String, StringType>(d.name.value);
+    }
+    if (d.lowerName.present) {
+      map['lower_name'] = Variable<String, StringType>(d.lowerName.value);
     }
     if (d.info.present) {
       map['info'] = Variable<String, StringType>(d.info.value);

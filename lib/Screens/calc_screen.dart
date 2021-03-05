@@ -626,34 +626,37 @@ class _CalcTopState extends State<CalcTop> {
                 }),
           ),
           Container(
-            height: 300,
-            child: PageView.builder(
+            constraints: BoxConstraints(minHeight: 150),
+            child: ExpandablePageView(
               controller: _pageController,
               onPageChanged: (page) => _pageNotifier.value=page,
               itemCount: 2,
               itemBuilder: (_, index) {
                 switch (index) {
                   case 0:
-                    return Stack(children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        alignment: Alignment.topCenter,
-                        margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 0),
-                            child: SvgPicture.asset("assets/images/UMF.svg", width: size.width,),
-                      ),
-                     /*LayoutBuilder(
-                       builder: (_, constraints) {
-                         double w=constraints.widthConstraints().maxWidth, h=constraints.heightConstraints().maxHeight;
-                         print("${constraints.widthConstraints().maxWidth} ${constraints.heightConstraints().maxHeight}");
-                         return Container(margin: EdgeInsets.only(left: w*0.04846, right:0, bottom: h*0.083),
-                             width: w,height: h,
-                             child: CustomPaint(painter: OutlinePainter(),));
-                       }
-                     )*/
-                     Container(
-                            margin:android ? EdgeInsets.only(left:23, bottom: 10, right: 2) : EdgeInsets.only(left:21,right: 3, bottom: 18, top:7),
-                            child: GraphicChart.withSampleData(vals)),
-                    ],);
+                    return Container(
+                      height: 300,
+                      child: Stack(children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          alignment: Alignment.topCenter,
+                          margin: EdgeInsets.only(top: 0, bottom: 0, left: 0, right: 0),
+                              child: SvgPicture.asset("assets/images/UMF.svg", width: size.width,),
+                        ),
+                       /*LayoutBuilder(
+                         builder: (_, constraints) {
+                           double w=constraints.widthConstraints().maxWidth, h=constraints.heightConstraints().maxHeight;
+                           print("${constraints.widthConstraints().maxWidth} ${constraints.heightConstraints().maxHeight}");
+                           return Container(margin: EdgeInsets.only(left: w*0.04846, right:0, bottom: h*0.083),
+                               width: w,height: h,
+                               child: CustomPaint(painter: OutlinePainter(),));
+                         }
+                       )*/
+                       Container(
+                              margin:android ? EdgeInsets.only(left:23, bottom: 10, right: 2) : EdgeInsets.only(left:21,right: 3, bottom: 18, top:7),
+                              child: GraphicChart.withSampleData(vals)),
+                      ],),
+                    );
                   default:
                     return Container(padding: EdgeInsets.symmetric(horizontal: 20),
                         child: CalcTable(resultMap: widget.resultMap));
@@ -762,7 +765,7 @@ class _CalcTableState extends State<CalcTable> {
     return Column(
       children: [
         Container(
-          height: 270,
+          height: 150,
           child: Column(
             children: [
               Container(

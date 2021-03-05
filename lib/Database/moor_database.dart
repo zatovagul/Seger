@@ -17,6 +17,7 @@ class Oxides extends Table {
 class Mats extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
+  TextColumn get lowerName => text()();
   TextColumn get info => text()();
   IntColumn get count => integer().withDefault(const Constant(0))();
   BoolColumn get def => boolean().withDefault(const Constant(false))();
@@ -81,11 +82,10 @@ class MatDao extends DatabaseAccessor<AppDatabase> with _$MatDaoMixin {
       (select(mats)..where((tbl) => tbl.id.equals(matId))).watchSingle();
   Stream<List<Mat>> watchMats() => select(mats).watch();
   Stream<List<Mat>> watchMatsOrdered() =>
-      (select(mats)..orderBy([(t) => OrderingTerm(expression: t.name)]))
-          .watch();
-  Future<List<Mat>> getMatsOrderedByCount() => (select(mats)..orderBy([ (t)=>
-    OrderingTerm(expression: t.count)
-  ])).get();
+        (select(mats)..orderBy([(t) => OrderingTerm(expression: t.lowerName, mode: OrderingMode.asc)]))
+            .watch();
+
+  Future<List<Mat>> getMatsOrderedByCount() => (select(mats)..orderBy([ (t)=> OrderingTerm(expression: t.count, mode: OrderingMode.desc)])).get();
   Future<List<Mat>> getAllMats() => select(mats).get();
   Future<Mat> getMatById(int matId) => (select(mats)..where((tbl) => tbl.id.equals(matId))).getSingle();
   Future updateMat(Mat mat) => update(mats).replace(mat);

@@ -327,7 +327,7 @@ class _MatSettingsState extends State<MatSettings> {
     }
     else {
       if(edit){
-        Future updateInfo=matDao.updateMat(widget.mat.copyWith(name:name, info: info, def: false, date: nowTime));
+        Future updateInfo=matDao.updateMat(widget.mat.copyWith(name:name, lowerName: name.toLowerCase(), info: info, def: false, date: nowTime));
         updateInfo.then((value){
           matOxideDao.deleteMaterialOxidesByMatId(widget.mat.id).then((v){
             List<MatOxide> matOxides = [];
@@ -342,7 +342,7 @@ class _MatSettingsState extends State<MatSettings> {
       }
       else {
         Future insertInfo = matDao.insertNewMat(
-            Mat(name: name, info: info, def: false, date: nowTime));
+            Mat(name: name,lowerName: name.toLowerCase(), info: info, def: false, date: nowTime));
         insertInfo.then((value) {
           List<MatOxide> matOxides = [];
           oxideInfo.forEach((element) {

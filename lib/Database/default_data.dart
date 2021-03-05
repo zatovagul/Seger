@@ -30,7 +30,7 @@ class DataInfo{
     Oxide( name: "Cu2O", role: "o", defRole: "o", mass: 143.09),
   ];
   List<Mat> mats=[
-    Mat(name: "Nepheline Syenite", info: "Nepheline Syenite from the East Coast ", def: true)
+    Mat(name: "Nepheline Syenite", lowerName: "nepheline syenite", info: "Nepheline Syenite from the East Coast ", def: true)
   ];
   List<MatOxide> matOxides=[
     MatOxide( oxideId: 1, matId: 1, count: 98.24),
