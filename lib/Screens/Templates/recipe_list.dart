@@ -192,7 +192,7 @@ class _RecipeRowState extends State<RecipeRow> {
           decoration: SegerItems.pageDecoration,
           child: Column(
             children: [
-              widget.recipe.image==null? Container() :
+              (widget.recipe.image==null || widget.recipe.image=="")? Container() :
               Container(
                 height: 180,
                 decoration: BoxDecoration(

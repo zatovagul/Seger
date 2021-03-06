@@ -97,7 +97,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     recipeDao.getRecipeById(widget.recipeId).then((value) {
       recipe = value;
       if(value.image!=null)
-      _file=File(value.image);
+        if(value.image!="")
+          _file=File(value.image);
 
       nameController.text = recipe.name;
       recipeMatDao.getRecipeMatsByRecipeId(recipe.id).then((val) {
@@ -545,6 +546,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               choose: true,
             ),
             duration: Duration(milliseconds: 500)));
+    if(result!=null)
     recipeDao.updateRecipe(recipe.copyWith(folderId: result)).then((value) => Scaffold.of(scafContext).showSnackBar(SnackBar(
       content: Text('Recipe Moved'),
       backgroundColor: Colors.green,
@@ -591,7 +593,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           ));
         });
     else{
-    recipeDao.updateRecipe(recipe.copyWith(image: null));
+    recipeDao.updateRecipe(recipe.copyWith(image: ""));
     _file=null;
     }
     _notifier.notifyListeners();
