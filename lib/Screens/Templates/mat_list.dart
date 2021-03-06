@@ -33,7 +33,6 @@ class _MatListState extends State<MatList> {
 
     mostUsedList=[];
     matDao.getMatsOrderedByCount().then((value){
-      print("FUUUUCK");
       int n=value.length;
       int l=0;
       for(int i=0;i<n;i++){

@@ -39,6 +39,7 @@ class Recipes extends Table {
   DateTimeColumn get date => dateTime()();
   IntColumn get folderId =>
       integer().customConstraint("REFERENCES folders(id)")();
+  TextColumn get image => text().nullable()();
 }
 
 class RecipeMats extends Table {

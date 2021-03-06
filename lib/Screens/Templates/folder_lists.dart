@@ -147,7 +147,7 @@ class _FolderListState extends State<FolderList> {
         });
         recipeMatDao.insertAllRecipeMats(rList).then((v) {
           print("$value THIS VALUE");
-          Navigator.pop(context, value);
+          Navigator.pop(context, {"recipeId":value, "folderId":folderId});
         });
       });
     }

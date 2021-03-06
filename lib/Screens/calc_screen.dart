@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter_svg/svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:seger/Database/moor_database.dart';
 import 'package:seger/Screens/Templates/extra_widgets.dart';
@@ -55,6 +57,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   TextEditingController nameController;
   DateTime nowTime;
 
+  File _file;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -92,6 +96,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   void getRecipeInfo() {
     recipeDao.getRecipeById(widget.recipeId).then((value) {
       recipe = value;
+      if(value.image!=null)
+      _file=File(value.image);
+
       nameController.text = recipe.name;
       recipeMatDao.getRecipeMatsByRecipeId(recipe.id).then((val) {
         val.forEach((element) {
@@ -305,11 +312,16 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                               child: Text("Update", style: TextStyle(fontSize: 20, color: updated ? SegerItems.blue : Colors.grey),),
                                             ),
                                           ),
-                                          Container(
-                                            margin: EdgeInsets.only(top: 40),
-                                          alignment: Alignment.center,
-                                          child: Text("Add Photo", style: TextStyle(fontSize: 20, color: SegerItems.blue),),
+                                          GestureDetector(
+                                            onTap: (){
+                                              addPhoto();
+                                            },
+                                            child: Container(
+                                              margin: EdgeInsets.only(top: 40),
+                                            alignment: Alignment.center,
+                                            child: Text(_file==null ? "Add Photo" : "Delete Photo", style: TextStyle(fontSize: 20, color: SegerItems.blue),),
                                         ),
+                                          ),
                                         GestureDetector(
                                           onTap:(){
                                             copyAndEdit();
@@ -406,12 +418,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       sumMap[i] = SumOxideForm(oxide: oxideMap[i], sum: 0);
     }
     for (MatCalcForm i in matItems) {
+      //print("${i.mat} ${i.matOxides}");
       for (int j in i.matOxides.keys) {
         MatOxide mO = i.matOxides[j];
         double s = mO.count / 100 * i.count;
         sumMap[i.matOxides[j].oxideId].sum += s;
       }
     }
+    sumMap.forEach((key, value) { value.sum=value.sum/value.oxide.mass;});
     double s = 0, defS=0;
     for (SumOxideForm i in sumMap.values) {
       if (i.oxide.role.contains("a")) {
@@ -427,7 +441,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
           var a=SumOxideForm(oxide: i.oxide, sum:(i.sum*(1/defS)));
           defResult
               .add(a);
-          print("${a.oxide.name}  ${a.sum} DEFAULT");
+          //print("${a.oxide.name}  ${a.sum} DEFAULT");
         }
       }
     }
@@ -483,7 +497,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 matItems: matItems,
               ),
               duration: Duration(milliseconds: 500)));
-      recipe = recipe.copyWith(id: result);
+      recipe = recipe.copyWith(id: result['recipeId'], folderId: result["folderId"]);
       widget.edit = true;
       updated=false;
       _notifier.notifyListeners();
@@ -546,6 +560,62 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         Navigator.of(context).pushAndRemoveUntil(PageTransition(child: CalculatorScreen(edit: false,), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
       }
     }));
+  }
+
+  void addPhoto(){
+    if(_file==null)
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc){
+          return SafeArea(child: Container(
+            child: new Wrap(
+              children: [
+                ListTile(
+                  leading: Icon(Icons.photo_library),
+                  title: Text("Choose from Gallery"),
+                  onTap: (){
+                    _imgFromGallery();
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.photo_camera),
+                  title: Text("Camera"),
+                  onTap: (){
+                    _imgFromCamera();
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            ),
+          ));
+        });
+    else{
+    recipeDao.updateRecipe(recipe.copyWith(image: null));
+    _file=null;
+    }
+    _notifier.notifyListeners();
+  }
+
+  _imgFromCamera() async {
+    File image= await ImagePicker.pickImage(source: ImageSource.camera, imageQuality: 50);
+    if(image!=null) saveFile(image);
+  }
+  _imgFromGallery() async {
+    File image = await  ImagePicker.pickImage(source: ImageSource.gallery, imageQuality: 50);
+    if(image!=null) saveFile(image);
+  }
+  saveFile(File image) async{
+    final String path = await getApplicationDocumentsDirectory().then((value) => value.path);
+    List splits=image.path.split("/");
+    String fileName=splits[splits.length-1];
+    print("$path $fileName");
+    File file=await image.copy("$path/$fileName");
+    setState(() {
+      _file= file;
+    });
+    print("$_file ${_file.path}");
+    recipeDao.updateRecipe(recipe.copyWith(image: _file.path));
   }
 }
 
@@ -747,6 +817,9 @@ class _CalcTopState extends State<CalcTop> {
       if(element.oxide.id==1) defSilicon=element.sum;
       else defAlumni=element.sum;
     });
+
+    silicon=double.parse(silicon.toStringAsFixed(2));alumni=double.parse(alumni.toStringAsFixed(2));titan=double.parse(titan.toStringAsFixed(2));
+    defSilicon=double.parse(defSilicon.toStringAsFixed(2));defAlumni=double.parse(defAlumni.toStringAsFixed(2));
   }
 }
 
@@ -967,6 +1040,8 @@ class OthersTe extends StatelessWidget {
 }
 
 
+
+
 //Creating graphic
 class GraphicChart extends StatelessWidget {
   final List<charts.Series> seriesList;
@@ -1000,6 +1075,13 @@ class GraphicChart extends StatelessWidget {
             tickProviderSpec: charts.BasicNumericTickProviderSpec(desiredTickCount: 2),
               viewport: charts.NumericExtents(0,100)
           ),
+      defaultRenderer: new charts.PointRendererConfig<num>(
+        customSymbolRenderers: {
+          'circle': new charts.CircleSymbolRenderer(),
+          'rect': new charts.RectSymbolRenderer(),
+          'tri': new IconRenderer(Icons.archive)
+        }
+      ),
     );
   }
 
@@ -1029,7 +1111,9 @@ class GraphicChart extends StatelessWidget {
         measureFn: (LinearValues sales, _) => sales.alu*100,
         radiusPxFn: (LinearValues sales, _) => 5,
         data: data,
-      )
+      )..setAttribute(
+          charts.pointSymbolRendererFnKey, (int index) => null)
+        ..setAttribute(charts.pointSymbolRendererIdKey, 'circle')
     ];
   }
 }

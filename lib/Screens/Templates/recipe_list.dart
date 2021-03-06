@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
@@ -190,6 +192,18 @@ class _RecipeRowState extends State<RecipeRow> {
           decoration: SegerItems.pageDecoration,
           child: Column(
             children: [
+              widget.recipe.image==null? Container() :
+              Container(
+                height: 180,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
+                  image: DecorationImage(
+                    image: FileImage(File(widget.recipe.image)),
+                    fit: BoxFit.cover
+                  )
+                ),
+                //child: Image.file(File(widget.recipe.image),),
+              ),
               Container(
                 padding: EdgeInsets.all(20),
                 child: Column(

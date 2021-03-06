@@ -852,11 +852,13 @@ class Recipe extends DataClass implements Insertable<Recipe> {
   final String name;
   final DateTime date;
   final int folderId;
+  final String image;
   Recipe(
       {@required this.id,
       @required this.name,
       @required this.date,
-      @required this.folderId});
+      @required this.folderId,
+      this.image});
   factory Recipe.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -870,6 +872,8 @@ class Recipe extends DataClass implements Insertable<Recipe> {
           dateTimeType.mapFromDatabaseResponse(data['${effectivePrefix}date']),
       folderId:
           intType.mapFromDatabaseResponse(data['${effectivePrefix}folder_id']),
+      image:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}image']),
     );
   }
   factory Recipe.fromJson(Map<String, dynamic> json,
@@ -879,6 +883,7 @@ class Recipe extends DataClass implements Insertable<Recipe> {
       name: serializer.fromJson<String>(json['name']),
       date: serializer.fromJson<DateTime>(json['date']),
       folderId: serializer.fromJson<int>(json['folderId']),
+      image: serializer.fromJson<String>(json['image']),
     );
   }
   @override
@@ -889,6 +894,7 @@ class Recipe extends DataClass implements Insertable<Recipe> {
       'name': serializer.toJson<String>(name),
       'date': serializer.toJson<DateTime>(date),
       'folderId': serializer.toJson<int>(folderId),
+      'image': serializer.toJson<String>(image),
     };
   }
 
@@ -901,14 +907,19 @@ class Recipe extends DataClass implements Insertable<Recipe> {
       folderId: folderId == null && nullToAbsent
           ? const Value.absent()
           : Value(folderId),
+      image:
+          image == null && nullToAbsent ? const Value.absent() : Value(image),
     ) as T;
   }
 
-  Recipe copyWith({int id, String name, DateTime date, int folderId}) => Recipe(
+  Recipe copyWith(
+          {int id, String name, DateTime date, int folderId, String image}) =>
+      Recipe(
         id: id ?? this.id,
         name: name ?? this.name,
         date: date ?? this.date,
         folderId: folderId ?? this.folderId,
+        image: image ?? this.image,
       );
   @override
   String toString() {
@@ -916,14 +927,17 @@ class Recipe extends DataClass implements Insertable<Recipe> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('date: $date, ')
-          ..write('folderId: $folderId')
+          ..write('folderId: $folderId, ')
+          ..write('image: $image')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => $mrjf($mrjc(id.hashCode,
-      $mrjc(name.hashCode, $mrjc(date.hashCode, folderId.hashCode))));
+  int get hashCode => $mrjf($mrjc(
+      id.hashCode,
+      $mrjc(name.hashCode,
+          $mrjc(date.hashCode, $mrjc(folderId.hashCode, image.hashCode)))));
   @override
   bool operator ==(other) =>
       identical(this, other) ||
@@ -931,7 +945,8 @@ class Recipe extends DataClass implements Insertable<Recipe> {
           other.id == id &&
           other.name == name &&
           other.date == date &&
-          other.folderId == folderId);
+          other.folderId == folderId &&
+          other.image == image);
 }
 
 class RecipesCompanion extends UpdateCompanion<Recipe> {
@@ -939,22 +954,26 @@ class RecipesCompanion extends UpdateCompanion<Recipe> {
   final Value<String> name;
   final Value<DateTime> date;
   final Value<int> folderId;
+  final Value<String> image;
   const RecipesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.date = const Value.absent(),
     this.folderId = const Value.absent(),
+    this.image = const Value.absent(),
   });
   RecipesCompanion copyWith(
       {Value<int> id,
       Value<String> name,
       Value<DateTime> date,
-      Value<int> folderId}) {
+      Value<int> folderId,
+      Value<String> image}) {
     return RecipesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       date: date ?? this.date,
       folderId: folderId ?? this.folderId,
+      image: image ?? this.image,
     );
   }
 }
@@ -1005,8 +1024,20 @@ class $RecipesTable extends Recipes with TableInfo<$RecipesTable, Recipe> {
         $customConstraints: 'REFERENCES folders(id)');
   }
 
+  final VerificationMeta _imageMeta = const VerificationMeta('image');
+  GeneratedTextColumn _image;
   @override
-  List<GeneratedColumn> get $columns => [id, name, date, folderId];
+  GeneratedTextColumn get image => _image ??= _constructImage();
+  GeneratedTextColumn _constructImage() {
+    return GeneratedTextColumn(
+      'image',
+      $tableName,
+      true,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, name, date, folderId, image];
   @override
   $RecipesTable get asDslTable => this;
   @override
@@ -1040,6 +1071,12 @@ class $RecipesTable extends Recipes with TableInfo<$RecipesTable, Recipe> {
     } else if (folderId.isRequired && isInserting) {
       context.missing(_folderIdMeta);
     }
+    if (d.image.present) {
+      context.handle(
+          _imageMeta, image.isAcceptableValue(d.image.value, _imageMeta));
+    } else if (image.isRequired && isInserting) {
+      context.missing(_imageMeta);
+    }
     return context;
   }
 
@@ -1065,6 +1102,9 @@ class $RecipesTable extends Recipes with TableInfo<$RecipesTable, Recipe> {
     }
     if (d.folderId.present) {
       map['folder_id'] = Variable<int, IntType>(d.folderId.value);
+    }
+    if (d.image.present) {
+      map['image'] = Variable<String, StringType>(d.image.value);
     }
     return map;
   }

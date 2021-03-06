@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
 
 
 class ExpandablePageView extends StatefulWidget {
@@ -110,13 +111,30 @@ class _SizeReportingWidgetState extends State<SizeReportingWidget> {
   }
 
   void _notifySize() {
-    if(this.mounted) {
       final size = context?.size;
       if (_oldSize != size) {
         _oldSize = size;
         widget.onSizeChange(size);
       }
     }
+}
+
+
+
+
+class IconRenderer extends charts.CustomSymbolRenderer {
+  final IconData iconData;
+
+  IconRenderer(this.iconData);
+
+  @override
+  Widget build(BuildContext context,
+      {Size size, Color color, bool enabled}) {
+    if (!enabled) {
+      color = color.withOpacity(0.26);
+    }
+    return new SizedBox.fromSize(
+        size: size, child: new Icon(iconData, color: color, size: 12.0));
   }
 }
 
