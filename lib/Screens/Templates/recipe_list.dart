@@ -50,7 +50,12 @@ class _RecipeListState extends State<RecipeList> {
             padding: EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () {
-                Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MenuScreen(), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.fade,
+                        child: MenuScreen(),
+                        duration: Duration(milliseconds: 250)));
               },
               child: SegerItems.menuIcon,
             ),
@@ -68,8 +73,66 @@ class _RecipeListState extends State<RecipeList> {
                         List<Recipe> recipes=snapshot.data;
                         size=recipes!=null ? recipes.length : 0;
                         return ListView.builder(
-                            itemCount: recipes!=null ? recipes.length : 0,
+                            itemCount: recipes!=null ? recipes.length+1 : 1,
                             itemBuilder: (_, index){
+                              if(index==recipes.length){
+                                return Container(
+                                  margin: EdgeInsets.symmetric(vertical: 20),
+                                  child: Column(
+                                    children: [
+                                      GestureDetector(
+                                        onTap: () async{
+                                          bool result=await showDialog(context: context, builder: (context){
+                                            return RecipeDialog(del:false);
+                                          });
+                                          if(result!=null){
+                                            if(result){
+                                              deleteRecipes();
+                                            }
+                                          }
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.all(10),
+                                          child: Text("Empty Folder", style: TextStyle(fontSize: 20, color: Colors.white, fontFamily: "PTSans")),
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () async{
+                                          bool result=await showDialog(context: context, builder: (context){
+                                            return RecipeDialog(del:true,);
+                                          });
+                                          if(result!=null){
+                                            if(result){
+                                              if(size>0){
+                                                Scaffold.of(scafContext).showSnackBar(SnackBar(
+                                                  content: Text('Empty Folder at First'),
+                                                  backgroundColor: Colors.red,
+                                                  duration: Duration(seconds: 1),
+                                                ));
+                                              }
+                                              else{
+                                                folderDao.deleteFolder(widget.folder).then((value){
+                                                  Scaffold.of(scafContext).showSnackBar(SnackBar(
+                                                    content: Text('Folder deleted'),
+                                                    backgroundColor: Colors.red,
+                                                    duration: Duration(seconds: 1),
+                                                  ));
+                                                  Navigator.pop(context);
+                                                });
+                                              }
+                                            }
+                                          }
+                                        },
+                                        child: Container(
+                                          margin: EdgeInsets.only(top: 20),
+                                          padding: EdgeInsets.all(10),
+                                          child: Text("Delete Folder", style: TextStyle(fontSize: 20, color: Colors.white, fontFamily: "PTSans")),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
                               Recipe recipe=recipes[index];
                               return Container(
                                 child: RecipeRow(recipe: recipe,),
@@ -77,62 +140,6 @@ class _RecipeListState extends State<RecipeList> {
                             });
                       }),
                 ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 20),
-                child: Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () async{
-                        bool result=await showDialog(context: context, builder: (context){
-                          return RecipeDialog(del:false);
-                        });
-                        if(result!=null){
-                          if(result){
-                            deleteRecipes();
-                          }
-                        }
-                      },
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        child: Text("Empty Folder", style: TextStyle(fontSize: 20, color: Colors.white)),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () async{
-                        bool result=await showDialog(context: context, builder: (context){
-                          return RecipeDialog(del:true,);
-                        });
-                        if(result!=null){
-                          if(result){
-                            if(size>0){
-                              Scaffold.of(scafContext).showSnackBar(SnackBar(
-                                content: Text('Empty Folder at First'),
-                                backgroundColor: Colors.red,
-                                duration: Duration(seconds: 1),
-                              ));
-                            }
-                            else{
-                              folderDao.deleteFolder(widget.folder).then((value){
-                                Scaffold.of(scafContext).showSnackBar(SnackBar(
-                                  content: Text('Folder deleted'),
-                                  backgroundColor: Colors.red,
-                                  duration: Duration(seconds: 1),
-                                ));
-                                Navigator.pop(context);
-                              });
-                            }
-                          }
-                        }
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(top: 20),
-                        padding: EdgeInsets.all(10),
-                        child: Text("Delete Folder", style: TextStyle(fontSize: 20, color: Colors.white)),
-                      ),
-                    ),
-                  ],
-                ),
-              )
           ],
         );
       }
@@ -185,7 +192,8 @@ class _RecipeRowState extends State<RecipeRow> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: (){
-        Navigator.push(context, PageTransition(child: CalculatorScreen(recipeId: widget.recipe.id,edit: true,), type: PageTransitionType.rightToLeft,duration: Duration(milliseconds: 500)));
+        Navigator.push(context, PageTransition(child: CalculatorScreen(recipeId: widget.recipe.id,edit: true,), type: PageTransitionType.rightToLeft,
+            duration: Duration(milliseconds: 250)));
       },
       child: Container(
           margin: EdgeInsets.only(top: 10, right: 20, left:20),
@@ -214,7 +222,7 @@ class _RecipeRowState extends State<RecipeRow> {
                         SegerItems.dateFormat.format(widget.recipe.date),
                         style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey),
+                            color: Colors.grey, fontFamily: "PTSans"),
                       ),
                     ),
                     Container(
@@ -223,7 +231,7 @@ class _RecipeRowState extends State<RecipeRow> {
                       child: Text(widget.recipe.name,
                           style: TextStyle(
                               fontSize: 22,
-                              color: Colors.black, fontWeight: FontWeight.bold)
+                              color: Colors.black,fontFamily: "PTSans", fontWeight: FontWeight.bold)
                       ),
                     ),
                     Container(
@@ -256,12 +264,12 @@ class _RecipeRowState extends State<RecipeRow> {
                                             ) : Container(),
                                             Container(
                                               alignment: Alignment.center,
-                                              child: Text("${calcForm.mat.name}", style: TextStyle(fontSize: 16, color: Colors.black),),
+                                              child: Text(calcForm.mat.name.length<=20 ? calcForm.mat.name : "${calcForm.mat.name.substring(0,20)}...", style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans"),),
                                             )
                                           ],
                                         ),
                                         Container(
-                                          child:Text("${calcForm.count }", style: TextStyle(fontSize: 16, color: Colors.black),) ,
+                                          child:Text("${calcForm.count }", style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans"),) ,
                                         )
                                       ],
                                     );
@@ -294,7 +302,7 @@ class _RecipeDialogState extends State<RecipeDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text("Are you sure to "+(widget.del ? "Delete folder?" : " Empty folder?"),  style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
+      title: Text("🚨 Are you sure you want to "+(widget.del ? "delete" : "empty")+" this folder?",  style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
       actions: [
         TextButton(onPressed: (){
           Navigator.pop(context, true);

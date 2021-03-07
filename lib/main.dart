@@ -11,13 +11,13 @@ abstract class SegerItems{
   static const blueGrey = Color(0xFF9ABCFF);
   static const greyi = Color(0xFFF6F6F6);
 
-  static const mainTextStyle=TextStyle(color: blue,fontSize: 17.0);
+  static const mainTextStyle=TextStyle(color: blue,fontSize: 17.0, fontFamily: 'PTSans');
   static const menuIcon=Icon(
     Icons.menu_outlined,
     size: 35.0,
     color: Colors.white,
   );
-  static SvgPicture segerTopPic=SvgPicture.asset("assets/images/seger_icon.svg", width: 70.0);
+  static SvgPicture segerTopPic=SvgPicture.asset("assets/images/seger_icon.svg", width: 50.0);
 
   static const textFieldDecoration=InputDecoration(
   hintText: "Enter name",
@@ -45,14 +45,16 @@ abstract class SegerItems{
     ),
   );
   static final FilteringTextInputFormatter doubleFilter =
-  FilteringTextInputFormatter.allow(RegExp(r'^\d+[\,\.]?\d*'));
+    FilteringTextInputFormatter.allow(RegExp(r'^\d+[\,\.]?\d{0,4}'));
+  static final FilteringTextInputFormatter nameFilter=
+    FilteringTextInputFormatter.allow(RegExp(r'^.{0,50}'));
   static final dateFormat=DateFormat("dd.MM.yyyy");
 
   static TextStyle mainStyle(double x){
     return TextStyle(color: blue,fontSize: x);
   }
   static TextStyle whiteStyle(double x){
-    return TextStyle(color: Colors.white,fontSize: x);
+    return TextStyle(color: Colors.white,fontSize: x, fontFamily: "PTSans",);
   }
 
   static BoxDecoration pageDecoration=BoxDecoration(
@@ -60,7 +62,6 @@ abstract class SegerItems{
     color: Colors.white,
   );
 }
-
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

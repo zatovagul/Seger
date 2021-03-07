@@ -37,7 +37,12 @@ class _OxideRoleSettingsState extends State<OxideRoleSettings> {
               padding: EdgeInsets.only(right: 20.0),
               child: GestureDetector(
                 onTap: (){
-                  Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MenuScreen(), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
+                  Navigator.push(
+                      context,
+                      PageTransition(
+                          type: PageTransitionType.fade,
+                          child: MenuScreen(),
+                          duration: Duration(milliseconds: 250)));
                 },
                 child: SegerItems.menuIcon,
               ),
@@ -111,7 +116,7 @@ class _OxideRoleSettingsState extends State<OxideRoleSettings> {
                                                     if(o.defRole!=o.role)
                                                     oxideDao.updateOxide(o.copyWith(role:o.defRole));
                                                   }
-                                                  Scaffold.of(scafContext).showSnackBar(SnackBar(content: Text('Settings reset'), backgroundColor: Colors.green,));
+                                                  Scaffold.of(scafContext).showSnackBar(SnackBar(content: Text('😎 Welcome back to classic UMF'), backgroundColor: Colors.green,));
                                                 },
                                                 child: Text("Reset to defaults", style: TextStyle(fontSize: 20, color: SegerItems.blue)),
                                               ),

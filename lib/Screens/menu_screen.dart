@@ -6,6 +6,7 @@ import 'package:seger/Screens/Templates/mat_list.dart';
 import 'package:seger/Screens/Templates/oxide_role_set.dart';
 import 'package:seger/Screens/calc_screen.dart';
 import 'package:seger/main.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MenuScreen extends StatelessWidget {
   List<String> names=["Calculator", "Recipes", "Materials", "Oxide Role"];
@@ -18,23 +19,29 @@ class MenuScreen extends StatelessWidget {
         height: MediaQuery.of(context).size.height,
         margin:
             EdgeInsets.only(left: 20.0, right: 20.0, top: 60.0, bottom: 20.0),
-        padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 20.0),
         decoration:  SegerItems.pageDecoration,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              margin: EdgeInsets.only(top: 50.0),
               child: Column(
                 children: [
-                  SvgPicture.asset("assets/images/seger_blue_icon.svg",
-                      width: 100.0),
                   Container(
-                      margin: EdgeInsets.only(top: 10.0),
-                      child: TextButton(
-                        child: Text("by\nOVO TRIMMING TOOLS",
-                            style: SegerItems.mainStyle(14),
-                            textAlign: TextAlign.center),
+                    margin: EdgeInsets.only(top: 18, right: 18 ),
+                    alignment: Alignment.centerRight,
+                    child: GestureDetector(onTap:(){
+                      Navigator.pop(context);
+                    },child: Container(padding:EdgeInsets.all(2),child: SvgPicture.asset("assets/images/cross.svg", width: 18,))),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 50.0),
+                    child: SvgPicture.asset("assets/images/seger_blue_icon.svg",
+                        width: 85),
+                  ),
+                  Container(
+                      margin: EdgeInsets.only(top: 13.0),
+                      child: SvgPicture.asset("assets/images/byovo_blue.svg",
+                          width: 185,
                       )),
                   Container(
                     margin: EdgeInsets.only(top: 50.0),
@@ -52,12 +59,7 @@ class MenuScreen extends StatelessWidget {
                               child:
                               TextButton(
                                 onPressed: (){
-                                  Navigator.pushReplacement(
-                                      context,
-                                      PageTransition(
-                                          type: PageTransitionType.fade,
-                                          child: page,
-                                          duration: Duration(milliseconds: 500)));
+                                  Navigator.of(context).pushAndRemoveUntil(PageTransition(child: page, type: PageTransitionType.fade, duration: Duration(milliseconds: 250)), (route) => false);
                                 },
                                   child: Text(names[i], style: SegerItems.mainTextStyle)),
                             ),
@@ -73,12 +75,42 @@ class MenuScreen extends StatelessWidget {
               ),
             ),
             Container(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Text(
-                  "SEGER F.A.Q.",
-                  style: SegerItems.mainTextStyle,
-                ),
+              margin: EdgeInsets.only(bottom: 45),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: (){
+                      _launchUrl("https://www.instagram.com/ovo_ceramics/");
+                    },
+                    child: Container(
+                      child: SvgPicture.asset("assets/images/instagram.svg",width: 30,),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: (){
+                      _launchUrl("https://ceramicschool.ru/ovoshop");
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(top: 20),
+                      child: Text(
+                        "Ovo Tools Website",
+                        style: SegerItems.mainTextStyle,
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: (){
+                        _launchUrl("https://ceramicschool.ru/seger");
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(top: 20),
+                      child: Text(
+                        "SEGER F.A.Q.",
+                        style: SegerItems.mainTextStyle,
+                      ),
+                    ),
+                  )
+                ],
               ),
             )
           ],
@@ -86,5 +118,9 @@ class MenuScreen extends StatelessWidget {
       ),
       backgroundColor: SegerItems.blue,
     );
+  }
+
+  void _launchUrl(String url) async{
+      await(canLaunch(url)) ? await launch(url) : throw 'Could not launch $url';
   }
 }

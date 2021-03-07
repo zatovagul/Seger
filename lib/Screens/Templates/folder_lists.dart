@@ -44,21 +44,26 @@ class _FolderListState extends State<FolderList> {
         title: widget.choose
             ? Text(
                 "Save Recipe",
-                style: TextStyle(color: Colors.white, fontSize: 18),
+                style: TextStyle(color: Colors.white, fontSize: 18, fontFamily: "PTSans"),
               )
             : Text(
                 "Recipes",
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold),
+                    fontWeight: FontWeight.bold, fontFamily: "PTSans"),
               ),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () {
-                Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MenuScreen(), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.fade,
+                        child: MenuScreen(),
+                        duration: Duration(milliseconds: 250)));
               },
               child: SegerItems.menuIcon,
             ),
@@ -114,7 +119,7 @@ class _FolderListState extends State<FolderList> {
                                 Navigator.push(context, PageTransition(
                                     child: RecipeList(folder: folders[i]),
                                     type: PageTransitionType.rightToLeft,
-                                    duration: Duration(milliseconds: 500)
+                                    duration: Duration(milliseconds: 250)
                                 )
                                 );
                               }
@@ -193,7 +198,7 @@ class _FolderRowState extends State<FolderRow> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Center(
-                    child: Text(widget.folder.name),
+                    child: Text(widget.folder.name, style: TextStyle(fontSize: 17, color: Colors.black,fontFamily: "PTSans",),),
                   ),
                   Row(
                     children: [
@@ -205,7 +210,7 @@ class _FolderRowState extends State<FolderRow> {
                               builder: (context, AsyncSnapshot<List<Recipe>> snapshot) {
                                 len=0;
                                 if(snapshot.data!=null)len=snapshot.data.length;
-                                return Text("$len");
+                                return Text("$len",style: TextStyle(fontSize: 16, color: Colors.black,fontFamily: "PTSans",),);
                               }),
                         ),
                       ),

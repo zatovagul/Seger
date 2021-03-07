@@ -107,14 +107,19 @@ class _MatSettingsState extends State<MatSettings> {
         centerTitle: true,
         title: Text(
           edit ? "Edit Material" : "New Material",
-          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold,fontFamily: "PTSans"),
         ),
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () {
-                Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MenuScreen(), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.fade,
+                        child: MenuScreen(),
+                        duration: Duration(milliseconds: 250)));
               },
               child: SegerItems.menuIcon,
             ),
@@ -169,9 +174,10 @@ class _MatSettingsState extends State<MatSettings> {
                                         margin: EdgeInsets.only(top: 10),
                                         child: TextField(
                                           controller: nameController,
+                                          inputFormatters: [SegerItems.nameFilter],
                                           style: TextStyle(
                                               fontSize: 22,
-                                              color: Colors.black),
+                                              color: Colors.black, fontFamily: "PTSans"),
                                           decoration:
                                               SegerItems.textFieldDecoration,
                                           onChanged: (value) {
@@ -189,7 +195,7 @@ class _MatSettingsState extends State<MatSettings> {
                                           controller: infoController,
                                           style: TextStyle(
                                               fontSize: 16,
-                                              color: Colors.black),
+                                              color: Colors.black, fontFamily: "PTSans"),
                                           decoration: InputDecoration(
                                               filled: true,
                                               fillColor: SegerItems.greyi,
@@ -222,7 +228,7 @@ class _MatSettingsState extends State<MatSettings> {
                                             "Percentage analysis",
                                             style: TextStyle(
                                                 fontSize: 18,
-                                                color: Colors.black, fontWeight: FontWeight.bold),
+                                                color: Colors.black,fontFamily: "PTSans", fontWeight: FontWeight.bold),
                                           ),
                                         ),
                                       ),
@@ -244,7 +250,7 @@ class _MatSettingsState extends State<MatSettings> {
                                                 "Total:",
                                                 style: TextStyle(
                                                     fontSize: 17,
-                                                    color: Colors.black,
+                                                    color: Colors.black,fontFamily: "PTSans",
                                                     fontWeight:
                                                         FontWeight.bold),
                                               ),
@@ -255,7 +261,7 @@ class _MatSettingsState extends State<MatSettings> {
                                                     if(to==0 && edit) _percChange();
                                                     return Text("$to",
                                                       style: TextStyle(
-                                                          fontSize: 17,
+                                                          fontSize: 17,fontFamily: "PTSans",
                                                           color: SegerItems.blue),
                                                     );
                                                   }
@@ -269,7 +275,7 @@ class _MatSettingsState extends State<MatSettings> {
                                           child: Text(
                                             SegerItems.dateFormat.format(nowTime),
                                             style: TextStyle(
-                                                fontSize: 12,
+                                                fontSize: 12,fontFamily: "PTSans",
                                                 color: Colors.grey),
                                           ),
                                         )
@@ -297,7 +303,8 @@ class _MatSettingsState extends State<MatSettings> {
                   onTap: (){
                     matOxideDao.deleteMaterialOxidesByMatId(widget.mat.id).then((value){
                       matDao.deleteMat(widget.mat);
-                      Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MatList(choose: false,), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
+                      Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MatList(choose: false,), type: PageTransitionType.fade,
+                          duration: Duration(milliseconds: 250)), (route) => false);
                     });
                   },
                   child: Container(
@@ -319,8 +326,8 @@ class _MatSettingsState extends State<MatSettings> {
   _makeInsert(){
     double l=0;
     oxideInfo.forEach((element) { l+=element.num; });
-    if(name=="" || info==""){
-      Scaffold.of(scafContext).showSnackBar(SnackBar(content: Text('Fill name and info'), backgroundColor: Colors.red,));
+    if(name==""){
+      Scaffold.of(scafContext).showSnackBar(SnackBar(content: Text('🙏 Give me the name! Please.'), backgroundColor: Colors.red,));
     }
     else if(l<=0){
       Scaffold.of(scafContext).showSnackBar(SnackBar(content: Text('Set percentage to oxides'), backgroundColor: Colors.red,));
@@ -391,7 +398,7 @@ class _OxideChangeRowState extends State<OxideChangeRow> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Center(
-                  child: Text(widget.oxide.oxide.name),
+                  child: Text(widget.oxide.oxide.name, style: TextStyle(fontSize: 17, color: Colors.black, fontFamily: "PTSans"),),
                 ),
                 Center(
                   child: ConstrainedBox(
@@ -403,7 +410,7 @@ class _OxideChangeRowState extends State<OxideChangeRow> {
                         inputFormatters: [
                           SegerItems.doubleFilter,
                         ],
-                        style: TextStyle(fontSize: 16, color: Colors.black),
+                        style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans"),
                         textAlign: TextAlign.end,
                         decoration: InputDecoration(
                             contentPadding: EdgeInsets.only(

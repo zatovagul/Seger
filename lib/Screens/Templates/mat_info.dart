@@ -53,7 +53,12 @@ class _MatInfoPageState extends State<MatInfoPage> {
             padding: EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () {
-                Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MenuScreen(), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.fade,
+                        child: MenuScreen(),
+                        duration: Duration(milliseconds: 250)));
               },
               child: SegerItems.menuIcon,
             ),
@@ -74,7 +79,8 @@ class _MatInfoPageState extends State<MatInfoPage> {
                     child: GestureDetector(
                         onTap: () {
                           Navigator.push(context, PageTransition(
-                              child: MatSettings(mat: widget.mat,), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: 500)
+                              child: MatSettings(mat: widget.mat,), type: PageTransitionType.rightToLeft,
+                              duration: Duration(milliseconds: 250)
                           ));
                         },
                         child: Text("Edit", style: SegerItems.whiteStyle(17))),

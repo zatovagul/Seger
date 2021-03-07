@@ -25,15 +25,29 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     Timer(Duration(seconds: 2),
         (){
-          Navigator.pushReplacement(context, PageTransition(type:PageTransitionType.fade,child:CalculatorScreen(edit: false,), duration: Duration(milliseconds: 500)));
+          Navigator.pushReplacement(context, PageTransition(type:PageTransitionType.fade,child:CalculatorScreen(edit: false,),
+              duration: Duration(milliseconds: 250)));
         });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-          child:SvgPicture.asset("assets/images/seger_icon.svg", width: 100.0),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Center(
+                child:SvgPicture.asset("assets/images/seger_icon.svg", width: 100.0),
+            ),
+          ),
+          Container(
+            height: 150,
+            child: Center(
+              child: SvgPicture.asset("assets/images/byovo_white.svg", width: 180.0),
+            ),
+          )
+        ],
       ),
       backgroundColor: SegerItems.blue,
     );

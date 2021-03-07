@@ -56,7 +56,12 @@ class _MatListState extends State<MatList> {
             padding: EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () {
-                Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MenuScreen(), type: PageTransitionType.fade, duration: Duration(milliseconds: 500)), (route) => false);
+                Navigator.push(
+                    context,
+                    PageTransition(
+                        type: PageTransitionType.fade,
+                        child: MenuScreen(),
+                        duration: Duration(milliseconds: 250)));
               },
               child: SegerItems.menuIcon,
             ),
@@ -77,7 +82,7 @@ class _MatListState extends State<MatList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      child: Text(widget.choose ? "Add Material" : "Materials", style:TextStyle(fontSize: 24, color:Colors.white, fontWeight: FontWeight.bold) ),
+                      child: Text(widget.choose ? "Add Material" : "Materials", style:TextStyle(fontSize: 24, color:Colors.white, fontWeight: FontWeight.bold, fontFamily: "PTSans") ),
                     ),
                     Container(
                       child: GestureDetector(
@@ -90,9 +95,9 @@ class _MatListState extends State<MatList> {
                                 PageTransition(
                                     type: PageTransitionType.rightToLeft,
                                     child: MatSettings(),
-                                    duration: Duration(milliseconds: 500)));
+                                    duration: Duration(milliseconds: 250)));
                           },
-                          child: Text(widget.choose ? "Cancel" : "+ Create new", style: SegerItems.whiteStyle(17))),
+                          child: Text(widget.choose ? "" : "+ Create new", style: SegerItems.whiteStyle(17))),
                     ),
                   ],
                 ),
@@ -111,7 +116,7 @@ class _MatListState extends State<MatList> {
                           controller: controller,
                           style: TextStyle(
                               fontSize: 22,
-                              color: Colors.black),
+                              color: Colors.black, fontFamily: "PTSans"),
                           decoration:
                           SegerItems.textFieldDecoration,
                           onChanged: (value) {
@@ -138,16 +143,15 @@ class _MatListState extends State<MatList> {
                                             List<Widget> list=[];
                                             list.add(Column(children: [
                                               Container(
-                                                padding:
-                                                EdgeInsets.symmetric(
-                                                    vertical: 6),
+                                                margin:EdgeInsets.only(top:20),
+                                                padding: EdgeInsets.symmetric(vertical: 6),
                                                 child: Align(
                                                   alignment:
                                                   Alignment.centerLeft,
                                                   child: Text(
                                                     "Most Used",
                                                     style: TextStyle(
-                                                        fontSize: 20,
+                                                        fontSize: 20,fontFamily: "PTSans",
                                                         fontWeight:
                                                         FontWeight
                                                             .bold),
@@ -190,7 +194,7 @@ class _MatListState extends State<MatList> {
                                                         mat.name[0]
                                                             .toUpperCase(),
                                                         style: TextStyle(
-                                                            fontSize: 20,
+                                                            fontSize: 20,fontFamily: "PTSans",
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold),
@@ -272,7 +276,7 @@ class _MatRowState extends State<MatRow> {
           Navigator.push(context,PageTransition(
               type: PageTransitionType.rightToLeft,
               child: MatInfoPage(mat: widget.mat,),
-              duration: Duration(milliseconds: 500)
+              duration: Duration(milliseconds: 250)
           ));
         }
       },
@@ -288,7 +292,7 @@ class _MatRowState extends State<MatRow> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Center(
-                    child: Text(widget.mat.name),
+                    child: Text(widget.mat.name.length<=20 ? widget.mat.name : "${widget.mat.name.substring(0,20)}...", style: TextStyle(fontSize: 17, color: Colors.black, fontFamily: "PTSans"),),
                   ),
                 ],
               ),
