@@ -64,6 +64,11 @@ flutter:
     - assets/images/byovo_blue.svg
     - assets/images/cross.svg
     - assets/images/instagram.svg
+    - assets/images/menu.svg
+    - assets/images/plus_blue.svg
+    - assets/images/plus_gray.svg
+    - assets/images/small_minus.svg
+    - assets/images/small_plus.svg
     - assets/fonts/
   fonts:
     - family: PTSans

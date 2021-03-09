@@ -292,7 +292,7 @@ class _MatRowState extends State<MatRow> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Center(
-                    child: Text(widget.mat.name.length<=20 ? widget.mat.name : "${widget.mat.name.substring(0,20)}...", style: TextStyle(fontSize: 17, color: Colors.black, fontFamily: "PTSans"),),
+                    child: Text(widget.mat.name.length<=30 ? widget.mat.name : "${widget.mat.name.substring(0,30)}...", style: TextStyle(fontSize: 17, color: Colors.black, fontFamily: "PTSans"),),
                   ),
                 ],
               ),

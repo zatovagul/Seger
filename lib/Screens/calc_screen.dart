@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -96,7 +97,14 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
   void getRecipeInfo() {
     recipeDao.getRecipeById(widget.recipeId).then((value) {
       recipe = value;
-      if(!widget.edit) recipe=recipe.copyWith(name:"${recipe.name} (copy)");
+      if(!widget.edit) {
+        recipe = recipe.copyWith(name: "${recipe.name} (copy)");
+        Scaffold.of(scafContext).showSnackBar(SnackBar(
+          content: Text('🙌 Recipe successfully copied! Edit please.'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 1),
+        ));
+      }
       if(value.image!=null)
         if(value.image!="")
           _file=File(value.image);
@@ -258,7 +266,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                           },
                                           child: Container(
                                               alignment: Alignment.centerLeft,
-                                              margin: EdgeInsets.all(20),
+                                              margin: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
                                               child: Text(
                                                 "+ Add Material",
                                                 style: SegerItems.mainTextStyle,
@@ -612,6 +620,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     else{
     recipeDao.updateRecipe(recipe.copyWith(image: ""));
     _file=null;
+    Scaffold.of(scafContext).showSnackBar(SnackBar(
+      content: Text('😭  Deleted! Waiting for a new one.'),
+      backgroundColor: Colors.red,
+      duration: Duration(seconds: 1),
+    ));
     }
     _notifier.notifyListeners();
   }
@@ -635,6 +648,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     });
     print("$_file ${_file.path}");
     recipeDao.updateRecipe(recipe.copyWith(image: _file.path));
+
+    Scaffold.of(scafContext).showSnackBar(SnackBar(
+      content: Text('📸 Good shot! Saved!'),
+      backgroundColor: Colors.green,
+      duration: Duration(seconds: 1),
+    ));
   }
 }
 
@@ -678,8 +697,9 @@ class _CalcTopState extends State<CalcTop> {
 
     Size size=MediaQuery.of(context).size;
     double width=size.width-40;
-    double height=width*0.726726726;
-    print("${height}");
+    double height=width*0.764179104477612;
+    double margin=width*0.043126684636119, botMargin=width*0.024258760107817;
+    print("${height} ${width}");
     bool android=Platform.isAndroid;
     return Container(
       //padding: EdgeInsets.symmetric(horizontal: 20),
@@ -728,19 +748,19 @@ class _CalcTopState extends State<CalcTop> {
                 switch (index) {
                   case 0:
                     return Container(
-                      height: 300,
+                      height: height+margin,
                       child: Stack(children: [
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           alignment: Alignment.topCenter,
                               child: Container(
-                                  margin: EdgeInsets.only(top: 1),
-                                  child: SvgPicture.asset("assets/images/UMF2.svg", width: size.width,)),
+                                  margin: EdgeInsets.only(top: margin),
+                                  child: SvgPicture.asset("assets/images/UMF2.svg", width: width,)),
                           // 242 - 333
                         ),
                        Container(
                           alignment: Alignment.topCenter,
-                              margin:android ? EdgeInsets.only(left:21, bottom: 300-20-height, right: 2) : EdgeInsets.only(left:20,right: 3, bottom: 300-20.5-height,),
+                              margin:android ? EdgeInsets.only(left:width*0.056, bottom: botMargin, right: 2) : EdgeInsets.only(left:width*0.056,right: 3, bottom: botMargin,),
                               child: GraphicChart.withSampleData(vals)),
                       ],),
                     );
@@ -759,8 +779,8 @@ class _CalcTopState extends State<CalcTop> {
               children: [
                 Row(
                   children: [
-                    Text(
-                      "R₂O/RO : ",
+                    OxideText(text:
+                      "R2O/RO : ",
                       style:
                           TextStyle(fontSize: 14, color: SegerItems.blueGrey,fontFamily: "PTSans",),
                     ),
@@ -772,8 +792,8 @@ class _CalcTopState extends State<CalcTop> {
                 ),
                 Row(
                   children: [
-                    Text(
-                      "SiO₂/Al₂O₃  : ",
+                    OxideText(text:
+                      "SiO2/Al2O3  : ",
                       style:
                           TextStyle(fontSize: 14, color: SegerItems.blueGrey, fontFamily: "PTSans",),
                     ),
@@ -858,7 +878,7 @@ class _CalcTableState extends State<CalcTable> {
           child: Column(
             children: [
               Container(
-                height: 40,
+                height: 35,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -872,9 +892,10 @@ class _CalcTableState extends State<CalcTable> {
                                   style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.white,
-                                      fontFamily: "PTSans",
-                                      fontWeight: FontWeight.bold),
-                                )))),
+                                      fontFamily: 'PTSans'
+                                      ),
+                                )
+                            ))),
                     Expanded(
                         child: Container(
                             margin: EdgeInsets.only(left: 10),
@@ -932,14 +953,7 @@ class _CalcTableState extends State<CalcTable> {
                               SumOxideForm form = element;
                               double sum =
                               double.parse(form.sum.toStringAsFixed(2));
-                              list.add(Container(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  "${sum} ${form.oxide.name}",
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.white),),
-                              )
-                              );
+                              list.add(OxideSumRow(sum:sum, name:form.oxide.name));
                             });
                             return Column(children:list);
                           })
@@ -953,13 +967,7 @@ class _CalcTableState extends State<CalcTable> {
                               SumOxideForm form = element;
                               double sum =
                               double.parse(form.sum.toStringAsFixed(2));
-                              list.add(Container(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  "${sum} ${form.oxide.name}",
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.white),),
-                              )
+                              list.add(OxideSumRow(sum:sum, name:form.oxide.name)
                               );
                             });
                             return Column(children:list);
@@ -979,14 +987,7 @@ class _CalcTableState extends State<CalcTable> {
                               SumOxideForm form = element;
                               double sum =
                               double.parse(form.sum.toStringAsFixed(2));
-                              list.add(Container(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  "${sum} ${form.oxide.name}",
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.white),),
-                              )
-                              );
+                              list.add(OxideSumRow(sum:sum, name:form.oxide.name));
                             });
                             return Column(children:list);
                           })
@@ -1006,13 +1007,7 @@ class _CalcTableState extends State<CalcTable> {
                               SumOxideForm form = element;
                               double sum =
                               double.parse(form.sum.toStringAsFixed(2));
-                              list.add(Container(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  "${sum} ${form.oxide.name}",
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.white),),
-                              )
+                              list.add(OxideSumRow(sum:sum, name:form.oxide.name)
                               );
                             });
                             list.add(OthersTe());
@@ -1020,14 +1015,7 @@ class _CalcTableState extends State<CalcTable> {
                               SumOxideForm form = element;
                               double sum =
                               double.parse(form.sum.toStringAsFixed(2));
-                              list.add(Container(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  "${sum} ${form.oxide.name}",
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.white),),
-                              )
-                              );
+                              list.add(OxideSumRow(sum:sum, name:form.oxide.name));
                             });
                             return Container(child: Column(children:list));
                           })
@@ -1043,11 +1031,35 @@ class _CalcTableState extends State<CalcTable> {
   }
 }
 
+class OxideSumRow extends StatelessWidget {
+  final double sum;
+  final String name;
+  OxideSumRow({this.sum, this.name});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 5),
+      alignment: Alignment.topLeft,
+      child: Row(
+        children: [
+          Text(
+            "${sum} ",
+            style: TextStyle(
+                fontSize: 14, color: Colors.white, fontFamily: 'PTSans'),),
+          OxideText(text:"${name}", style: TextStyle(
+              fontSize: 14, color: SegerItems.blueGrey, fontFamily: 'PTSans'),)
+        ],
+      ),
+    );
+  }
+}
+
+
 class OthersTe extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.only(top: 10),
+        margin: EdgeInsets.only(top: 18),
         alignment: Alignment.centerLeft,
         child: Text(
           "Other",
@@ -1093,13 +1105,13 @@ class GraphicChart extends StatelessWidget {
             tickProviderSpec: charts.BasicNumericTickProviderSpec(desiredTickCount: 2),
               viewport: charts.NumericExtents(0,100)
           ),
-      defaultRenderer: new charts.PointRendererConfig<num>(
+     /* defaultRenderer: new charts.PointRendererConfig<num>(
         customSymbolRenderers: {
           'circle': new charts.CircleSymbolRenderer(),
           'rect': new charts.RectSymbolRenderer(),
           'tri': new IconRenderer(Icons.archive)
         }
-      ),
+      ),*/
     );
   }
 
@@ -1129,9 +1141,9 @@ class GraphicChart extends StatelessWidget {
         measureFn: (LinearValues sales, _) => sales.alu*100,
         radiusPxFn: (LinearValues sales, _) => 5,
         data: data,
-      )..setAttribute(
+      )/*..setAttribute(
           charts.pointSymbolRendererFnKey, (int index) => null)
-        ..setAttribute(charts.pointSymbolRendererIdKey, 'circle')
+        ..setAttribute(charts.pointSymbolRendererIdKey, 'circle') */
     ];
   }
 }
@@ -1164,8 +1176,6 @@ class MaterialCalcRow extends StatefulWidget {
 class _MaterialCalcRowState extends State<MaterialCalcRow> {
   @override
   Widget build(BuildContext context) {
-    Color color = Colors.grey;
-    if (widget.mat.tag) color = SegerItems.blue;
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
       actionExtentRatio: 0.25,
@@ -1191,12 +1201,8 @@ class _MaterialCalcRowState extends State<MaterialCalcRow> {
                                 widget.tagFalse();
                             },
                             child: Container(
-                                margin: EdgeInsets.only(left: 10, right: 5),
-                                child: Icon(
-                                  Icons.add,
-                                  color: color,
-                                  size: 35,
-                                ))),
+                                padding: EdgeInsets.only(left: 10, right: 5, top:2, bottom: 2),
+                                child: widget.mat.tag ? SvgPicture.asset("assets/images/plus_blue.svg", width: 18,) : SvgPicture.asset("assets/images/plus_gray.svg", width: 18,))),
                         Text(
                           widget.mat.mat.name.length<=17 ? "${widget.mat.mat.name}" : "${widget.mat.mat.name.substring(0,17)}...",
                           style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans",),
@@ -1278,6 +1284,7 @@ class _NumberPickerState extends State<NumberPicker> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             widget.mat.count -= 1.0;
             if(widget.mat.count<0) widget.mat.count=0;
@@ -1286,12 +1293,8 @@ class _NumberPickerState extends State<NumberPicker> {
             widget.updated();
           },
           child: Container(
-              padding: EdgeInsets.all(5),
-              child: Icon(
-                Icons.remove,
-                size: 22,
-                color: SegerItems.blue,
-              )),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              child: SvgPicture.asset("assets/images/small_minus.svg", width:10)),
         ),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 5),
@@ -1332,6 +1335,7 @@ class _NumberPickerState extends State<NumberPicker> {
           ),
         ),
         GestureDetector(
+          behavior: HitTestBehavior.opaque,
             onTap: () {
               widget.mat.count += 1;
               widget.mat.count=_round(widget.mat.count);
@@ -1339,12 +1343,9 @@ class _NumberPickerState extends State<NumberPicker> {
               widget.updated();
             },
             child: Container(
-                padding: EdgeInsets.all(5),
-                child: Icon(
-                  Icons.add,
-                  size: 22,
-                  color: SegerItems.blue,
-                ))),
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                child: SvgPicture.asset("assets/images/small_plus.svg", width:10))
+        ),
       ],
     );
   }

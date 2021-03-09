@@ -104,7 +104,7 @@ class _MatInfoPageState extends State<MatInfoPage> {
                                   child: Text(matSnapshot.data!=null ? matSnapshot.data.name : "",
                                     style: TextStyle(
                                         fontSize: 22,
-                                        color: Colors.black, fontWeight: FontWeight.bold)
+                                        color: Colors.black, fontWeight: FontWeight.bold, fontFamily: 'PTSans')
                                   ),
                                 ),
                                 Container(
@@ -113,7 +113,7 @@ class _MatInfoPageState extends State<MatInfoPage> {
                                   child: Text(matSnapshot.data!=null ? matSnapshot.data.info : "",
                                       style: TextStyle(
                                           fontSize: 16,
-                                          color: Colors.black)
+                                          color: Colors.black, fontFamily: 'PTSans')
                                   ),
                                 ),
                                 Container(
@@ -124,7 +124,7 @@ class _MatInfoPageState extends State<MatInfoPage> {
                                       "Percentage analysis",
                                       style: TextStyle(
                                           fontSize: 18,
-                                          color: Colors.black, fontWeight: FontWeight.bold),
+                                          color: Colors.black, fontWeight: FontWeight.bold, fontFamily: 'PTSans'),
                                     ),
                                   ),
                                 ),
@@ -150,10 +150,10 @@ class _MatInfoPageState extends State<MatInfoPage> {
                                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: [
                                                         Center(
-                                                          child: Text(oxideMap[element.oxideId].name),
+                                                          child: OxideText(text:oxideMap[element.oxideId].name,  style: TextStyle(fontSize: 17, color: Colors.black, fontFamily: 'PTSans')),
                                                         ),
                                                         Center(
-                                                          child: Text("${element.count}"),
+                                                          child: Text("${element.count}", style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'PTSans'),),
                                                         )
                                                       ],
                                                     ),
@@ -176,12 +176,12 @@ class _MatInfoPageState extends State<MatInfoPage> {
                                                       fontSize: 17,
                                                       color: Colors.black,
                                                       fontWeight:
-                                                      FontWeight.bold),
+                                                      FontWeight.bold, fontFamily: 'PTSans'),
                                                 ),
                                                 Text("$tot",
                                                   style: TextStyle(
                                                       fontSize: 17,
-                                                      color: SegerItems.blue),
+                                                      color: SegerItems.blue, fontFamily: 'PTSans'),
                                                 )
                                               ],
                                             ),
@@ -195,7 +195,7 @@ class _MatInfoPageState extends State<MatInfoPage> {
                                                   "${SegerItems.dateFormat.format(matSnapshot.data.date)}",
                                                   style: TextStyle(
                                                       fontSize: 12,
-                                                      color: Colors.grey),
+                                                      color: Colors.grey, fontFamily: 'PTSans'),
                                                 ),
                                               ));
                                           return Column(

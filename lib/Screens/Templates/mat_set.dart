@@ -379,11 +379,19 @@ class OxideChangeRow extends StatefulWidget {
 }
 
 class _OxideChangeRowState extends State<OxideChangeRow> {
+  FocusNode _focusNode;
   @override
   void initState() {
     super.initState();
     widget.controller = TextEditingController();
     widget.controller.text = widget.oxide.num != 0 ? "${widget.oxide.num}" : "";
+
+    _focusNode=FocusNode();
+    _focusNode.addListener(() {
+      if(_focusNode.hasFocus){
+        widget.controller.selection= TextSelection(baseOffset: 0, extentOffset: widget.controller.text.length);
+      }
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -398,13 +406,14 @@ class _OxideChangeRowState extends State<OxideChangeRow> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Center(
-                  child: Text(widget.oxide.oxide.name, style: TextStyle(fontSize: 17, color: Colors.black, fontFamily: "PTSans"),),
+                  child: OxideText(text:widget.oxide.oxide.name, style: TextStyle(fontSize: 17, color: Colors.black, fontFamily: "PTSans"),),
                 ),
                 Center(
                   child: ConstrainedBox(
                     constraints: BoxConstraints(minWidth: 70, maxHeight: 30, maxWidth: 150),
                     child: IntrinsicWidth(
                       child: TextField(
+                        focusNode: _focusNode,
                         controller: widget.controller,
                         keyboardType: TextInputType.numberWithOptions(decimal: true),
                         inputFormatters: [

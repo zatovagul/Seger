@@ -64,83 +64,92 @@ class _RecipeListState extends State<RecipeList> {
       ),
       body: Builder(builder: (context){
         scafContext=context;
-        return Column(
-          children: [
-                Expanded(
-                  child: StreamBuilder(
-                      stream: recipeStream,
-                      builder: (context, AsyncSnapshot<List<Recipe>> snapshot){
-                        List<Recipe> recipes=snapshot.data;
-                        size=recipes!=null ? recipes.length : 0;
-                        return ListView.builder(
-                            itemCount: recipes!=null ? recipes.length+1 : 1,
-                            itemBuilder: (_, index){
-                              if(index==recipes.length){
-                                return Container(
-                                  margin: EdgeInsets.symmetric(vertical: 20),
-                                  child: Column(
-                                    children: [
-                                      GestureDetector(
-                                        onTap: () async{
-                                          bool result=await showDialog(context: context, builder: (context){
-                                            return RecipeDialog(del:false);
-                                          });
-                                          if(result!=null){
-                                            if(result){
-                                              deleteRecipes();
-                                            }
-                                          }
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.all(10),
-                                          child: Text("Empty Folder", style: TextStyle(fontSize: 20, color: Colors.white, fontFamily: "PTSans")),
-                                        ),
-                                      ),
-                                      GestureDetector(
-                                        onTap: () async{
-                                          bool result=await showDialog(context: context, builder: (context){
-                                            return RecipeDialog(del:true,);
-                                          });
-                                          if(result!=null){
-                                            if(result){
-                                              if(size>0){
-                                                Scaffold.of(scafContext).showSnackBar(SnackBar(
-                                                  content: Text('Empty Folder at First'),
-                                                  backgroundColor: Colors.red,
-                                                  duration: Duration(seconds: 1),
-                                                ));
-                                              }
-                                              else{
-                                                folderDao.deleteFolder(widget.folder).then((value){
-                                                  Scaffold.of(scafContext).showSnackBar(SnackBar(
-                                                    content: Text('Folder deleted'),
-                                                    backgroundColor: Colors.red,
-                                                    duration: Duration(seconds: 1),
-                                                  ));
-                                                  Navigator.pop(context);
-                                                });
-                                              }
-                                            }
-                                          }
-                                        },
-                                        child: Container(
-                                          margin: EdgeInsets.only(top: 20),
-                                          padding: EdgeInsets.all(10),
-                                          child: Text("Delete Folder", style: TextStyle(fontSize: 20, color: Colors.white, fontFamily: "PTSans")),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }
-                              Recipe recipe=recipes[index];
-                              return Container(
-                                child: RecipeRow(recipe: recipe,),
-                              );
+        return StreamBuilder(
+          stream: recipeStream,
+          builder: (context,AsyncSnapshot<List<Recipe>> snapshot) {
+            List<Recipe> recipes=snapshot.data;
+            size=recipes!=null ? recipes.length : 0;
+            return Stack(
+              children: [
+                  Positioned(
+                  bottom: 0,
+                  child: Container(
+                    width:MediaQuery.of(context).size.width,
+                    margin: EdgeInsets.symmetric(vertical: 20),
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () async{
+                            bool result=await showDialog(context: context, builder: (context){
+                              return RecipeDialog(del:false);
                             });
-                      }),
+                            if(result!=null){
+                              if(result){
+                                deleteRecipes();
+                              }
+                            }
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            child:size>0 ? Text("Empty Folder", style: TextStyle(fontSize: 20, color: Colors.white, fontFamily: "PTSans")) : Container(),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () async{
+                            bool result=await showDialog(context: context, builder: (context){
+                              return RecipeDialog(del:true,);
+                            });
+                            if(result!=null){
+                              if(result){
+                                if(size>0){
+                                  Scaffold.of(scafContext).showSnackBar(SnackBar(
+                                    content: Text('Empty Folder at First'),
+                                    backgroundColor: Colors.red,
+                                    duration: Duration(seconds: 1),
+                                  ));
+                                }
+                                else{
+                                  folderDao.deleteFolder(widget.folder).then((value){
+                                    Scaffold.of(scafContext).showSnackBar(SnackBar(
+                                      content: Text('Folder deleted'),
+                                      backgroundColor: Colors.red,
+                                      duration: Duration(seconds: 1),
+                                    ));
+                                    Navigator.pop(context);
+                                  });
+                                }
+                              }
+                            }
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(top: 20),
+                            padding: EdgeInsets.all(10),
+                            child: Text("Delete Folder", style: TextStyle(fontSize: 20, color: Colors.white, fontFamily: "PTSans")),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-          ],
+                  Positioned.fill(
+                      child: ListView.builder(
+                                itemCount: recipes!=null ? recipes.length+1 : 1,
+                                itemBuilder: (_, index){
+                                  if(recipes==null) return Container();
+                                  if(index==recipes.length){
+                                    return Container(height: 180,);
+                                  }
+                                  Recipe recipe=recipes[index];
+                                  return Container(
+                                    child: RecipeRow(recipe: recipe,),
+                                  );
+                                })
+
+                    ),
+
+              ],
+            );
+          }
         );
       }
       ),
@@ -195,97 +204,102 @@ class _RecipeRowState extends State<RecipeRow> {
         Navigator.push(context, PageTransition(child: CalculatorScreen(recipeId: widget.recipe.id,edit: true,), type: PageTransitionType.rightToLeft,
             duration: Duration(milliseconds: 250)));
       },
-      child: Container(
-          margin: EdgeInsets.only(top: 10, right: 20, left:20),
-          decoration: SegerItems.pageDecoration,
-          child: Column(
-            children: [
-              (widget.recipe.image==null || widget.recipe.image=="")? Container() :
-              Container(
-                height: 180,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
-                  image: DecorationImage(
-                    image: FileImage(File(widget.recipe.image)),
-                    fit: BoxFit.cover
-                  )
-                ),
-                //child: Image.file(File(widget.recipe.image),),
-              ),
-              Container(
-                padding: EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        SegerItems.dateFormat.format(widget.recipe.date),
-                        style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey, fontFamily: "PTSans"),
-                      ),
+      child: Column(
+        children: [
+          Container(color: SegerItems.blue,height:10),
+          Container(
+              margin: EdgeInsets.only( right: 20, left:20),
+              decoration: SegerItems.pageDecoration,
+              child: Column(
+                children: [
+                  (widget.recipe.image==null || widget.recipe.image=="")? Container() :
+                  Container(
+                    height: 180,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(10.0)),
+                      image: DecorationImage(
+                        image: FileImage(File(widget.recipe.image)),
+                        fit: BoxFit.cover
+                      )
                     ),
-                    Container(
-                      alignment: Alignment.centerLeft,
-                      margin: EdgeInsets.only(top: 10),
-                      child: Text(widget.recipe.name,
-                          style: TextStyle(
-                              fontSize: 22,
-                              color: Colors.black,fontFamily: "PTSans", fontWeight: FontWeight.bold)
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top:20),
-                      child: StreamBuilder<List<RecipeMat>>(
-                        stream: matStream,
-                        builder: (context,AsyncSnapshot<List<RecipeMat>> snapshot) {
-                              List<Widget> list=[];
-                              if(snapshot.data!=null)
-                              snapshot.data.forEach((element) {
-                                list.add(StreamBuilder<Mat>(
-                                  stream:matDao.watchMatByMatId(element.matId) ,
-                                  builder: (context, AsyncSnapshot<Mat> snapMat){
-                                    if(snapMat.data==null){
-                                      return Container();
-                                    }
-                                    MatCalcForm calcForm=MatCalcForm(mat: snapMat.data,count: element.count, tag: element.tag);
-                                    matCalcForms.add(calcForm);
-                                    return Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Row(
+                    //child: Image.file(File(widget.recipe.image),),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            SegerItems.dateFormat.format(widget.recipe.date),
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey, fontFamily: "PTSans"),
+                          ),
+                        ),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          margin: EdgeInsets.only(top: 10),
+                          child: Text(widget.recipe.name,
+                              style: TextStyle(
+                                  fontSize: 22,
+                                  color: Colors.black,fontFamily: "PTSans", fontWeight: FontWeight.bold)
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top:20),
+                          child: StreamBuilder<List<RecipeMat>>(
+                            stream: matStream,
+                            builder: (context,AsyncSnapshot<List<RecipeMat>> snapshot) {
+                                  List<Widget> list=[];
+                                  if(snapshot.data!=null)
+                                  snapshot.data.forEach((element) {
+                                    list.add(StreamBuilder<Mat>(
+                                      stream:matDao.watchMatByMatId(element.matId) ,
+                                      builder: (context, AsyncSnapshot<Mat> snapMat){
+                                        if(snapMat.data==null){
+                                          return Container();
+                                        }
+                                        MatCalcForm calcForm=MatCalcForm(mat: snapMat.data,count: element.count, tag: element.tag);
+                                        matCalcForms.add(calcForm);
+                                        return Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            element.tag ? Center(
-                                              child: Icon(
-                                                Icons.add,
-                                                color: SegerItems.blue,
-                                                size: 20,
-                                              ),
-                                            ) : Container(),
+                                            Row(
+                                              children: [
+                                                element.tag ? Center(
+                                                  child: Icon(
+                                                    Icons.add,
+                                                    color: SegerItems.blue,
+                                                    size: 20,
+                                                  ),
+                                                ) : Container(),
+                                                Container(
+                                                  alignment: Alignment.center,
+                                                  child: Text(calcForm.mat.name.length<=20 ? calcForm.mat.name : "${calcForm.mat.name.substring(0,20)}...", style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans"),),
+                                                )
+                                              ],
+                                            ),
                                             Container(
-                                              alignment: Alignment.center,
-                                              child: Text(calcForm.mat.name.length<=20 ? calcForm.mat.name : "${calcForm.mat.name.substring(0,20)}...", style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans"),),
+                                              child:Text("${calcForm.count }", style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans"),) ,
                                             )
                                           ],
-                                        ),
-                                        Container(
-                                          child:Text("${calcForm.count }", style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans"),) ,
-                                        )
-                                      ],
-                                    );
-                                  },
-                                ));
-                              });
-                              return Column(children: list,);
+                                        );
+                                      },
+                                    ));
+                                  });
+                                  return Column(children: list,);
 
-                        }
-                      ),
-                    )
-                  ],
-                ),
+                            }
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
               )
-            ],
-          )
+          ),
+        ],
       ),
     );
   }

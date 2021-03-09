@@ -87,11 +87,11 @@ class _OxideRoleSettingsState extends State<OxideRoleSettings> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Expanded(child: Center(child: Text("A"))),
-                                  Expanded(child: Center(child: Text("AE"))),
-                                  Expanded(child: Center(child: Text("St"))),
-                                  Expanded(child: Center(child: Text("GF"))),
-                                  Expanded(child: Center(child: Text("Oth"))),
+                                  Expanded(child: Center(child: Text("A", style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: "PTSans"),))),
+                                  Expanded(child: Center(child: Text("AE", style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: "PTSans")))),
+                                  Expanded(child: Center(child: Text("St", style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: "PTSans")))),
+                                  Expanded(child: Center(child: Text("GF", style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: "PTSans")))),
+                                  Expanded(child: Center(child: Text("Oth", style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: "PTSans")))),
                                 ],
                               ),
                             ))
@@ -167,7 +167,7 @@ class _OxideRoleRowState extends State<OxideRoleRow> {
           width: 80,
           height: 50,
           child: Center(
-            child: Text(oxide.name),
+            child: OxideText(text:oxide.name, style: TextStyle(fontSize: 17, color: Colors.black, fontFamily: "PTSans")),
           ),
         ),
         Expanded(child: Container(

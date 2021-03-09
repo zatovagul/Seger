@@ -12,11 +12,7 @@ abstract class SegerItems{
   static const greyi = Color(0xFFF6F6F6);
 
   static const mainTextStyle=TextStyle(color: blue,fontSize: 17.0, fontFamily: 'PTSans');
-  static const menuIcon=Icon(
-    Icons.menu_outlined,
-    size: 35.0,
-    color: Colors.white,
-  );
+  static SvgPicture menuIcon=SvgPicture.asset("assets/images/menu.svg",width: 24,);
   static SvgPicture segerTopPic=SvgPicture.asset("assets/images/seger_icon.svg", width: 50.0);
 
   static const textFieldDecoration=InputDecoration(
@@ -32,6 +28,7 @@ abstract class SegerItems{
   ),
   );
   static const whiteTextFieldDecoration=InputDecoration(
+    contentPadding: EdgeInsets.only(bottom: 5),isDense: true,
     hintText: "Enter name",
     hintStyle: TextStyle(color: blueGrey),
     border:UnderlineInputBorder(
@@ -79,8 +76,39 @@ void main() {
       Provider(create: (_) => db.folderDao),
     ],
     child: MaterialApp(
+      color: SegerItems.blue,
       home: SplashScreen(),
     ),
   ));
 }
+
+class OxideText extends StatelessWidget {
+  final String text;
+  final TextStyle style;
+  OxideText({this.text,this.style});
+  @override
+  Widget build(BuildContext context) {
+    List<String> lets=text.split('');
+    List<InlineSpan> letters=[];
+    lets.forEach((e) {
+      if(isNumeric(e)){
+        letters.add(WidgetSpan(
+          child: Transform.translate(offset: const Offset(0,2), child: Text(e, textScaleFactor: 0.7,style: style,),)
+        ));
+      }
+      else{
+        letters.add(TextSpan(text: e, style: style));
+      }
+    });
+    return RichText(
+        text: TextSpan(children: letters));
+  }
+}
+bool isNumeric(String s) {
+  if (s == null) {
+    return false;
+  }
+  return double.tryParse(s) != null;
+}
+
 
