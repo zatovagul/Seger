@@ -90,14 +90,18 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     resultMap['o'] = [];
 
     if (widget.recipeId!=null) {
-      getRecipeInfo();
+      getRecipeInfo(widget.recipeId);
+    }
+    else{
+      getRecipeInfo(1);
     }
   }
 
-  void getRecipeInfo() {
-    recipeDao.getRecipeById(widget.recipeId).then((value) {
+  void getRecipeInfo(int recipeId) {
+    recipeDao.getRecipeById(recipeId).then((value) {
+      print(value);
       recipe = value;
-      if(!widget.edit) {
+      if(!widget.edit && widget.recipeId!=null) {
         recipe = recipe.copyWith(name: "${recipe.name} (copy)");
         Scaffold.of(scafContext).showSnackBar(SnackBar(
           content: Text('🙌 Recipe successfully copied! Edit please.'),
@@ -145,6 +149,8 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
             padding: EdgeInsets.only(right: 20.0),
             child: GestureDetector(
               onTap: () {
+                if(!widget.edit)
+                  updateDraftRecipe();
                 Navigator.push(
                     context,
                     PageTransition(
@@ -397,7 +403,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                                   ),
                                                   GestureDetector(
                                                       onTap: () {
+                                                        nameController.text="";
                                                         matItems.clear();
+                                                        clearDraftRecipe();
                                                         _notifier.notifyListeners();
                                                         _countTable();
                                                       },
@@ -525,6 +533,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       recipe = recipe.copyWith(id: result['recipeId'], folderId: result["folderId"]);
       widget.edit = true;
       updated=false;
+      clearDraftRecipe();
       _notifier.notifyListeners();
       Scaffold.of(scafContext).showSnackBar(SnackBar(
         content: Text('👌 Awesome! Recipe Saved!'),
@@ -555,6 +564,24 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     else{
 
     }
+  }
+  void updateDraftRecipe(){
+    Recipe recipe=Recipe(id:1,name: nameController.text, image: null, folderId: null, date:null);
+    recipeDao.updateRecipe(recipe);
+    recipeMatDao.deleteAllRecipeMatsByRecipeId(recipe.id).then((value){
+      List<RecipeMat> reMats=[];
+      matItems.forEach((element) {if(!element.tag) reMats.add(RecipeMat(matId: element.mat.id, recipeId: recipe.id, count: element.count, tag: element.tag));});
+      matItems.forEach((element) {if(element.tag) reMats.add(RecipeMat(matId: element.mat.id, recipeId: recipe.id, count: element.count, tag: element.tag));});
+      recipeMatDao.insertAllRecipeMats(reMats).then((value){
+        updated=false;
+        _notifier.notifyListeners();
+      });
+    });
+  }
+  void clearDraftRecipe(){
+    Recipe recipe=Recipe(id:1,name: "", image: null, folderId: null, date:null);
+    recipeDao.updateRecipe(recipe);
+    recipeMatDao.deleteAllRecipeMatsByRecipeId(recipe.id);
   }
   void copyAndEdit(){
     Navigator.of(context).pushAndRemoveUntil(PageTransition(child:

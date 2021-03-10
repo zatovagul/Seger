@@ -26,6 +26,9 @@ class MatSettings extends StatefulWidget {
 
 class _MatSettingsState extends State<MatSettings> {
   bool edit = false;
+
+  bool delete;
+
   Future<List<Oxide>> _futureBuilder;
   Map<int, MatOxide> matOxideMap;
   static ValueNotifier<double> _notifier;
@@ -69,6 +72,14 @@ class _MatSettingsState extends State<MatSettings> {
     oxideInfo = [];
 
     _notifier=ValueNotifier<double>(0);
+
+    delete=true;
+    if(edit) Provider.of<RecipeMatDao>(context, listen:false).getRecipeMatsByMatId(widget.mat.id).then((value)
+    {
+      if(value.length > 0)
+        delete=false;
+    }
+    );
 
     oxideDao = Provider.of<OxideDao>(context, listen: false);
     matDao = Provider.of<MatDao>(context, listen: false);
@@ -301,12 +312,25 @@ class _MatSettingsState extends State<MatSettings> {
                 )),
                 !edit ? Container(): GestureDetector(
                   onTap: (){
-                    matOxideDao.deleteMaterialOxidesByMatId(widget.mat.id).then((value){
-                      matDao.deleteMat(widget.mat);
-                      Navigator.of(context).pushAndRemoveUntil(PageTransition(child: MatList(choose: false,), type: PageTransitionType.fade,
-                          duration: Duration(milliseconds: 250)), (route) => false);
-                    });
-                  },
+                    if(delete) {
+                            matOxideDao
+                                .deleteMaterialOxidesByMatId(widget.mat.id)
+                                .then((value) {
+                              matDao.deleteMat(widget.mat);
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  PageTransition(
+                                      child: MatList(
+                                        choose: false,
+                                      ),
+                                      type: PageTransitionType.fade,
+                                      duration: Duration(milliseconds: 250)),
+                                  (route) => false);
+                            });
+                          }
+                    else{
+                      Scaffold.of(scafContext).showSnackBar(SnackBar(content: Text('😯 You cannot delete this material. it is used in your recipes.'), backgroundColor: Colors.red,duration: Duration(seconds: 1),));
+                    }
+                        },
                   child: Container(
                     alignment: Alignment.bottomCenter,
                     height: 50,

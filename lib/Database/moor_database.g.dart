@@ -856,8 +856,8 @@ class Recipe extends DataClass implements Insertable<Recipe> {
   Recipe(
       {@required this.id,
       @required this.name,
-      @required this.date,
-      @required this.folderId,
+      this.date,
+      this.folderId,
       this.image});
   factory Recipe.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
@@ -1011,7 +1011,7 @@ class $RecipesTable extends Recipes with TableInfo<$RecipesTable, Recipe> {
     return GeneratedDateTimeColumn(
       'date',
       $tableName,
-      false,
+      true,
     );
   }
 
@@ -1020,8 +1020,8 @@ class $RecipesTable extends Recipes with TableInfo<$RecipesTable, Recipe> {
   @override
   GeneratedIntColumn get folderId => _folderId ??= _constructFolderId();
   GeneratedIntColumn _constructFolderId() {
-    return GeneratedIntColumn('folder_id', $tableName, false,
-        $customConstraints: 'REFERENCES folders(id)');
+    return GeneratedIntColumn('folder_id', $tableName, true,
+        $customConstraints: 'NULLABLE REFERENCES folders(id)');
   }
 
   final VerificationMeta _imageMeta = const VerificationMeta('image');

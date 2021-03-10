@@ -36,9 +36,9 @@ class MatOxides extends Table {
 class Recipes extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
-  DateTimeColumn get date => dateTime()();
+  DateTimeColumn get date => dateTime().nullable()();
   IntColumn get folderId =>
-      integer().customConstraint("REFERENCES folders(id)")();
+      integer().nullable().customConstraint("NULLABLE REFERENCES folders(id)")();
   TextColumn get image => text().nullable()();
 }
 
@@ -162,6 +162,9 @@ class RecipeMatDao extends DatabaseAccessor<AppDatabase>
   Future<List<RecipeMat>> getRecipeMatsByRecipeId(int recipeId) =>
       (select(recipeMats)..where((tbl) => tbl.recipeId.equals(recipeId)))
           .get();
+  Future<List<RecipeMat>> getRecipeMatsByMatId(int matId) =>
+      (select(recipeMats)..where((tbl) => tbl.matId.equals(matId)))
+          .get();
   Future insertRecipeMat(RecipeMat recipeMat) =>
       into(recipeMats).insert(recipeMat);
   Future insertAllRecipeMats(List<RecipeMat> recipeMat) =>
@@ -209,6 +212,7 @@ class AppDatabase extends _$AppDatabase {
           await into(mats).insertAll(dataInfo.mats);
           await into(matOxides).insertAll(dataInfo.matOxides);
           await into(folders).insertAll(dataInfo.folders);
+          await into(recipes).insert(dataInfo.recipe);
         }
         await db.customStatement('PRAGMA foreign_keys = ON');
       },

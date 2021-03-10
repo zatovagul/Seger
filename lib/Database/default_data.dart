@@ -80,4 +80,5 @@ class DataInfo{
     Folder( name: "Testing", del: false),
     Folder( name: "Drafts", del: false),
   ];
+  Recipe recipe= Recipe(id:1, name: "", date: null, folderId: null, image: null);
 }
