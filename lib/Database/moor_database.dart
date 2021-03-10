@@ -119,8 +119,7 @@ class MatOxideDao extends DatabaseAccessor<AppDatabase>
 
   Future insertNewMaterialOxide(MatOxide matOxide) =>
       into(matOxides).insert(matOxide);
-  Future insertAllMaterialOxides(List<MatOxide> matOxide) =>
-      into(matOxides).insertAll(matOxide);
+  Future insertAllMaterialOxides(List<MatOxide> matOxide) =>batch((b) => b.insertAll(matOxides, matOxide));
 
   Future deleteMaterialOxide(MatOxide matOxide) =>
       delete(matOxides).delete(matOxide);
@@ -167,8 +166,7 @@ class RecipeMatDao extends DatabaseAccessor<AppDatabase>
           .get();
   Future insertRecipeMat(RecipeMat recipeMat) =>
       into(recipeMats).insert(recipeMat);
-  Future insertAllRecipeMats(List<RecipeMat> recipeMat) =>
-      into(recipeMats).insertAll(recipeMat);
+  Future insertAllRecipeMats(List<RecipeMat> recipeMat) => batch((b) => b.insertAll(recipeMats, recipeMat));
   Future updateRecipeMat(RecipeMat recipeMat) =>
       update(recipeMats).replace(recipeMat);
   Future deleteAllRecipeMats() => delete(recipeMats).go();
@@ -205,16 +203,19 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-      beforeOpen: (db, details) async {
-        if (details.wasCreated) {
+      beforeOpen:  (details) async {
+      if (details.wasCreated) {
           DataInfo dataInfo = DataInfo();
-          await into(oxides).insertAll(dataInfo.oxides);
-          await into(mats).insertAll(dataInfo.mats);
-          await into(matOxides).insertAll(dataInfo.matOxides);
-          await into(folders).insertAll(dataInfo.folders);
+          await batch((b) => b.insertAll(oxides,dataInfo.oxides ));
+          await batch((b) => b.insertAll(mats,dataInfo.mats ));
+          await batch((b) => b.insertAll(matOxides,dataInfo.matOxides ));
+          await batch((b) => b.insertAll(folders,dataInfo.folders ));
           await into(recipes).insert(dataInfo.recipe);
-        }
-        await db.customStatement('PRAGMA foreign_keys = ON');
-      },
+      }
+      await customStatement("PRAGMA foreign_keys = ON");
+  //await db.customStatement('PRAGMA foreign_keys = ON');
+  },
       onUpgrade: (migration, from, to) async {});
 }
+//  sqflite: ^1.3.2+3 -> ^2.0.0+2
+//   moor_flutter: ^1.6.0 -> ^4.0.0-nullsafety
