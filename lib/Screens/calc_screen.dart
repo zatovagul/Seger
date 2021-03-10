@@ -689,11 +689,19 @@ class _CalcTopState extends State<CalcTop> {
     countNum();
     List<LinearValues> vals=[];
     if((defAlumni!=alumni || defSilicon!=silicon) && defAlumni>=0.01){
-      vals.add(LinearValues(defSilicon, defAlumni, 1));
+      var val=LinearValues(defSilicon, defAlumni, 1, false);
+      if(defSilicon>7.2){val.rect=true;val.sili=7.2;}
+      if(defAlumni>1){val.rect=true;val.alu=1;}
+      vals.add(val);
     }
-    if(titan>0)
-      vals.add(LinearValues(silicon, alumni+titan, 2));
-    vals.add(LinearValues(silicon,alumni,0));
+    if(titan>0) {
+      var val=LinearValues(silicon, alumni + titan, 2, false);
+      if(silicon>7.2){val.rect=true;val.sili=7.2;}if(alumni+titan>1){val.rect=true;val.alu=1;}
+      vals.add(val);
+    }
+    var val=LinearValues(silicon,alumni,0, false);
+    if(silicon>7.2){val.rect=true;val.sili=7.2;}if(alumni>1){val.rect=true;val.alu=1;}
+    vals.add(val);
 
     Size size=MediaQuery.of(context).size;
     double width=size.width-40;
@@ -1105,13 +1113,13 @@ class GraphicChart extends StatelessWidget {
             tickProviderSpec: charts.BasicNumericTickProviderSpec(desiredTickCount: 2),
               viewport: charts.NumericExtents(0,100)
           ),
-     /* defaultRenderer: new charts.PointRendererConfig<num>(
+      defaultRenderer: new charts.PointRendererConfig<num>(
         customSymbolRenderers: {
           'circle': new charts.CircleSymbolRenderer(),
           'rect': new charts.RectSymbolRenderer(),
-          'tri': new IconRenderer(Icons.archive)
+          'tri': new IconRenderer(Icons.arrow_upward)
         }
-      ),*/
+      ),
     );
   }
 
@@ -1141,18 +1149,18 @@ class GraphicChart extends StatelessWidget {
         measureFn: (LinearValues sales, _) => sales.alu*100,
         radiusPxFn: (LinearValues sales, _) => 5,
         data: data,
-      )/*..setAttribute(
-          charts.pointSymbolRendererFnKey, (int index) => null)
-        ..setAttribute(charts.pointSymbolRendererIdKey, 'circle') */
+      )..setAttribute(
+          charts.pointSymbolRendererFnKey, (int index) => data[index].rect ? 'rect' : 'circle')
     ];
   }
 }
 class LinearValues {
-  final double sili;
-  final double alu;
+  double sili;
+  double alu;
   final int val;
+  bool rect;
 
-  LinearValues(this.sili, this.alu, this.val);
+  LinearValues(this.sili, this.alu, this.val, this.rect);
 }
 
 

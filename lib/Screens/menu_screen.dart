@@ -12,7 +12,8 @@ class MenuScreen extends StatelessWidget {
   List<String> names=["Calculator", "Recipes", "Materials", "Oxide Role"];
   @override
   Widget build(BuildContext context) {
-
+    double height=MediaQuery.of(context).size.height;
+    print(height);
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -27,24 +28,24 @@ class MenuScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Container(
-                    margin: EdgeInsets.only(top: 18, right: 18 ),
+                    margin: EdgeInsets.only(top: height*0.021, right: height*0.021 ),
                     alignment: Alignment.centerRight,
                     child: GestureDetector(onTap:(){
                       Navigator.pop(context);
                     },child: Container(padding:EdgeInsets.all(2),child: SvgPicture.asset("assets/images/cross.svg", width: 18,))),
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 50.0),
+                    margin: EdgeInsets.only(top: height*0.059),
                     child: SvgPicture.asset("assets/images/seger_blue_icon.svg",
                         width: 85),
                   ),
                   Container(
-                      margin: EdgeInsets.only(top: 13.0),
+                      margin: EdgeInsets.only(top: height*0.015),
                       child: SvgPicture.asset("assets/images/byovo_blue.svg",
                           width: 185,
                       )),
                   Container(
-                    margin: EdgeInsets.only(top: 50.0),
+                    margin: EdgeInsets.only(top: height*0.059),
                     child: Builder(
                       builder: (context){
                         List<Widget> widgets=[];
@@ -55,7 +56,7 @@ class MenuScreen extends StatelessWidget {
                           else if(i==3) page=OxideRoleSettings();
                           widgets.add(
                             Container(
-                              margin: EdgeInsets.only(top: 15.0),
+                              margin: EdgeInsets.only(top: height*0.017),
                               child:
                               TextButton(
                                 onPressed: (){
@@ -75,7 +76,7 @@ class MenuScreen extends StatelessWidget {
               ),
             ),
             Container(
-              margin: EdgeInsets.only(bottom: 45),
+              margin: EdgeInsets.only(bottom: height*0.053),
               child: Column(
                 children: [
                   GestureDetector(
@@ -91,7 +92,7 @@ class MenuScreen extends StatelessWidget {
                       _launchUrl("https://ceramicschool.ru/ovoshop");
                     },
                     child: Container(
-                      margin: EdgeInsets.only(top: 20),
+                      margin: EdgeInsets.only(top: height*0.023),
                       child: Text(
                         "Ovo Tools Website",
                         style: SegerItems.mainTextStyle,
@@ -103,7 +104,7 @@ class MenuScreen extends StatelessWidget {
                         _launchUrl("https://ceramicschool.ru/seger");
                     },
                     child: Container(
-                      margin: EdgeInsets.only(top: 20),
+                      margin: EdgeInsets.only(top: height*0.023),
                       child: Text(
                         "SEGER F.A.Q.",
                         style: SegerItems.mainTextStyle,
