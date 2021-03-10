@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:page_transition/page_transition.dart';
@@ -13,13 +15,15 @@ class MenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double height=MediaQuery.of(context).size.height;
-    print(height);
+    double width=MediaQuery.of(context).size.width;
+    bool android=Platform.isAndroid;
+    print("$height  $width");
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: MediaQuery.of(context).size.height,
         margin:
-            EdgeInsets.only(left: 20.0, right: 20.0, top: 60.0, bottom: 20.0),
+            EdgeInsets.only(left: 20.0, right: 20.0, top: android ? 60.0 : 45, bottom: 20.0),
         decoration:  SegerItems.pageDecoration,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,12 +41,12 @@ class MenuScreen extends StatelessWidget {
                   Container(
                     margin: EdgeInsets.only(top: height*0.059),
                     child: SvgPicture.asset("assets/images/seger_blue_icon.svg",
-                        width: 85),
+                        width: width*0.206812652068127),// 85.0
                   ),
                   Container(
                       margin: EdgeInsets.only(top: height*0.015),
                       child: SvgPicture.asset("assets/images/byovo_blue.svg",
-                          width: 185,
+                          width: width*0.450121654501217,//185.0
                       )),
                   Container(
                     margin: EdgeInsets.only(top: height*0.059),
