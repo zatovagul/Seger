@@ -733,9 +733,9 @@ class _CalcTopState extends State<CalcTop> {
 
     Size size=MediaQuery.of(context).size;
     double width=size.width;
-    double pageWidth=size.width-40;
+    double pageWidth=size.width-(width*SegerItems.letSizes[40]);
     double height=pageWidth*0.764179104477612;
-    double margin=pageWidth*0.043126684636119, botMargin=pageWidth*0.024258760107817;
+    double margin=pageWidth*(pageWidth>=300 ? pageWidth>=350 ? 0.043126684636119 : 0.05 : 0.06), botMargin=pageWidth*(pageWidth>=300 ? pageWidth>=350 ? 0.024258760107817 : 0.02 : 0.01);
     print("${height} ${pageWidth}");
     bool android=Platform.isAndroid;
     return Container(
@@ -788,7 +788,7 @@ class _CalcTopState extends State<CalcTop> {
                       height: height+margin,
                       child: Stack(children: [
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          padding: EdgeInsets.symmetric(horizontal: width*SegerItems.letSizes[20]),
                           alignment: Alignment.topCenter,
                               child: Container(
                                   margin: EdgeInsets.only(top: margin),
@@ -797,7 +797,7 @@ class _CalcTopState extends State<CalcTop> {
                         ),
                        Container(
                           alignment: Alignment.topCenter,
-                              margin:android ? EdgeInsets.only(left:pageWidth*0.056, bottom: botMargin, right: 2) : EdgeInsets.only(left:pageWidth*0.056,right: 3, bottom: botMargin,),
+                              margin:android ? EdgeInsets.only(left:pageWidth*0.056, bottom: botMargin, right: 2) : EdgeInsets.only(left:pageWidth*(pageWidth>=300 ? 0.056 : 0.04),right: pageWidth>=300 ? pageWidth>=350 ? 3 : 2 : 0, bottom: botMargin,),
                               child: GraphicChart.withSampleData(vals)),
                       ],),
                     );
