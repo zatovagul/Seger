@@ -138,6 +138,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -275,7 +276,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                               margin: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
                                               child: Text(
                                                 "+ Add Material",
-                                                style: SegerItems.mainTextStyle,
+                                                style: SegerItems.mainStyle(width*SegerItems.letSizes[17]),
                                               ))), // AddMaterialButton
                                       Container(
                                         margin: EdgeInsets.only(right: 20),
@@ -290,7 +291,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                                   child: Text(
                                                     "Total:",
                                                     style: TextStyle(
-                                                        fontSize: 17,
+                                                        fontSize: width*SegerItems.letSizes[17],
                                                         color: Colors.black,fontFamily: "PTSans",
                                                         fontWeight:
                                                             FontWeight.bold),
@@ -304,7 +305,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                                     tot.toStringAsFixed(2));
                                                 return Text("$tot",
                                                     style: TextStyle(
-                                                        fontSize: 17,
+                                                        fontSize: width*SegerItems.letSizes[17],
                                                         color: Colors.black,fontFamily: "PTSans",));
                                               }),
                                               GestureDetector(
@@ -335,7 +336,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                                 child: Container(
                                                   margin: EdgeInsets.only(top: 40),
                                                   alignment: Alignment.center,
-                                                  child: Text("Update", style: TextStyle(fontSize: 20, color: updated ? SegerItems.blue : Colors.grey, fontFamily: "PTSans"),),
+                                                  child: Text("Update", style: TextStyle(fontSize: width*SegerItems.letSizes[20], color: updated ? SegerItems.blue : Colors.grey, fontFamily: "PTSans"),),
                                                 ),
                                               ),
                                               GestureDetector(
@@ -345,7 +346,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                                 child: Container(
                                                   margin: EdgeInsets.only(top: 40),
                                                 alignment: Alignment.center,
-                                                child: Text(_file==null ? "Add Photo" : "Delete Photo", style: TextStyle(fontSize: 20, color: SegerItems.blue, fontFamily: "PTSans"),),
+                                                child: Text(_file==null ? "Add Photo" : "Delete Photo", style: TextStyle(fontSize: width*SegerItems.letSizes[20], color: SegerItems.blue, fontFamily: "PTSans"),),
                                             ),
                                               ),
                                             GestureDetector(
@@ -398,7 +399,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                                     child: Text(
                                                       "Save",
                                                       style:
-                                                          SegerItems.mainTextStyle,
+                                                          SegerItems.mainStyle(width*SegerItems.letSizes[17]),
                                                     ),
                                                   ),
                                                   GestureDetector(
@@ -412,7 +413,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                                       child: Text(
                                                         "Clear",
                                                         style: SegerItems
-                                                            .mainTextStyle,
+                                                            .mainStyle(width*SegerItems.letSizes[17]),
                                                       )),
                                                 ],
                                               ),

@@ -413,7 +413,10 @@ class _OxideChangeRowState extends State<OxideChangeRow> {
     _focusNode=FocusNode();
     _focusNode.addListener(() {
       if(_focusNode.hasFocus){
+        if(widget.controller.text.length>0)
         widget.controller.selection= TextSelection(baseOffset: 0, extentOffset: widget.controller.text.length);
+        else
+          widget.controller.selection=null;
       }
     });
   }

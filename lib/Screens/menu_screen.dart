@@ -69,7 +69,7 @@ class MenuScreen extends StatelessWidget {
                                 onPressed: (){
                                   Navigator.of(context).pushAndRemoveUntil(PageTransition(child: page, type: PageTransitionType.fade, duration: Duration(milliseconds: 250)), (route) => false);
                                 },
-                                  child: Text(names[i], style: SegerItems.mainTextStyle)),
+                                  child: Text(names[i], style: SegerItems.mainStyle(width*SegerItems.letSizes[17]))),
                             ),
                           );
                         }
@@ -102,7 +102,7 @@ class MenuScreen extends StatelessWidget {
                       margin: EdgeInsets.only(top: height*0.023),
                       child: Text(
                         "Ovo Tools Website",
-                        style: SegerItems.mainTextStyle,
+                        style: SegerItems.mainStyle(width*SegerItems.letSizes[17]),
                       ),
                     ),
                   ),
@@ -114,7 +114,7 @@ class MenuScreen extends StatelessWidget {
                       margin: EdgeInsets.only(top: height*0.023),
                       child: Text(
                         "SEGER F.A.Q.",
-                        style: SegerItems.mainTextStyle,
+                        style: SegerItems.mainStyle(width*SegerItems.letSizes[17]),
                       ),
                     ),
                   )

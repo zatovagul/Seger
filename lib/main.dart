@@ -11,7 +11,6 @@ abstract class SegerItems{
   static const blueGrey = Color(0xFF9ABCFF);
   static const greyi = Color(0xFFF6F6F6);
 
-  static const mainTextStyle=TextStyle(color: blue,fontSize: 17.0, fontFamily: 'PTSans');
   static SvgPicture menuIcon=SvgPicture.asset("assets/images/menu.svg",width: 24,);
   static SvgPicture segerTopPic=SvgPicture.asset("assets/images/seger_icon.svg", width: 50.0);
 
@@ -48,7 +47,7 @@ abstract class SegerItems{
   static final dateFormat=DateFormat("dd.MM.yyyy");
 
   static TextStyle mainStyle(double x){
-    return TextStyle(color: blue,fontSize: x);
+    return TextStyle(color: blue,fontSize: x, fontFamily: 'PTSans');
   }
   static TextStyle whiteStyle(double x){
     return TextStyle(color: Colors.white,fontSize: x, fontFamily: "PTSans",);
@@ -58,6 +57,17 @@ abstract class SegerItems{
     borderRadius: BorderRadius.all(Radius.circular(10.0)),
     color: Colors.white,
   );
+
+  static Map<double, double> letSizes={
+    12:0.0292,
+    14:0.0340,
+    16:0.0389,
+    17:0.0413,
+    18:0.0437,
+    20:0.0486,
+    22:0.0535,
+    24:0.0584,
+  };
 }
 
 void main() {
