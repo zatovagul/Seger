@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'dart:math';
 
+import 'package:moor_ffi/moor_ffi.dart';
 import 'package:moor_flutter/moor_flutter.dart';
-import 'package:path/path.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:seger/Database/default_data.dart';
 part 'moor_database.g.dart';
@@ -190,15 +192,18 @@ class MatOxideForm {
   MatOxideForm({@required this.matOxide, @required this.oxide});
 }
 
+
+
 @UseMoor(
     tables: [Oxides, Mats, MatOxides, Recipes, RecipeMats, Folders],
     daos: [OxideDao, MatDao, MatOxideDao, FolderDao, RecipeDao, RecipeMatDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase()
-      : super(FlutterQueryExecutor.inDatabaseFolder(
-          path: "db.sqlite",
-          logStatements: true,
-        ));
+      : super(LazyDatabase(() async{
+    final dbFolder=await getApplicationDocumentsDirectory();
+    final file=File(p.join(dbFolder.path, 'myDB.sqlite'));
+    return VmDatabase(file);
+  }));
   int get schemaVersion => 1;
 
   @override
