@@ -60,6 +60,7 @@ class _RecipeListState extends State<RecipeList> {
   @override
   Widget build(BuildContext context) {
     double height=MediaQuery.of(context).size.height;
+    double width=MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: SegerItems.blue,
       appBar:  AppBar(
@@ -68,11 +69,11 @@ class _RecipeListState extends State<RecipeList> {
         centerTitle: true,
         title: Text(
           "${widget.folder.name}",
-          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontSize: width*SegerItems.letSizes[18], fontWeight: FontWeight.bold),
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 20.0),
+            padding: EdgeInsets.only(right: width*SegerItems.letSizes[20]),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -134,8 +135,8 @@ class _RecipeListState extends State<RecipeList> {
                             }
                           },
                           child: Container(
-                            padding: EdgeInsets.all(10),
-                            child:size>0 ? Text("Empty Folder", style: TextStyle(fontSize: 20, color: Colors.white, fontFamily: "PTSans")) : Container(),
+                            padding: EdgeInsets.symmetric(vertical:10, horizontal: width*SegerItems.letSizes[10]),
+                            child:size>0 ? Text("Empty Folder", style: TextStyle(fontSize: width*SegerItems.letSizes[20], color: Colors.white, fontFamily: "PTSans")) : Container(),
                           ),
                         ),
                         GestureDetector(
@@ -168,8 +169,8 @@ class _RecipeListState extends State<RecipeList> {
                           },
                           child: Container(
                             margin: EdgeInsets.only(top: 20),
-                            padding: EdgeInsets.all(10),
-                            child: Text("Delete Folder", style: TextStyle(fontSize: 20, color: Colors.white, fontFamily: "PTSans")),
+                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: width*SegerItems.letSizes[10]),
+                            child: Text("Delete Folder", style: TextStyle(fontSize: width*SegerItems.letSizes[20], color: Colors.white, fontFamily: "PTSans")),
                           ),
                         ),
                       ],
@@ -229,6 +230,7 @@ class _RecipeRowState extends State<RecipeRow> {
 
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return GestureDetector(
       onTap: (){
         Navigator.push(context, PageTransition(child: CalculatorScreen(recipeId: widget.recipe.id,edit: true,), type: PageTransitionType.rightToLeft,
@@ -238,7 +240,7 @@ class _RecipeRowState extends State<RecipeRow> {
         children: [
           Container(color: SegerItems.blue,height:10),
           Container(
-              margin: EdgeInsets.only( right: 20, left:20),
+              margin: EdgeInsets.only( right: width*SegerItems.letSizes[20], left:width*SegerItems.letSizes[20]),
               decoration: SegerItems.pageDecoration,
               child: Column(
                 children: [
@@ -255,7 +257,7 @@ class _RecipeRowState extends State<RecipeRow> {
                     //child: Image.file(File(widget.recipe.image),),
                   ),
                   Container(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: width*SegerItems.letSizes[20]),
                     child: Column(
                       children: [
                         Container(
@@ -263,7 +265,7 @@ class _RecipeRowState extends State<RecipeRow> {
                           child: Text(
                             SegerItems.dateFormat.format(widget.recipe.date),
                             style: TextStyle(
-                                fontSize: 12,
+                                fontSize: width*SegerItems.letSizes[12],
                                 color: Colors.grey, fontFamily: "PTSans"),
                           ),
                         ),
@@ -272,7 +274,7 @@ class _RecipeRowState extends State<RecipeRow> {
                           margin: EdgeInsets.only(top: 10),
                           child: Text(widget.recipe.name,
                               style: TextStyle(
-                                  fontSize: 22,
+                                  fontSize: width*SegerItems.letSizes[22],
                                   color: Colors.black,fontFamily: "PTSans", fontWeight: FontWeight.bold)
                           ),
                         ),
@@ -306,12 +308,12 @@ class _RecipeRowState extends State<RecipeRow> {
                                                 ) : Container(),
                                                 Container(
                                                   alignment: Alignment.center,
-                                                  child: Text(calcForm.mat.name.length<=20 ? calcForm.mat.name : "${calcForm.mat.name.substring(0,20)}...", style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans"),),
+                                                  child: Text(calcForm.mat.name.length<=20 ? calcForm.mat.name : "${calcForm.mat.name.substring(0,20)}...", style: TextStyle(fontSize: width*SegerItems.letSizes[16], color: Colors.black, fontFamily: "PTSans"),),
                                                 )
                                               ],
                                             ),
                                             Container(
-                                              child:Text("${calcForm.count }", style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans"),) ,
+                                              child:Text("${calcForm.count }", style: TextStyle(fontSize: width*SegerItems.letSizes[16], color: Colors.black, fontFamily: "PTSans"),) ,
                                             )
                                           ],
                                         );
@@ -345,15 +347,16 @@ class RecipeDialog extends StatefulWidget {
 class _RecipeDialogState extends State<RecipeDialog> {
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return AlertDialog(
-      title: Text("🚨 Are you sure you want to "+(widget.del ? "delete" : "empty")+" this folder?",  style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
+      title: Text("🚨 Are you sure you want to "+(widget.del ? "delete" : "empty")+" this folder?",  style: TextStyle(color: Colors.black, fontSize: width*SegerItems.letSizes[18], fontWeight: FontWeight.bold)),
       actions: [
         TextButton(onPressed: (){
           Navigator.pop(context, true);
-        }, child: Text("Yes", style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold))),
+        }, child: Text("Yes", style: TextStyle(color: Colors.black, fontSize: width*SegerItems.letSizes[18], fontWeight: FontWeight.bold))),
         TextButton(onPressed: (){
           Navigator.pop(context, false);
-        }, child: Text("No", style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold))),
+        }, child: Text("No", style: TextStyle(color: Colors.black, fontSize: width*SegerItems.letSizes[18], fontWeight: FontWeight.bold))),
       ],
     );
   }

@@ -35,6 +35,7 @@ class _FolderListState extends State<FolderList> {
 
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: SegerItems.blue,
       appBar: AppBar(
@@ -44,18 +45,18 @@ class _FolderListState extends State<FolderList> {
         title: widget.choose
             ? Text(
                 "Save Recipe",
-                style: TextStyle(color: Colors.white, fontSize: 18, fontFamily: "PTSans"),
+                style: TextStyle(color: Colors.white, fontSize: width*SegerItems.letSizes[18], fontFamily: "PTSans"),
               )
             : Text(
                 "Recipes",
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: width*SegerItems.letSizes[18],
                     fontWeight: FontWeight.bold, fontFamily: "PTSans"),
               ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 20.0),
+            padding: EdgeInsets.only(right: width*SegerItems.letSizes[20]),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -71,7 +72,7 @@ class _FolderListState extends State<FolderList> {
         ],
       ),
       body: Container(
-        margin: EdgeInsets.only(right: 20, left: 20, bottom: 20),
+        margin: EdgeInsets.only(right: width*SegerItems.letSizes[20], left: width*SegerItems.letSizes[20], bottom: 20),
         child: Column(
           children: [
             Container(
@@ -91,12 +92,12 @@ class _FolderListState extends State<FolderList> {
                               });
                         },
                         child: Text("New Folder",
-                            style: SegerItems.whiteStyle(17))),
+                            style: SegerItems.whiteStyle(width*SegerItems.letSizes[17]))),
               ),
             ),
             Expanded(
                 child: Container(
-              padding: EdgeInsets.only(left: 20, right: 20, top: 10),
+              padding: EdgeInsets.only(left: width*SegerItems.letSizes[20], right: width*SegerItems.letSizes[20], top: 10),
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
               decoration: SegerItems.pageDecoration,
@@ -182,6 +183,7 @@ class _FolderRowState extends State<FolderRow> {
 
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return Container(
       height: 51,
       child: GestureDetector(
@@ -198,19 +200,19 @@ class _FolderRowState extends State<FolderRow> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Center(
-                    child: Text(widget.folder.name, style: TextStyle(fontSize: 17, color: Colors.black,fontFamily: "PTSans",),),
+                    child: Text(widget.folder.name, style: TextStyle(fontSize: width*SegerItems.letSizes[17], color: Colors.black,fontFamily: "PTSans",),),
                   ),
                   Row(
                     children: [
                       Center(
                         child: Container(
-                          margin: EdgeInsets.only(right: 20),
+                          margin: EdgeInsets.only(right: width*SegerItems.letSizes[20]),
                           child: StreamBuilder<List<Recipe>>(
                               stream: lenStream,
                               builder: (context, AsyncSnapshot<List<Recipe>> snapshot) {
                                 len=0;
                                 if(snapshot.data!=null)len=snapshot.data.length;
-                                return Text("$len",style: TextStyle(fontSize: 16, color: Colors.black,fontFamily: "PTSans",),);
+                                return Text("$len",style: TextStyle(fontSize: width*SegerItems.letSizes[16], color: Colors.black,fontFamily: "PTSans",),);
                               }),
                         ),
                       ),
@@ -218,7 +220,7 @@ class _FolderRowState extends State<FolderRow> {
                         child: Container(
                           child: Icon(
                             Icons.arrow_forward_ios_outlined,
-                            size: 25,
+                            size: width*SegerItems.letSizes[24],
                             color: SegerItems.blue,
                           ),
                         ),
@@ -257,13 +259,14 @@ class _NewFolderPopUpState extends State<NewFolderPopUp> {
 
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return AlertDialog(
       content: Container(
         height: 50,
         child: Center(
           child: TextField(
             controller: widget.controller,
-            style: TextStyle(fontSize: 22, color: Colors.black),
+            style: TextStyle(fontSize: width*SegerItems.letSizes[22], color: Colors.black),
             decoration: SegerItems.textFieldDecoration,
           ),
         ),

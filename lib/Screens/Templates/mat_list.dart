@@ -44,6 +44,7 @@ class _MatListState extends State<MatList> {
 
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: SegerItems.blue,
       appBar: AppBar(
@@ -53,7 +54,7 @@ class _MatListState extends State<MatList> {
         title: SegerItems.segerTopPic,
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 20.0),
+            padding: EdgeInsets.only(right: width*SegerItems.letSizes[20]),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -73,7 +74,7 @@ class _MatListState extends State<MatList> {
           FocusScope.of(context).requestFocus(new FocusNode());
         },
         child: Container(
-          margin: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+          margin: EdgeInsets.only(left: width*SegerItems.letSizes[20], right: width*SegerItems.letSizes[20], bottom: 20),
           child: Column(
             children: [
               Container(
@@ -82,7 +83,7 @@ class _MatListState extends State<MatList> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Container(
-                      child: Text(widget.choose ? "Add Material" : "Materials", style:TextStyle(fontSize: 24, color:Colors.white, fontWeight: FontWeight.bold, fontFamily: "PTSans") ),
+                      child: Text(widget.choose ? "Add Material" : "Materials", style:TextStyle(fontSize: width*SegerItems.letSizes[24], color:Colors.white, fontWeight: FontWeight.bold, fontFamily: "PTSans") ),
                     ),
                     Container(
                       child: GestureDetector(
@@ -104,7 +105,7 @@ class _MatListState extends State<MatList> {
               ),
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.only(left: 20, right: 20),
+                  padding: EdgeInsets.only(left: width*SegerItems.letSizes[20], right: width*SegerItems.letSizes[20]),
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
                   decoration: SegerItems.pageDecoration,
@@ -115,7 +116,7 @@ class _MatListState extends State<MatList> {
                         child: TextField(
                           controller: controller,
                           style: TextStyle(
-                              fontSize: 22,
+                              fontSize: width*SegerItems.letSizes[22],
                               color: Colors.black, fontFamily: "PTSans"),
                           decoration:
                           SegerItems.textFieldDecoration,
@@ -151,7 +152,7 @@ class _MatListState extends State<MatList> {
                                                   child: Text(
                                                     "Most Used",
                                                     style: TextStyle(
-                                                        fontSize: 20,fontFamily: "PTSans",
+                                                        fontSize: width*SegerItems.letSizes[20],fontFamily: "PTSans",
                                                         fontWeight:
                                                         FontWeight
                                                             .bold),
@@ -194,7 +195,7 @@ class _MatListState extends State<MatList> {
                                                         mat.name[0]
                                                             .toUpperCase(),
                                                         style: TextStyle(
-                                                            fontSize: 20,fontFamily: "PTSans",
+                                                            fontSize: width*SegerItems.letSizes[20],fontFamily: "PTSans",
                                                             fontWeight:
                                                                 FontWeight
                                                                     .bold),
@@ -264,6 +265,7 @@ class _MatRowState extends State<MatRow> {
   }
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: (){
@@ -292,7 +294,7 @@ class _MatRowState extends State<MatRow> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Center(
-                    child: Text(widget.mat.name.length<=30 ? widget.mat.name : "${widget.mat.name.substring(0,30)}...", style: TextStyle(fontSize: 17, color: Colors.black, fontFamily: "PTSans"),),
+                    child: Text(widget.mat.name.length<=30 ? widget.mat.name : "${widget.mat.name.substring(0,30)}...", style: TextStyle(fontSize: width*SegerItems.letSizes[17], color: Colors.black, fontFamily: "PTSans"),),
                   ),
                 ],
               ),

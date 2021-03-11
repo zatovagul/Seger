@@ -24,6 +24,7 @@ class _OxideRoleSettingsState extends State<OxideRoleSettings> {
   }
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     List<Oxide> oxideList=[];
     return Scaffold(
       backgroundColor: SegerItems.blue,
@@ -34,7 +35,7 @@ class _OxideRoleSettingsState extends State<OxideRoleSettings> {
         backgroundColor: SegerItems.blue,
         actions: [
           Padding(
-              padding: EdgeInsets.only(right: 20.0),
+              padding: EdgeInsets.only(right: width*SegerItems.letSizes[20]),
               child: GestureDetector(
                 onTap: (){
                   Navigator.push(
@@ -53,7 +54,7 @@ class _OxideRoleSettingsState extends State<OxideRoleSettings> {
         builder: (context) {
           scafContext=context;
           return Container(
-            margin: EdgeInsets.only(left: 20, right: 20,  bottom: 20),
+            margin: EdgeInsets.only(left: width*SegerItems.letSizes[20], right: width*SegerItems.letSizes[20],  bottom: 20),
             child: Column(
               children: [
                 Container(
@@ -70,7 +71,7 @@ class _OxideRoleSettingsState extends State<OxideRoleSettings> {
                 ),
                 Expanded(
                   child: Container(
-                      padding: EdgeInsets.only(top:10,left:20,right: 20),
+                      padding: EdgeInsets.only(top:10,left:width*SegerItems.letSizes[20],right: width*SegerItems.letSizes[20]),
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height,
                       decoration: SegerItems.pageDecoration,
@@ -87,11 +88,11 @@ class _OxideRoleSettingsState extends State<OxideRoleSettings> {
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Expanded(child: Center(child: Text("A", style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: "PTSans"),))),
-                                  Expanded(child: Center(child: Text("AE", style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: "PTSans")))),
-                                  Expanded(child: Center(child: Text("St", style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: "PTSans")))),
-                                  Expanded(child: Center(child: Text("GF", style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: "PTSans")))),
-                                  Expanded(child: Center(child: Text("Oth", style: TextStyle(fontSize: 14, color: Colors.black, fontFamily: "PTSans")))),
+                                  Expanded(child: Center(child: Text("A", style: TextStyle(fontSize: width*SegerItems.letSizes[14], color: Colors.black, fontFamily: "PTSans"),))),
+                                  Expanded(child: Center(child: Text("AE", style: TextStyle(fontSize: width*SegerItems.letSizes[14], color: Colors.black, fontFamily: "PTSans")))),
+                                  Expanded(child: Center(child: Text("St", style: TextStyle(fontSize: width*SegerItems.letSizes[14], color: Colors.black, fontFamily: "PTSans")))),
+                                  Expanded(child: Center(child: Text("GF", style: TextStyle(fontSize: width*SegerItems.letSizes[14], color: Colors.black, fontFamily: "PTSans")))),
+                                  Expanded(child: Center(child: Text("Oth", style: TextStyle(fontSize: width*SegerItems.letSizes[14], color: Colors.black, fontFamily: "PTSans")))),
                                 ],
                               ),
                             ))
@@ -118,7 +119,7 @@ class _OxideRoleSettingsState extends State<OxideRoleSettings> {
                                                   }
                                                   Scaffold.of(scafContext).showSnackBar(SnackBar(content: Text('😎 Welcome back to classic UMF'), backgroundColor: Colors.green,));
                                                 },
-                                                child: Text("Reset to defaults", style: TextStyle(fontSize: 20, color: SegerItems.blue)),
+                                                child: Text("Reset to defaults", style: TextStyle(fontSize: width*SegerItems.letSizes[20], color: SegerItems.blue)),
                                               ),
                                             ),
                                           );
@@ -161,13 +162,14 @@ class _OxideRoleRowState extends State<OxideRoleRow> {
     OxideDao dao=Provider.of<OxideDao>(context);
     Oxide oxide= widget.oxide;
     _role=oxide.role;
+    double width=MediaQuery.of(context).size.width;
     return Row(
       children: [
         Container(
           width: 80,
           height: 50,
           child: Center(
-            child: OxideText(text:oxide.name, style: TextStyle(fontSize: 17, color: Colors.black, fontFamily: "PTSans")),
+            child: OxideText(text:oxide.name, style: TextStyle(fontSize: width*SegerItems.letSizes[17], color: Colors.black, fontFamily: "PTSans")),
           ),
         ),
         Expanded(child: Container(

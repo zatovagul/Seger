@@ -38,6 +38,7 @@ class _MatInfoPageState extends State<MatInfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: SegerItems.blue,
       appBar: AppBar(
@@ -46,11 +47,11 @@ class _MatInfoPageState extends State<MatInfoPage> {
         centerTitle: true,
         title: Text(
           "Material",
-          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontSize: width*SegerItems.letSizes[18], fontWeight: FontWeight.bold),
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 20.0),
+            padding: EdgeInsets.only(right: width*SegerItems.letSizes[20]),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -69,7 +70,7 @@ class _MatInfoPageState extends State<MatInfoPage> {
         builder: (context){
           scafContext=context;
           return Container(
-            margin: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+            margin: EdgeInsets.only(left: width*SegerItems.letSizes[20], right: width*SegerItems.letSizes[20], bottom: 20),
             child: Column(
               children: [
                 Container(
@@ -88,7 +89,7 @@ class _MatInfoPageState extends State<MatInfoPage> {
                 ),
                 Expanded(
                     child: Container(
-                      padding: EdgeInsets.only(left: 20, right: 20),
+                      padding: EdgeInsets.only(left: width*SegerItems.letSizes[20], right: width*SegerItems.letSizes[20]),
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height,
                       decoration: SegerItems.pageDecoration,
@@ -103,7 +104,7 @@ class _MatInfoPageState extends State<MatInfoPage> {
                                   margin: EdgeInsets.only(top: 20),
                                   child: Text(matSnapshot.data!=null ? matSnapshot.data.name : "",
                                     style: TextStyle(
-                                        fontSize: 22,
+                                        fontSize: width*SegerItems.letSizes[22],
                                         color: Colors.black, fontWeight: FontWeight.bold, fontFamily: 'PTSans')
                                   ),
                                 ),
@@ -112,7 +113,7 @@ class _MatInfoPageState extends State<MatInfoPage> {
                                   margin: EdgeInsets.only(top:20),
                                   child: Text(matSnapshot.data!=null ? matSnapshot.data.info : "",
                                       style: TextStyle(
-                                          fontSize: 16,
+                                          fontSize: width*SegerItems.letSizes[16],
                                           color: Colors.black, fontFamily: 'PTSans')
                                   ),
                                 ),
@@ -123,7 +124,7 @@ class _MatInfoPageState extends State<MatInfoPage> {
                                     child: Text(
                                       "Percentage analysis",
                                       style: TextStyle(
-                                          fontSize: 18,
+                                          fontSize: width*SegerItems.letSizes[18],
                                           color: Colors.black, fontWeight: FontWeight.bold, fontFamily: 'PTSans'),
                                     ),
                                   ),
@@ -150,10 +151,10 @@ class _MatInfoPageState extends State<MatInfoPage> {
                                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                       children: [
                                                         Center(
-                                                          child: OxideText(text:oxideMap[element.oxideId].name,  style: TextStyle(fontSize: 17, color: Colors.black, fontFamily: 'PTSans')),
+                                                          child: OxideText(text:oxideMap[element.oxideId].name,  style: TextStyle(fontSize: width*SegerItems.letSizes[17], color: Colors.black, fontFamily: 'PTSans')),
                                                         ),
                                                         Center(
-                                                          child: Text("${element.count}", style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'PTSans'),),
+                                                          child: Text("${element.count}", style: TextStyle(fontSize: width*SegerItems.letSizes[16], color: Colors.black, fontFamily: 'PTSans'),),
                                                         )
                                                       ],
                                                     ),
@@ -173,14 +174,14 @@ class _MatInfoPageState extends State<MatInfoPage> {
                                                 Text(
                                                   "Total:",
                                                   style: TextStyle(
-                                                      fontSize: 17,
+                                                      fontSize: width*SegerItems.letSizes[17],
                                                       color: Colors.black,
                                                       fontWeight:
                                                       FontWeight.bold, fontFamily: 'PTSans'),
                                                 ),
                                                 Text("$tot",
                                                   style: TextStyle(
-                                                      fontSize: 17,
+                                                      fontSize: width*SegerItems.letSizes[17],
                                                       color: SegerItems.blue, fontFamily: 'PTSans'),
                                                 )
                                               ],
@@ -194,7 +195,7 @@ class _MatInfoPageState extends State<MatInfoPage> {
                                                 child: Text(
                                                   "${SegerItems.dateFormat.format(matSnapshot.data.date)}",
                                                   style: TextStyle(
-                                                      fontSize: 12,
+                                                      fontSize: width*SegerItems.letSizes[12],
                                                       color: Colors.grey, fontFamily: 'PTSans'),
                                                 ),
                                               ));

@@ -59,6 +59,9 @@ abstract class SegerItems{
   );
 
   static Map<double, double> letSizes={
+    5:0.0121,
+    8:0.0195,
+    10:0.0243,
     12:0.0292,
     14:0.0340,
     16:0.0389,
@@ -67,6 +70,7 @@ abstract class SegerItems{
     20:0.0486,
     22:0.0535,
     24:0.0584,
+    40:0.0973,
   };
 }
 

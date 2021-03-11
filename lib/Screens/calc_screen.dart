@@ -147,7 +147,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         title: SegerItems.segerTopPic,
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 20.0),
+            padding: EdgeInsets.only(right: width*SegerItems.letSizes[20]),
             child: GestureDetector(
               onTap: () {
                 if(!widget.edit)
@@ -273,13 +273,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                           },
                                           child: Container(
                                               alignment: Alignment.centerLeft,
-                                              margin: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+                                              margin: EdgeInsets.symmetric(vertical: 20, horizontal: width*SegerItems.letSizes[40]),
                                               child: Text(
                                                 "+ Add Material",
                                                 style: SegerItems.mainStyle(width*SegerItems.letSizes[17]),
                                               ))), // AddMaterialButton
                                       Container(
-                                        margin: EdgeInsets.only(right: 20),
+                                        margin: EdgeInsets.only(right: width*SegerItems.letSizes[20]),
                                         child: Container(
                                           alignment: Alignment.centerRight,
                                           child: Row(
@@ -287,7 +287,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                             children: [
                                               Container(
                                                   margin:
-                                                      EdgeInsets.only(right: 20),
+                                                      EdgeInsets.only(right: width*SegerItems.letSizes[20]),
                                                   child: Text(
                                                     "Total:",
                                                     style: TextStyle(
@@ -314,7 +314,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                                 },
                                                 child: Container(
                                                     margin:
-                                                        EdgeInsets.only(left: 10),
+                                                        EdgeInsets.only(left: width*SegerItems.letSizes[10]),
                                                     child: Icon(
                                                         Icons.radio_button_off,
                                                         color: SegerItems.blue,
@@ -356,7 +356,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                               child: Container(
                                                 margin: EdgeInsets.only(top: 40),
                                                 alignment: Alignment.center,
-                                                child: Text("Copy and Edit", style: TextStyle(fontSize: 20, color: SegerItems.blue, fontFamily: "PTSans"),),
+                                                child: Text("Copy and Edit", style: TextStyle(fontSize: width*SegerItems.letSizes[20], color: SegerItems.blue, fontFamily: "PTSans"),),
                                               ),
                                             ),
                                             GestureDetector(
@@ -366,7 +366,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                               child: Container(
                                                 margin: EdgeInsets.only(top: 40),
                                                 alignment: Alignment.center,
-                                                child: Text("Move", style: TextStyle(fontSize: 20, color: SegerItems.blue, fontFamily: "PTSans"),),
+                                                child: Text("Move", style: TextStyle(fontSize: width*SegerItems.letSizes[20], color: SegerItems.blue, fontFamily: "PTSans"),),
                                               ),
                                             ),
                                             GestureDetector(
@@ -376,7 +376,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                               child: Container(
                                                 margin: EdgeInsets.only(top: 40),
                                                 alignment: Alignment.center,
-                                                child: Text("Delete", style: TextStyle(fontSize: 20, color: SegerItems.blue, fontFamily: "PTSans"),),
+                                                child: Text("Delete", style: TextStyle(fontSize: width*SegerItems.letSizes[20], color: SegerItems.blue, fontFamily: "PTSans"),),
                                               ),
                                             ),
                                           ],
@@ -384,9 +384,9 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                       )  // Edit buttons
                                           : Container(
                                               padding: EdgeInsets.only(
-                                                  right: 20,
+                                                  right: width*SegerItems.letSizes[20],
                                                   top: 70,
-                                                  left: 20,
+                                                  left: width*SegerItems.letSizes[20],
                                                   bottom: 20),
                                               child: Row(
                                                 mainAxisAlignment:
@@ -732,10 +732,11 @@ class _CalcTopState extends State<CalcTop> {
     vals.add(val);
 
     Size size=MediaQuery.of(context).size;
-    double width=size.width-40;
-    double height=width*0.764179104477612;
-    double margin=width*0.043126684636119, botMargin=width*0.024258760107817;
-    print("${height} ${width}");
+    double width=size.width;
+    double pageWidth=size.width-40;
+    double height=pageWidth*0.764179104477612;
+    double margin=pageWidth*0.043126684636119, botMargin=pageWidth*0.024258760107817;
+    print("${height} ${pageWidth}");
     bool android=Platform.isAndroid;
     return Container(
       //padding: EdgeInsets.symmetric(horizontal: 20),
@@ -743,7 +744,7 @@ class _CalcTopState extends State<CalcTop> {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+            padding: EdgeInsets.symmetric(horizontal: width*SegerItems.letSizes[20]),
             margin: EdgeInsets.symmetric(vertical: 5),
             child: ValueListenableBuilder<int>(
                 valueListenable: _pageNotifier,
@@ -791,17 +792,17 @@ class _CalcTopState extends State<CalcTop> {
                           alignment: Alignment.topCenter,
                               child: Container(
                                   margin: EdgeInsets.only(top: margin),
-                                  child: SvgPicture.asset("assets/images/UMF2.svg", width: width,)),
+                                  child: SvgPicture.asset("assets/images/UMF2.svg", width: pageWidth,)),
                           // 242 - 333
                         ),
                        Container(
                           alignment: Alignment.topCenter,
-                              margin:android ? EdgeInsets.only(left:width*0.056, bottom: botMargin, right: 2) : EdgeInsets.only(left:width*0.056,right: 3, bottom: botMargin,),
+                              margin:android ? EdgeInsets.only(left:pageWidth*0.056, bottom: botMargin, right: 2) : EdgeInsets.only(left:pageWidth*0.056,right: 3, bottom: botMargin,),
                               child: GraphicChart.withSampleData(vals)),
                       ],),
                     );
                   default:
-                    return Container(padding: EdgeInsets.symmetric(horizontal: 20),
+                    return Container(padding: EdgeInsets.symmetric(horizontal: width*SegerItems.letSizes[20]),
                         child: CalcTable(resultMap: widget.resultMap));
                 }
               },
@@ -818,11 +819,11 @@ class _CalcTopState extends State<CalcTop> {
                     OxideText(text:
                       "R2O/RO : ",
                       style:
-                          TextStyle(fontSize: 14, color: SegerItems.blueGrey,fontFamily: "PTSans",),
+                          TextStyle(fontSize: width*SegerItems.letSizes[14], color: SegerItems.blueGrey,fontFamily: "PTSans",),
                     ),
                     Text(
                       "${al}:${ae}",
-                      style: TextStyle(fontSize: 14, color: Colors.white, fontFamily: "PTSans",),
+                      style: TextStyle(fontSize: width*SegerItems.letSizes[14], color: Colors.white, fontFamily: "PTSans",),
                     )
                   ],
                 ),
@@ -831,10 +832,10 @@ class _CalcTopState extends State<CalcTop> {
                     OxideText(text:
                       "SiO2/Al2O3  : ",
                       style:
-                          TextStyle(fontSize: 14, color: SegerItems.blueGrey, fontFamily: "PTSans",),
+                          TextStyle(fontSize: width*SegerItems.letSizes[14], color: SegerItems.blueGrey, fontFamily: "PTSans",),
                     ),
                     Text("${siAl}",
-                        style: TextStyle(fontSize: 14, color: Colors.white, fontFamily: "PTSans",))
+                        style: TextStyle(fontSize: width*SegerItems.letSizes[14], color: Colors.white, fontFamily: "PTSans",))
                   ],
                 )
               ],
@@ -845,7 +846,7 @@ class _CalcTopState extends State<CalcTop> {
             margin: EdgeInsets.only(bottom: 20),
             child: TextField(
               controller: widget.controller,
-              style: TextStyle(fontSize: 22, color: Colors.white, fontFamily: "PTSans", fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: width*SegerItems.letSizes[22], color: Colors.white, fontFamily: "PTSans", fontWeight: FontWeight.bold),
               decoration: SegerItems.whiteTextFieldDecoration,
               onChanged: (value) {
                 widget.updated();
@@ -907,6 +908,7 @@ class CalcTable extends StatefulWidget {
 class _CalcTableState extends State<CalcTable> {
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     Map<String, List<SumOxideForm>> rMap = widget.resultMap;
     return Column(
       children: [
@@ -926,7 +928,7 @@ class _CalcTableState extends State<CalcTable> {
                                 child: Text(
                                   "Alcali",
                                   style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: width*SegerItems.letSizes[14],
                                       color: Colors.white,
                                       fontFamily: 'PTSans'
                                       ),
@@ -934,37 +936,37 @@ class _CalcTableState extends State<CalcTable> {
                             ))),
                     Expanded(
                         child: Container(
-                            margin: EdgeInsets.only(left: 10),
+                            margin: EdgeInsets.only(left: width*SegerItems.letSizes[10]),
                             child: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   "AEarth",
                                   style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: width*SegerItems.letSizes[14],
                                       color: Colors.white,fontFamily: "PTSans",
                                       fontWeight: FontWeight.bold),
                                 )))),
                     Expanded(
                         child: Container(
-                            margin: EdgeInsets.only(left: 10),
+                            margin: EdgeInsets.only(left: width*SegerItems.letSizes[10]),
                             child: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   "Stabs",
                                   style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: width*SegerItems.letSizes[14],
                                       color: Colors.white,fontFamily: "PTSans",
                                       fontWeight: FontWeight.bold),
                                 )))),
                     Expanded(
                         child: Container(
-                            margin: EdgeInsets.only(left: 10),
+                            margin: EdgeInsets.only(left: width*SegerItems.letSizes[10]),
                             child: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
                                   "Gformers",
                                   style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: width*SegerItems.letSizes[14],
                                       color: Colors.white,fontFamily: "PTSans",
                                       fontWeight: FontWeight.bold),
                                 )))),
@@ -996,7 +998,7 @@ class _CalcTableState extends State<CalcTable> {
                         )),
                     Expanded(
                         child: Container(
-                          margin: EdgeInsets.only(left: 10),
+                          margin: EdgeInsets.only(left: width*SegerItems.letSizes[10]),
                           child: Builder(builder: (context){
                             List<Widget> list=[];
                             rMap['ae'].forEach((element) {
@@ -1016,7 +1018,7 @@ class _CalcTableState extends State<CalcTable> {
                     ),
                     Expanded(
                         child: Container(
-                          margin: EdgeInsets.only(left: 10),
+                          margin: EdgeInsets.only(left: width*SegerItems.letSizes[10]),
                           child: Builder(builder: (context){
                             List<Widget> list=[];
                             rMap['s'].forEach((element) {
@@ -1036,7 +1038,7 @@ class _CalcTableState extends State<CalcTable> {
                     ),
                     Expanded(
                         child: Container(
-                          margin: EdgeInsets.only(left: 10),
+                          margin: EdgeInsets.only(left: width*SegerItems.letSizes[10]),
                           child: Builder(builder: (context){
                             List<Widget> list=[];
                             rMap['gf'].forEach((element) {
@@ -1073,6 +1075,7 @@ class OxideSumRow extends StatelessWidget {
   OxideSumRow({this.sum, this.name});
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return Container(
       margin: EdgeInsets.only(bottom: 5),
       alignment: Alignment.topLeft,
@@ -1081,9 +1084,9 @@ class OxideSumRow extends StatelessWidget {
           Text(
             "${sum} ",
             style: TextStyle(
-                fontSize: 14, color: Colors.white, fontFamily: 'PTSans'),),
+                fontSize: width*SegerItems.letSizes[14], color: Colors.white, fontFamily: 'PTSans'),),
           OxideText(text:"${name}", style: TextStyle(
-              fontSize: 14, color: SegerItems.blueGrey, fontFamily: 'PTSans'),)
+              fontSize: width*SegerItems.letSizes[14], color: SegerItems.blueGrey, fontFamily: 'PTSans'),)
         ],
       ),
     );
@@ -1094,13 +1097,14 @@ class OxideSumRow extends StatelessWidget {
 class OthersTe extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return Container(
         margin: EdgeInsets.only(top: 18),
         alignment: Alignment.centerLeft,
         child: Text(
           "Other",
           style: TextStyle(
-              fontSize: 14, color: Colors.white,fontFamily: "PTSans", fontWeight: FontWeight.bold),
+              fontSize: width*SegerItems.letSizes[14], color: Colors.white,fontFamily: "PTSans", fontWeight: FontWeight.bold),
         ));
   }
 }
@@ -1212,6 +1216,7 @@ class MaterialCalcRow extends StatefulWidget {
 class _MaterialCalcRowState extends State<MaterialCalcRow> {
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
       actionExtentRatio: 0.25,
@@ -1237,17 +1242,17 @@ class _MaterialCalcRowState extends State<MaterialCalcRow> {
                                 widget.tagFalse();
                             },
                             child: Container(
-                                padding: EdgeInsets.only(left: 10, right: 5, top:2, bottom: 2),
-                                child: widget.mat.tag ? SvgPicture.asset("assets/images/plus_blue.svg", width: 18,) : SvgPicture.asset("assets/images/plus_gray.svg", width: 18,))),
+                                padding: EdgeInsets.only(left: width*SegerItems.letSizes[10], right: width*SegerItems.letSizes[5], top:2, bottom: 2),
+                                child: widget.mat.tag ? SvgPicture.asset("assets/images/plus_blue.svg", width: width*SegerItems.letSizes[18],) : SvgPicture.asset("assets/images/plus_gray.svg", width: width*SegerItems.letSizes[18],))),
                         Text(
                           widget.mat.mat.name.length<=17 ? "${widget.mat.mat.name}" : "${widget.mat.mat.name.substring(0,17)}...",
-                          style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans",),
+                          style: TextStyle(fontSize: width*SegerItems.letSizes[16], color: Colors.black, fontFamily: "PTSans",),
                         )
                       ],
                     ),
                   ),
                   Container(
-                      margin: EdgeInsets.only(right: 20),
+                      margin: EdgeInsets.only(right: width*SegerItems.letSizes[20]),
                       child: NumberPicker(
                         mat: widget.mat,
                         notifier: widget.notifier,
@@ -1308,6 +1313,7 @@ class _NumberPickerState extends State<NumberPicker> {
 
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     try {
       if (double.parse(controller.text.replaceAll(',', '.')) !=
           widget.mat.count) {
@@ -1329,11 +1335,11 @@ class _NumberPickerState extends State<NumberPicker> {
             widget.updated();
           },
           child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: width*SegerItems.letSizes[10]),
               child: SvgPicture.asset("assets/images/small_minus.svg", width:10)),
         ),
         Container(
-          margin: EdgeInsets.symmetric(horizontal: 5),
+          margin: EdgeInsets.symmetric(horizontal: width*SegerItems.letSizes[5]),
           child: ConstrainedBox(
             constraints:
                 BoxConstraints(minWidth: 50, maxHeight: 30, maxWidth: 80),
@@ -1343,7 +1349,7 @@ class _NumberPickerState extends State<NumberPicker> {
                 controller: controller,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 inputFormatters: [SegerItems.doubleFilter],
-                style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans",),
+                style: TextStyle(fontSize: width*SegerItems.letSizes[16], color: Colors.black, fontFamily: "PTSans",),
                 textAlign: TextAlign.center,
                 decoration: InputDecoration(
                     contentPadding:
@@ -1379,7 +1385,7 @@ class _NumberPickerState extends State<NumberPicker> {
               widget.updated();
             },
             child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: width*SegerItems.letSizes[10]),
                 child: SvgPicture.asset("assets/images/small_plus.svg", width:10))
         ),
       ],

@@ -109,6 +109,7 @@ class _MatSettingsState extends State<MatSettings> {
 
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return Scaffold(
       //resizeToAvoidBottomInset: false,
       backgroundColor: SegerItems.blue,
@@ -118,11 +119,11 @@ class _MatSettingsState extends State<MatSettings> {
         centerTitle: true,
         title: Text(
           edit ? "Edit Material" : "New Material",
-          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold,fontFamily: "PTSans"),
+          style: TextStyle(color: Colors.white, fontSize: width*SegerItems.letSizes[18], fontWeight: FontWeight.bold,fontFamily: "PTSans"),
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 20.0),
+            padding: EdgeInsets.only(right: width*SegerItems.letSizes[20]),
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -145,7 +146,7 @@ class _MatSettingsState extends State<MatSettings> {
             FocusScope.of(context).requestFocus(new FocusNode());
           },
           child: Container(
-            margin: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+            margin: EdgeInsets.only(left: width*SegerItems.letSizes[20], right: width*SegerItems.letSizes[20], bottom: 20),
             child: Column(
               children: [
                 Container(
@@ -161,7 +162,7 @@ class _MatSettingsState extends State<MatSettings> {
                 ),
                 Expanded(
                     child: Container(
-                  padding: EdgeInsets.only(left: 20, right: 20),
+                  padding: EdgeInsets.only(left: width*SegerItems.letSizes[20], right: width*SegerItems.letSizes[20]),
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
                   decoration: SegerItems.pageDecoration,
@@ -187,7 +188,7 @@ class _MatSettingsState extends State<MatSettings> {
                                           controller: nameController,
                                           inputFormatters: [SegerItems.nameFilter],
                                           style: TextStyle(
-                                              fontSize: 22,
+                                              fontSize: width*SegerItems.letSizes[22],
                                               color: Colors.black, fontFamily: "PTSans"),
                                           decoration:
                                               SegerItems.textFieldDecoration,
@@ -205,7 +206,7 @@ class _MatSettingsState extends State<MatSettings> {
                                           maxLines: null,
                                           controller: infoController,
                                           style: TextStyle(
-                                              fontSize: 16,
+                                              fontSize: width*SegerItems.letSizes[16],
                                               color: Colors.black, fontFamily: "PTSans"),
                                           decoration: InputDecoration(
                                               filled: true,
@@ -238,7 +239,7 @@ class _MatSettingsState extends State<MatSettings> {
                                           child: Text(
                                             "Percentage analysis",
                                             style: TextStyle(
-                                                fontSize: 18,
+                                                fontSize: width*SegerItems.letSizes[18],
                                                 color: Colors.black,fontFamily: "PTSans", fontWeight: FontWeight.bold),
                                           ),
                                         ),
@@ -260,7 +261,7 @@ class _MatSettingsState extends State<MatSettings> {
                                               Text(
                                                 "Total:",
                                                 style: TextStyle(
-                                                    fontSize: 17,
+                                                    fontSize: width*SegerItems.letSizes[17],
                                                     color: Colors.black,fontFamily: "PTSans",
                                                     fontWeight:
                                                         FontWeight.bold),
@@ -272,7 +273,7 @@ class _MatSettingsState extends State<MatSettings> {
                                                     if(to==0 && edit) _percChange();
                                                     return Text("$to",
                                                       style: TextStyle(
-                                                          fontSize: 17,fontFamily: "PTSans",
+                                                          fontSize: width*SegerItems.letSizes[17],fontFamily: "PTSans",
                                                           color: SegerItems.blue),
                                                     );
                                                   }
@@ -286,7 +287,7 @@ class _MatSettingsState extends State<MatSettings> {
                                           child: Text(
                                             SegerItems.dateFormat.format(nowTime),
                                             style: TextStyle(
-                                                fontSize: 12,fontFamily: "PTSans",
+                                                fontSize: width*SegerItems.letSizes[12],fontFamily: "PTSans",
                                                 color: Colors.grey),
                                           ),
                                         )
@@ -334,7 +335,7 @@ class _MatSettingsState extends State<MatSettings> {
                   child: Container(
                     alignment: Alignment.bottomCenter,
                     height: 50,
-                    child:  Text("Delete Material", style: TextStyle(fontSize: 20, color: Colors.white)),
+                    child:  Text("Delete Material", style: TextStyle(fontSize: width*SegerItems.letSizes[20], color: Colors.white)),
                   ),
                 ),
               ],
@@ -422,6 +423,7 @@ class _OxideChangeRowState extends State<OxideChangeRow> {
   }
   @override
   Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
     return Container(
       height: 51,
       child: Column(
@@ -433,7 +435,7 @@ class _OxideChangeRowState extends State<OxideChangeRow> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Center(
-                  child: OxideText(text:widget.oxide.oxide.name, style: TextStyle(fontSize: 17, color: Colors.black, fontFamily: "PTSans"),),
+                  child: OxideText(text:widget.oxide.oxide.name, style: TextStyle(fontSize: width*SegerItems.letSizes[17], color: Colors.black, fontFamily: "PTSans"),),
                 ),
                 Center(
                   child: ConstrainedBox(
@@ -446,11 +448,11 @@ class _OxideChangeRowState extends State<OxideChangeRow> {
                         inputFormatters: [
                           SegerItems.doubleFilter,
                         ],
-                        style: TextStyle(fontSize: 16, color: Colors.black, fontFamily: "PTSans"),
+                        style: TextStyle(fontSize: width*SegerItems.letSizes[16], color: Colors.black, fontFamily: "PTSans"),
                         textAlign: TextAlign.end,
                         decoration: InputDecoration(
                             contentPadding: EdgeInsets.only(
-                                top: 0, bottom: 0, left: 5, right: 5),
+                                top: 0, bottom: 0, left: width*SegerItems.letSizes[5], right: width*SegerItems.letSizes[5]),
                             filled: true,
                             fillColor: SegerItems.greyi,
                             enabledBorder: OutlineInputBorder(
