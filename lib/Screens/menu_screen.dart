@@ -17,7 +17,10 @@ class MenuScreen extends StatelessWidget {
     double height=MediaQuery.of(context).size.height;
     double width=MediaQuery.of(context).size.width;
     bool android=Platform.isAndroid;
+    // 11 : 896.0  414.0
+    // 8 : 667.0  375.0
     print("$height  $width");
+    bool small=height<690;
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -39,7 +42,7 @@ class MenuScreen extends StatelessWidget {
                     },child: Container(padding:EdgeInsets.all(2),child: SvgPicture.asset("assets/images/cross.svg", width: 18,))),
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: height*0.059),
+                    margin: EdgeInsets.only(top: !small ? height*0.059 : height*0.035),
                     child: SvgPicture.asset("assets/images/seger_blue_icon.svg",
                         width: width*0.206812652068127),// 85.0
                   ),
@@ -49,7 +52,7 @@ class MenuScreen extends StatelessWidget {
                           width: width*0.450121654501217,//185.0
                       )),
                   Container(
-                    margin: EdgeInsets.only(top: height*0.059),
+                    margin: EdgeInsets.only(top:!small ? height*0.059 : height*0.035),
                     child: Builder(
                       builder: (context){
                         List<Widget> widgets=[];

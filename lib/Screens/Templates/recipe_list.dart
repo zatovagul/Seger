@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 import 'package:seger/Database/moor_database.dart';
@@ -24,6 +25,24 @@ class _RecipeListState extends State<RecipeList> {
   FolderDao folderDao;
   Stream<List<Recipe>> recipeStream;
   int size;
+  bool bottom;
+
+  ScrollController _scrollController;
+  _scrollListener(){
+    if (_scrollController.offset >= _scrollController.position.maxScrollExtent-50 &&
+        !_scrollController.position.outOfRange) {
+      setState(() {
+         bottom=true;
+      });
+    }
+    if (_scrollController.offset <= _scrollController.position.maxScrollExtent-50 &&
+        !_scrollController.position.outOfRange) {
+      setState(() {
+        bottom=false;
+      });
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -32,9 +51,15 @@ class _RecipeListState extends State<RecipeList> {
     folderDao=Provider.of<FolderDao>(context, listen: false);
     recipeMatDao=Provider.of<RecipeMatDao>(context, listen: false);
     recipeStream=recipeDao.watchRecipesByFolderId(widget.folder.id);
+
+    _scrollController=ScrollController();
+    _scrollController.addListener(()=>_scrollListener());
+    bottom=true;
   }
+
   @override
   Widget build(BuildContext context) {
+    double height=MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: SegerItems.blue,
       appBar:  AppBar(
@@ -71,14 +96,33 @@ class _RecipeListState extends State<RecipeList> {
             size=recipes!=null ? recipes.length : 0;
             return Stack(
               children: [
-                  Positioned(
+                  Positioned.fill(
+                      child: ListView.builder(
+                              controller: _scrollController,
+                                itemCount: recipes!=null ? recipes.length+1 : 1,
+                                itemBuilder: (_, index){
+                                  if(recipes==null) return Container();
+                                  if(index==recipes.length){
+                                    return Container(margin: EdgeInsets.only(bottom: 150),);
+                                  }
+                                  Recipe recipe=recipes[index];
+                                  return Container(
+                                    child: RecipeRow(recipe: recipe,liW: (){
+                                      _scrollListener();
+                                    },),
+                                  );
+                                })
+
+                    ),
+                Positioned(
                   bottom: 0,
-                  child: Container(
+                  child: (bottom) ? Container(
                     width:MediaQuery.of(context).size.width,
                     margin: EdgeInsets.symmetric(vertical: 20),
                     child: Column(
                       children: [
                         GestureDetector(
+                          behavior: HitTestBehavior.translucent,
                           onTap: () async{
                             bool result=await showDialog(context: context, builder: (context){
                               return RecipeDialog(del:false);
@@ -95,6 +139,7 @@ class _RecipeListState extends State<RecipeList> {
                           ),
                         ),
                         GestureDetector(
+                          behavior: HitTestBehavior.translucent,
                           onTap: () async{
                             bool result=await showDialog(context: context, builder: (context){
                               return RecipeDialog(del:true,);
@@ -129,23 +174,8 @@ class _RecipeListState extends State<RecipeList> {
                         ),
                       ],
                     ),
-                  ),
+                  ) : Container(),
                 ),
-                  Positioned.fill(
-                      child: ListView.builder(
-                                itemCount: recipes!=null ? recipes.length+1 : 1,
-                                itemBuilder: (_, index){
-                                  if(recipes==null) return Container();
-                                  if(index==recipes.length){
-                                    return Container(height: 180,);
-                                  }
-                                  Recipe recipe=recipes[index];
-                                  return Container(
-                                    child: RecipeRow(recipe: recipe,),
-                                  );
-                                })
-
-                    ),
 
               ],
             );
@@ -170,10 +200,11 @@ class _RecipeListState extends State<RecipeList> {
     });
   }
 }
-
+typedef liW=Function();
 class RecipeRow extends StatefulWidget {
   Recipe recipe;
-  RecipeRow({this.recipe});
+  final liW;
+  RecipeRow({this.recipe, this.liW});
   @override
   _RecipeRowState createState() => _RecipeRowState();
 }
@@ -182,7 +213,6 @@ class _RecipeRowState extends State<RecipeRow> {
   RecipeMatDao recipeMatDao;
   MatDao matDao;
   List<MatCalcForm> matCalcForms;
-  ValueNotifier<List<MatCalcForm>> notifier;
   Stream<List<RecipeMat>> matStream;
   Stream<Mat> materialStream;
 
@@ -191,10 +221,10 @@ class _RecipeRowState extends State<RecipeRow> {
     // TODO: implement initState
     super.initState();
     matCalcForms=[];
-    notifier=ValueNotifier(matCalcForms);
     recipeMatDao=Provider.of<RecipeMatDao>(context, listen: false);
     matDao=Provider.of<MatDao>(context, listen: false);
     matStream=recipeMatDao.watchRecipeMatsByRecipeId(widget.recipe.id);
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {widget.liW(); });
   }
 
   @override
