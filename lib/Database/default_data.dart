@@ -21,7 +21,7 @@ class DataInfo{
     Oxide( name: "V2O5", role: "o", defRole: "o", mass: 181.88),
     Oxide( name: "Cr2O3", role: "o", defRole: "o", mass: 151.99),
     Oxide( name: "MnO", role: "o", defRole: "o", mass: 70.9374),
-    Oxide( name: "MnO3", role: "o", defRole: "o", mass: 86.94),
+    Oxide( name: "MnO2", role: "o", defRole: "o", mass: 86.94),
     Oxide( name: "FeO", role: "o", defRole: "o", mass: 71.84),
     Oxide( name: "Fe2O3", role: "o", defRole: "o", mass: 159.69),
     Oxide( name: "CoO", role: "o", defRole: "o", mass: 74.93),
@@ -34,6 +34,7 @@ class DataInfo{
     Oxide( name: "F", role: "o", defRole: "o", mass: 18.9984),
     Oxide( name: "PbO", role: "ae", defRole: "ae", mass: 223.2),
     Oxide( name: "SnO2", role: "o", defRole: "o", mass: 150.7),
+    Oxide( name: "Bi2O3", role: "o", defRole: "o", mass: 465.96),
     Oxide( name: "HfO2", role: "o", defRole: "o", mass: 210.49),
     Oxide( name: "Nb2O5", role: "o", defRole: "o", mass: 265.81),
     Oxide( name: "Ta2O5", role: "o", defRole: "o", mass: 441.893),
@@ -47,7 +48,6 @@ class DataInfo{
     Oxide( name: "GeO2", role: "gf", defRole: "gf", mass: 104.61),
     Oxide( name: "As2O3", role: "o", defRole: "o", mass: 197.841),
     Oxide( name: "Sb2O3", role: "o", defRole: "o", mass: 291.52),
-    Oxide( name: "Bi2O3", role: "o", defRole: "o", mass: 465.96),
     Oxide( name: "SeO2", role: "o", defRole: "o", mass: 110.96),
     Oxide( name: "La2O3", role: "o", defRole: "o", mass: 325.81),
     Oxide( name: "CeO2", role: "o", defRole: "o", mass: 172.115),
@@ -64,16 +64,6 @@ class DataInfo{
     Oxide( name: "Tm2O3", role: "o", defRole: "o", mass: 385.866),
     Oxide( name: "Yb2O3", role: "o", defRole: "o", mass: 394.08),
     Oxide( name: "Lu2O3", role: "o", defRole: "o", mass: 397.932),
-  ];
-  List<Mat> mats=[
-    Mat(name: "Nepheline Syenite", lowerName: "nepheline syenite", info: "Nepheline Syenite from the East Coast ", def: true)
-  ];
-  List<MatOxide> matOxides=[
-    MatOxide( oxideId: 1, matId: 1, count: 98.24),
-    MatOxide(oxideId: 2, matId: 1, count: 0.02),
-    MatOxide( oxideId: 3, matId: 1, count: 1.7),
-    MatOxide( oxideId: 4, matId: 1, count: 1.7),
-    MatOxide( oxideId: 5, matId: 1, count: 1.7),
   ];
   List<Folder> folders=[
     Folder( name: "Favourites", del: false),

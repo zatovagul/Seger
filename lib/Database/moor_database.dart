@@ -6,6 +6,8 @@ import 'package:moor_flutter/moor_flutter.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:seger/Database/default_data.dart';
+
+import 'material_data.dart';
 part 'moor_database.g.dart';
 
 class Oxides extends Table {
@@ -211,9 +213,11 @@ class AppDatabase extends _$AppDatabase {
       beforeOpen:  (details) async {
       if (details.wasCreated) {
           DataInfo dataInfo = DataInfo();
+          MaterialInfo matInfo= MaterialInfo();
+          MatOxideInfo matOxideInfo=MatOxideInfo();
           await batch((b) => b.insertAll(oxides,dataInfo.oxides ));
-          await batch((b) => b.insertAll(mats,dataInfo.mats ));
-          await batch((b) => b.insertAll(matOxides,dataInfo.matOxides ));
+          await batch((b) => b.insertAll(mats,matInfo.mats));
+          await batch((b) => b.insertAll(matOxides,matOxideInfo.matOxides));
           await batch((b) => b.insertAll(folders,dataInfo.folders ));
           await into(recipes).insert(dataInfo.recipe);
       }
