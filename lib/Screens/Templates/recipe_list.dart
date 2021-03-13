@@ -294,28 +294,31 @@ class _RecipeRowState extends State<RecipeRow> {
                                         }
                                         MatCalcForm calcForm=MatCalcForm(mat: snapMat.data,count: element.count, tag: element.tag);
                                         matCalcForms.add(calcForm);
-                                        return Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                element.tag ? Center(
-                                                  child: Icon(
-                                                    Icons.add,
-                                                    color: SegerItems.blue,
-                                                    size: 20,
-                                                  ),
-                                                ) : Container(),
-                                                Container(
-                                                  alignment: Alignment.center,
-                                                  child: Text(calcForm.mat.name.length<=20 ? calcForm.mat.name : "${calcForm.mat.name.substring(0,20)}...", style: TextStyle(fontSize: width*SegerItems.letSizes[16], color: Colors.black, fontFamily: "PTSans"),),
-                                                )
-                                              ],
-                                            ),
-                                            Container(
-                                              child:Text("${calcForm.count }", style: TextStyle(fontSize: width*SegerItems.letSizes[16], color: Colors.black, fontFamily: "PTSans"),) ,
-                                            )
-                                          ],
+                                        return Container(
+                                          margin: EdgeInsets.only(top:5),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  element.tag ? Center(
+                                                    child: Icon(
+                                                      Icons.add,
+                                                      color: SegerItems.blue,
+                                                      size: 20,
+                                                    ),
+                                                  ) : Container(),
+                                                  Container(
+                                                    alignment: Alignment.center,
+                                                    child: Text(calcForm.mat.name.length<=20 ? calcForm.mat.name : "${calcForm.mat.name.substring(0,20)}...", style: TextStyle(fontSize: width*SegerItems.letSizes[16], color: Colors.black, fontFamily: "PTSans"),),
+                                                  )
+                                                ],
+                                              ),
+                                              Container(
+                                                child:Text("${calcForm.count }", style: TextStyle(fontSize: width*SegerItems.letSizes[16], color: Colors.black, fontFamily: "PTSans"),) ,
+                                              )
+                                            ],
+                                          ),
                                         );
                                       },
                                     ));
