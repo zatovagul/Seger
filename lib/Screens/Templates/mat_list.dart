@@ -36,8 +36,9 @@ class _MatListState extends State<MatList> {
       int n=value.length;
       int l=0;
       for(int i=0;i<n;i++){
-        if(l++==4) break;
-        mostUsedList.add(value[i]);
+        if(l++==20) break;
+        if(value[i].count>0)
+          mostUsedList.add(value[i]);
       }
     });
   }
@@ -166,6 +167,7 @@ class _MatListState extends State<MatList> {
                                             mostUsedList.forEach((element) {
                                               list.add(MatRow(choose: widget.choose,mat: element,));
                                             });
+                                            if(mostUsedList.length>0)
                                             li.add(Container(
                                               margin: EdgeInsets.only(bottom: 50),
                                               child: Column(children: list,),

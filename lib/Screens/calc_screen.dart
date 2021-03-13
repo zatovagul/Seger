@@ -280,7 +280,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                                                 matItems.add(calcForm);
 
                                                 updated = true;
-
+                                                updateDraftRecipe();
                                                 _notifier.notifyListeners();
                                               });
                                             }
@@ -708,6 +708,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         image: null,
         folderId: null,
         date: null);
+    print("$recipe is Draft recipe");
     recipeDao.updateRecipe(recipe);
     recipeMatDao.deleteAllRecipeMatsByRecipeId(recipe.id).then((value) {
       List<RecipeMat> reMats = [];
@@ -729,7 +730,6 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       });
       recipeMatDao.insertAllRecipeMats(reMats).then((value) {
         updated = false;
-        _notifier.notifyListeners();
       });
     });
   }
