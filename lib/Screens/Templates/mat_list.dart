@@ -134,9 +134,10 @@ class _MatListState extends State<MatList> {
                               child: StreamBuilder(
                                 stream: streamMats,
                                 builder: (context, AsyncSnapshot<List<Mat>> snapshot){
-                                  String letter="a-";
+                                  String letter="a";
                                   List<Mat> mats=snapshot.data;
                                   return ListView.builder(
+                                    cacheExtent: 999999,
                                     itemCount: mats!=null ? mats.length+1 : 1,
                                       itemBuilder: (_,index){
                                         List<Widget> li=[];
@@ -177,46 +178,24 @@ class _MatListState extends State<MatList> {
                                         else {
                                           Mat mat=mats[index-1];
                                             if (_notifier.value.length == 0) {
-                                              if ((letter[0] ==
-                                                          mat.name[0]
-                                                              .toLowerCase() &&
-                                                      letter[1] == '-') ||
-                                                  letter[0] !=
+                                              if ((index==0) ||
+                                                  letter !=
                                                       mat.name[0]
                                                           .toLowerCase()) {
                                                 Widget letField =
-                                                    Column(children: [
-                                                  Container(
-                                                    padding:
-                                                        EdgeInsets.symmetric(
-                                                            vertical: 6),
-                                                    child: Align(
-                                                      alignment:
-                                                          Alignment.centerLeft,
-                                                      child: Text(
-                                                        mat.name[0]
-                                                            .toUpperCase(),
-                                                        style: TextStyle(
-                                                            fontSize: width*SegerItems.letSizes[20],fontFamily: "PTSans",
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .bold),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Divider(
-                                                    height: 1,
-                                                  )
-                                                ]);
+                                                    TopLetter(name:mat.name[0]);
                                                 li.add(letField);
+                                                print("$index ${mat.lowerName} $letter");
                                                 letter =
-                                                    "${mat.name.toLowerCase()[0]}+";
+                                                    "${mat.name.toLowerCase()[0]}";
+                                                print(letter);
                                               }
                                               li.add(MatRow(
                                                 mat: mat,
                                                 choose: widget.choose,
                                               ));
-                                            } else {
+                                            }
+                                            else {
                                               if (mat.name
                                                   .toLowerCase()
                                                   .startsWith(controller.text
@@ -309,5 +288,36 @@ class _MatRowState extends State<MatRow> {
   }
 }
 
+class TopLetter extends StatelessWidget {
+  final String name;
+  TopLetter({this.name});
+  @override
+  Widget build(BuildContext context) {
+    double width=MediaQuery.of(context).size.width;
+    return Column(children: [
+      Container(
+        padding:
+        EdgeInsets.symmetric(
+            vertical: 6),
+        child: Align(
+          alignment:
+          Alignment.centerLeft,
+          child: Text(
+            name
+                .toUpperCase(),
+            style: TextStyle(
+                fontSize: width*SegerItems.letSizes[20],fontFamily: "PTSans",
+                fontWeight:
+                FontWeight
+                    .bold),
+          ),
+        ),
+      ),
+      Divider(
+        height: 1,
+      )
+    ]);
+  }
+}
 
 
